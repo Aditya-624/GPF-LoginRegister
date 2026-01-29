@@ -1,0 +1,195 @@
+// Mock user database with secure password handling
+// In a real application, passwords should be hashed using bcrypt or similar
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+
+let mockUsers = [
+  {
+    userId: 'user1',
+    username: 'John Doe',
+    password: 'Password@123',
+    dob: '1990-01-15',
+    securityQuestions: [
+      { question: 'What is your Nickname?', answer: 'johnny' },
+      { question: 'What is your First School Name?', answer: 'Lincoln' }
+    ],
+    passwordChangeDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) // 15 days ago
+  },
+  {
+    userId: 'user2',
+    username: 'Jane Smith',
+    password: 'Secure@456',
+    dob: '1992-05-20',
+    securityQuestions: [
+      { question: 'What is your Place of Birth?', answer: 'New York' },
+      { question: "What is your Mother's Surname?", answer: 'Johnson' }
+    ],
+    passwordChangeDate: new Date()
+  },
+  {
+    userId: 'admin',
+    username: 'Administrator',
+    password: 'Admin@123',
+    dob: '1985-03-10',
+    securityQuestions: [
+      { question: 'What is your Nickname?', answer: 'admin' },
+      { question: 'What is your First School Name?', answer: 'St. Johns' }
+    ],
+    passwordChangeDate: new Date()
+  }
+];
+
+// Password validation utility
+export const validatePassword = (password) => {
+  const errors = [];
+  
+  if (!password) {
+    return { valid: false, errors: ['Password is required'] };
+  }
+  
+  if (password.length < 8) {
+    errors.push('Password must be at least 8 characters');
+  }
+  
+  if (password.length > 12) {
+    errors.push('Password must not exceed 12 characters');
+  }
+  
+  if (!/[A-Z]/.test(password)) {
+    errors.push('Password must contain at least 1 capital letter');
+  }
+  
+  if (!/[0-9]/.test(password)) {
+    errors.push('Password must contain at least 1 number');
+  }
+  
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    errors.push('Password must contain at least 1 special character');
+  }
+  
+  return {
+    valid: errors.length === 0,
+    errors
+  };
+};
+
+// User management service
+export const userService = {
+  // Register new user (calls backend)
+  registerUser: async (userData) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      const text = await res.text();
+      let data;
+      try { data = text ? JSON.parse(text) : {}; } catch { data = { message: text } }
+      if (!res.ok) return { success: false, error: data.message || data.error || res.statusText };
+      return { success: true, message: data.message || 'User registered' };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  },
+
+  validateLogin: async (userId, password) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, password })
+      });
+      const text = await res.text();
+      let data;
+      try { data = text ? JSON.parse(text) : {}; } catch { data = { message: text } }
+      if (!res.ok) return { success: false, error: data.message || data.error || res.statusText };
+      return {
+        success: true,
+        userId: data.userId,
+        username: data.username,
+        token: data.token || data.token,
+        isPasswordExpired: false
+      };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  },
+
+  // Change password via backend
+  changePassword: async (userId, oldPassword, newPassword) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/change-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, oldPassword, newPassword })
+      });
+      const text = await res.text();
+      let data;
+      try { data = text ? JSON.parse(text) : {}; } catch { data = { message: text } }
+      if (!res.ok) return { success: false, error: data.message || data.error || res.statusText };
+      return { success: true, message: data.message || 'Password changed' };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  },
+
+  userExists: (userId) => {
+    return mockUsers.some(u => u.userId === userId);
+  },
+
+  // Get security questions for user
+  getSecurityQuestions: () => {
+    return [
+      'What is your Nickname?',
+      'What is your First School Name?',
+      'What is your Place of Birth?',
+      "What is your Mother's Surname?",
+      'What is your favorite pet name?',
+      'What is the name of your best friend?'
+    ];
+  },
+
+  // Get user's security questions by userId
+  getUserSecurityQuestions: (userId) => {
+    const user = mockUsers.find(u => u.userId === userId);
+    if (!user) {
+      return { success: false, error: 'User does not exist' };
+    }
+    return {
+      success: true,
+      userId,
+      username: user.username,
+      questions: [
+        { id: 1, question: user.securityQuestions[0].question },
+        { id: 2, question: user.securityQuestions[1].question }
+      ]
+    };
+  },
+
+  // Verify security questions answers
+  verifySecurityAnswers: (userId, answer1, answer2) => {
+    const user = mockUsers.find(u => u.userId === userId);
+    if (!user) {
+      return { success: false, error: 'User does not exist' };
+    }
+
+    // Convert answers to lowercase for case-insensitive comparison
+    const userAnswer1 = user.securityQuestions[0].answer.toLowerCase().trim();
+    const userAnswer2 = user.securityQuestions[1].answer.toLowerCase().trim();
+    const inputAnswer1 = answer1.toLowerCase().trim();
+    const inputAnswer2 = answer2.toLowerCase().trim();
+
+    if (userAnswer1 === inputAnswer1 && userAnswer2 === inputAnswer2) {
+      return {
+        success: true,
+        password: user.password,
+        message: `Your password is: ${user.password}`
+      };
+    } else {
+      return {
+        success: false,
+        error: 'your inputs are wrong..'
+      };
+    }
+  }
+};
