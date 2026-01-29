@@ -24,6 +24,11 @@ public class SecurityConfig {
             .cors(cors -> {})
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+                // Always allow CORS preflight requests
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                // Explicitly allow POST to registration endpoint
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/auth/register").permitAll()
+                // Allow other auth endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()
             )

@@ -46,6 +46,19 @@ public class AuthControllerTest {
     }
 
     @Test
+    void registerWithOriginReturnsCreated() throws Exception {
+        String url = "http://localhost:" + port + "/api/auth/register";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Origin", "http://localhost:5173");
+        String body = "{\"userId\":\"u2\",\"username\":\"User Two\",\"email\":\"u2@example.com\",\"password\":\"Password@123\"}";
+
+        ResponseEntity<String> resp = restTemplate.postForEntity(url, new HttpEntity<>(body, headers), String.class);
+        org.assertj.core.api.Assertions.assertThat(resp.getStatusCode().value()).isEqualTo(201);
+        org.assertj.core.api.Assertions.assertThat(resp.getBody()).contains("User registered");
+    }
+
+    @Test
     void loginReturnsToken() throws Exception {
         // Create user in DB
         User u = new User();

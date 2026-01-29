@@ -2,6 +2,25 @@
 // In a real application, passwords should be hashed using bcrypt or similar
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
+// Auth helpers (localStorage safe access)
+const getAuthToken = () => {
+  try { return localStorage.getItem('authToken'); } catch { return null; }
+};
+
+const setAuthToken = (token) => {
+  try { if (token) localStorage.setItem('authToken', token); else localStorage.removeItem('authToken'); } catch { }
+};
+
+const getAuthHeaders = () => {
+  const token = getAuthToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+const authFetch = (url, options = {}) => {
+  const headers = { ...(options.headers || {}), ...getAuthHeaders() };
+  return fetch(url, { ...options, headers });
+};
+
 let mockUsers = [
   {
     userId: 'user1',
@@ -118,7 +137,7 @@ export const userService = {
   // Change password via backend
   changePassword: async (userId, oldPassword, newPassword) => {
     try {
-      const res = await fetch(`${API_BASE}/api/auth/change-password`, {
+      const res = await authFetch(`${API_BASE}/api/auth/change-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, oldPassword, newPassword })
