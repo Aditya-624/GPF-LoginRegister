@@ -6,6 +6,7 @@ function Registration({ onRegistrationSuccess }) {
   const [formData, setFormData] = useState({
     userId: '',
     username: '',
+    email: '', // Add email field
     dob: '',
     password: '',
     confirmPassword: '',
@@ -46,6 +47,11 @@ function Registration({ onRegistrationSuccess }) {
   };
 
   const validateForm = () => {
+        if (!formData.email.trim()) {
+          newErrors.email = 'Email is required';
+        } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email)) {
+          newErrors.email = 'Invalid email address';
+        }
     const newErrors = {};
 
     if (!formData.userId.trim()) {
@@ -119,6 +125,7 @@ function Registration({ onRegistrationSuccess }) {
     const result = await userService.registerUser({
       userId: formData.userId,
       username: formData.username,
+      email: formData.email, // Add email to payload
       password: formData.password,
       dob: formData.dob,
       securityQuestions: [
@@ -146,6 +153,24 @@ function Registration({ onRegistrationSuccess }) {
         <p className="registration-subtitle">Create your account to get started</p>
 
         <form onSubmit={handleSubmit} className="registration-form">
+                    {/* Email Field */}
+                    <div className="form-group">
+                      <label htmlFor="email" className="form-label">
+                        Email <span className="required">*</span>
+                      </label>
+                      <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        className={`form-input ${errors.email ? 'error' : ''}`}
+                        placeholder="Enter your email address"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        disabled={isLoading}
+                        autoComplete="email"
+                      />
+                      {errors.email && <span className="error-text">{errors.email}</span>}
+                    </div>
           {errors.submit && (
             <div className="error-message">
               <span className="error-icon">⚠️</span>

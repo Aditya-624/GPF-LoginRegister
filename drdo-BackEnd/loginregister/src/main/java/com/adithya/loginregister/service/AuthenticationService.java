@@ -32,15 +32,6 @@ public class AuthenticationService {
     }
 
     public User register(RegisterRequest req) {
-        if (req.getUserId() != null && userRepository.existsByUserId(req.getUserId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId already exists");
-        }
-        if (userRepository.existsByUsername(req.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username already exists");
-        }
-        if (userRepository.existsByEmail(req.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email already exists");
-        }
 
         User user = new User();
         user.setUserId(req.getUserId());
