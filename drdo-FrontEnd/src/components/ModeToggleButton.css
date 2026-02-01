@@ -1,0 +1,18 @@
+.mode-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--input-border);
+  color: var(--card-text);
+  cursor: pointer;
+  padding: 0;
+  font-size: 16px;
+  transition: background-color var(--transition-smooth), color var(--transition-smooth), border-color var(--transition-smooth);
+}
+
+.mode-toggle:hover { background: rgba(0,0,0,0.04); }
+.mode-icon { display: block; line-height: 1; }

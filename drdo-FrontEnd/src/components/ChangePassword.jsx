@@ -13,6 +13,14 @@ function ChangePassword({ onSuccess, onCancel }) {
   const [passwordErrors, setPasswordErrors] = useState([]);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
 
+  const [showOld, setShowOld] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const toggleShowOld = () => setShowOld(s => !s);
+  const toggleShowNew = () => setShowNew(s => !s);
+  const toggleShowConfirm = () => setShowConfirm(s => !s);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -157,51 +165,66 @@ function ChangePassword({ onSuccess, onCancel }) {
             <label htmlFor="userId" className="form-label">
               User ID <span className="required">*</span>
             </label>
-            <input
-              id="userId"
-              type="text"
-              name="userId"
-              className="form-input"
-              placeholder="Enter your User ID"
-              value={userId}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              autoComplete="username"
-            />
+            <div className="input-with-icon">
+              <span className="icon user-icon" aria-hidden>👤</span>
+              <input
+                id="userId"
+                type="text"
+                name="userId"
+                className="form-input"
+                placeholder="Enter your User ID"
+                value={userId}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                autoComplete="username"
+              />
+            </div>
           </div>
 
           <div className="form-group">
             <label htmlFor="oldPassword" className="form-label">
               Old Password <span className="required">*</span>
             </label>
-            <input
-              id="oldPassword"
-              type="password"
-              name="oldPassword"
-              className="form-input"
-              placeholder="Enter your current password"
-              value={oldPassword}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              autoComplete="current-password"
-            />
+            <div className="input-with-icon">
+              <span className="icon lock-icon" aria-hidden>🔒</span>
+              <input
+                id="oldPassword"
+                type={showOld ? 'text' : 'password'}
+                name="oldPassword"
+                className="form-input"
+                placeholder="Enter your current password"
+                value={oldPassword}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                autoComplete="current-password"
+              />
+              <button type="button" className={`icon-btn eye-btn ${showOld ? 'visible' : ''}`} onClick={toggleShowOld} aria-label={showOld ? 'Hide password' : 'Show password'}>
+                {showOld ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
 
           <div className="form-group">
             <label htmlFor="newPassword" className="form-label">
               New Password <span className="required">*</span>
             </label>
-            <input
-              id="newPassword"
-              type="password"
-              name="newPassword"
-              className={`form-input ${newPassword && passwordErrors.length === 0 ? 'valid' : ''}`}
-              placeholder="Enter new password (8-12 characters)"
-              value={newPassword}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              autoComplete="new-password"
-            />
+            <div className="input-with-icon">
+              <span className="icon lock-icon" aria-hidden>🔒</span>
+              <input
+                id="newPassword"
+                type={showNew ? 'text' : 'password'}
+                name="newPassword"
+                className={`form-input ${newPassword && passwordErrors.length === 0 ? 'valid' : ''}`}
+                placeholder="Enter new password (8-12 characters)"
+                value={newPassword}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                autoComplete="new-password"
+              />
+              <button type="button" className={`icon-btn eye-btn ${showNew ? 'visible' : ''}`} onClick={toggleShowNew} aria-label={showNew ? 'Hide password' : 'Show password'}>
+                {showNew ? '🙈' : '👁️'}
+              </button>
+            </div>
             {newPassword && passwordErrors.length > 0 && (
               <div className="password-requirements">
                 <p className="requirements-title">Password must contain:</p>
@@ -227,23 +250,29 @@ function ChangePassword({ onSuccess, onCancel }) {
             <label htmlFor="confirmPassword" className="form-label">
               Confirm Password <span className="required">*</span>
             </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              name="confirmPassword"
-              className={`form-input ${
-                confirmPassword
-                  ? passwordsMatch
-                    ? 'valid'
-                    : 'error'
-                  : ''
-              }`}
-              placeholder="Re-enter your new password"
-              value={confirmPassword}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              autoComplete="new-password"
-            />
+            <div className="input-with-icon">
+              <span className="icon lock-icon" aria-hidden>🔒</span>
+              <input
+                id="confirmPassword"
+                type={showConfirm ? 'text' : 'password'}
+                name="confirmPassword"
+                className={`form-input ${
+                  confirmPassword
+                    ? passwordsMatch
+                      ? 'valid'
+                      : 'error'
+                    : ''
+                }`}
+                placeholder="Re-enter your new password"
+                value={confirmPassword}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                autoComplete="new-password"
+              />
+              <button type="button" className={`icon-btn eye-btn ${showConfirm ? 'visible' : ''}`} onClick={toggleShowConfirm} aria-label={showConfirm ? 'Hide password' : 'Show password'}>
+                {showConfirm ? '🙈' : '👁️'}
+              </button>
+            </div>
             {confirmPassword && (
               <div className={`match-indicator ${passwordsMatch ? 'match' : 'mismatch'}`}>
                 <span className="match-icon">{passwordsMatch ? '✓' : '✗'}</span>

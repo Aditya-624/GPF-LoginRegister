@@ -1,3 +1,34 @@
+/* App-wide variables and layout — uses var() tokens per spec */
+:root {
+  --page-bg: #E0F7FA;
+  --card-bg: #ffffff;
+  --text-primary: #353537;
+  --text-secondary: #7B7B7D;
+  --accent-primary: #62adb7;
+  --button-bg: #6DB432;
+  --input-border: #7B7B7D;
+  --input-bg: #ffffff;
+
+  --spotlight-color: rgba(255,255,255,0.06);
+  --card-shadow: 0 12px 40px rgba(11,18,32,0.12);
+  --transition-smooth: 240ms;
+  --muted-bg: #f5f5f5;
+}
+
+/* Dark overrides */
+.theme-dark {
+  --page-bg: #353537;
+  --card-bg: #7B7B7D;
+  --text-primary: #ffffff;
+  --text-secondary: #ffffff;
+  --accent-primary: #62adb7;
+  --button-bg: #6DB432;
+  --input-border: #353537;
+  --input-bg: #353537;
+  --spotlight-color: rgba(0,0,0,0.45);
+  --card-shadow: 0 20px 50px rgba(0,0,0,0.55);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -120,6 +151,67 @@
 
   .dashboard-content p {
     font-size: 16px;
+  }
+}
+
+/* -------------------------------
+   Route transition animations
+   ------------------------------- */
+.page-wrapper { position: relative; }
+.page-wrapper > * { /* pages by default flow normally */ }
+
+/* Shared transition timing */
+.slide-left-enter, .slide-right-enter, .slide-up-enter, .slide-down-enter, .fade-scale-enter {
+  opacity: 0;
+}
+
+/* Slide Left (e.g., Login -> Register) */
+.slide-left-enter { transform: translateX(100%); }
+.slide-left-enter-active { transform: translateX(0); opacity: 1; transition: transform 400ms ease-in-out, opacity 400ms ease-in-out; position: absolute; inset: 0; width: 100%; }
+.slide-left-exit { transform: translateX(0); opacity: 1; }
+.slide-left-exit-active { transform: translateX(-25%); opacity: 0; transition: transform 400ms ease-in-out, opacity 400ms ease-in-out; position: absolute; inset: 0; width: 100%; }
+
+/* Slide Right (e.g., Register -> Login) */
+.slide-right-enter { transform: translateX(-100%); }
+.slide-right-enter-active { transform: translateX(0); opacity: 1; transition: transform 400ms ease-in-out, opacity 400ms ease-in-out; position: absolute; inset: 0; width: 100%; }
+.slide-right-exit { transform: translateX(0); opacity: 1; }
+.slide-right-exit-active { transform: translateX(25%); opacity: 0; transition: transform 400ms ease-in-out, opacity 400ms ease-in-out; position: absolute; inset: 0; width: 100%; }
+
+/* Slide Up (e.g., Login -> Forgot Password) */
+.slide-up-enter { transform: translateY(100%); }
+.slide-up-enter-active { transform: translateY(0); opacity: 1; transition: transform 400ms ease-in-out, opacity 400ms ease-in-out; position: absolute; inset: 0; width: 100%; }
+.slide-up-exit { transform: translateY(0); opacity: 1; }
+.slide-up-exit-active { transform: translateY(-25%); opacity: 0; transition: transform 400ms ease-in-out, opacity 400ms ease-in-out; position: absolute; inset: 0; width: 100%; }
+
+/* Slide Down (e.g., Forgot Password -> Login) */
+.slide-down-enter { transform: translateY(-100%); }
+.slide-down-enter-active { transform: translateY(0); opacity: 1; transition: transform 400ms ease-in-out, opacity 400ms ease-in-out; position: absolute; inset: 0; width: 100%; }
+.slide-down-exit { transform: translateY(0); opacity: 1; }
+.slide-down-exit-active { transform: translateY(25%); opacity: 0; transition: transform 400ms ease-in-out, opacity 400ms ease-in-out; position: absolute; inset: 0; width: 100%; }
+
+/* Fade + slight scale (Login -> Dashboard) */
+.fade-scale-enter { transform: scale(0.98); opacity: 0; }
+.fade-scale-enter-active { transform: scale(1); opacity: 1; transition: transform 400ms ease-in-out, opacity 400ms ease-in-out; position: absolute; inset: 0; width: 100%; }
+.fade-scale-exit { transform: scale(1); opacity: 1; }
+.fade-scale-exit-active { transform: scale(1.02); opacity: 0; transition: transform 400ms ease-in-out, opacity 400ms ease-in-out; position: absolute; inset: 0; width: 100%; }
+
+/* Keep animations lightweight on small screens */
+@media (max-width: 480px) {
+  .slide-left-exit-active, .slide-right-exit-active { transform: translateX(-18%); }
+  .slide-up-exit-active, .slide-down-exit-active { transform: translateY(-18%); }
+}
+
+/* Respect user's reduced motion setting */
+@media (prefers-reduced-motion: reduce) {
+  .slide-left-enter-active, .slide-left-exit-active,
+  .slide-right-enter-active, .slide-right-exit-active,
+  .slide-up-enter-active, .slide-up-exit-active,
+  .slide-down-enter-active, .slide-down-exit-active,
+  .fade-scale-enter-active, .fade-scale-exit-active {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    position: static !important;
   }
 }
 

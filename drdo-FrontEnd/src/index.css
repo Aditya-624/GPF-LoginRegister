@@ -1,11 +1,41 @@
 :root {
+  /* New color tokens */
+  --accent-primary: #62adb7; /* kept as provided */
+  --button-bg: #6DB432;
+  --text-primary: #353537;
+  --text-secondary: #7B7B7D;
+
+  /* Backwards-compatible variables */
+  --brand: var(--accent-primary);
+  --brand-dark: #4b9096;
+  --white: #ffffff;
+  --placeholder: #bfbfbf;
+
+  /* Theme-aware variables (defaults = Light Mode colors requested) */
+  --page-bg: #E0F7FA; /* light page */
+  --page-text: var(--text-primary);
+  --card-bg: var(--white);
+  --card-text: var(--text-primary);
+  --input-bg: var(--white);
+  --input-text: var(--text-primary);
+  --input-border: #7B7B7D; /* Light mode input border requested */
+  --spotlight-color: rgba(255,255,255,0.06);
+  --card-shadow: 0 10px 30px rgba(11,18,32,0.12);
+  --transition-smooth: 240ms;
+  /* semantic colors */
+  --success: var(--button-bg);
+  --success-bg: rgba(109,180,50,0.08);
+  --error: #c62828;
+  --error-bg: rgba(198,40,40,0.06);
+  --muted-bg: #f5f5f5;
+
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: var(--page-text);
+  background-color: var(--page-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,12 +44,24 @@
 }
 
 a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  font-weight: 600;
+  color: var(--brand);
+  text-decoration: none;
 }
+
 a:hover {
-  color: #535bf2;
+  text-decoration: underline;
+}
+
+/* Generic link classes used in components */
+.link, .link-button {
+  color: var(--brand);
+  text-decoration: underline;
+  font-weight: 700;
+}
+
+.link:hover, .link-button:hover {
+  text-decoration: underline;
 }
 
 body {
@@ -28,12 +70,40 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--page-bg);
+  color: var(--page-text);
+  /* decorative background overlays */
+  background-image:
+    radial-gradient(900px 420px at 50% 4%, var(--spotlight-color), transparent 25%),
+    radial-gradient(500px 300px at 90% 85%, rgba(255,255,255,0.03), transparent 20%),
+    linear-gradient(180deg, rgba(0,0,0,0.015), transparent 30%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
 }
+
+input, textarea, select {
+  color: var(--input-text);
+} 
+
+input::placeholder, textarea::placeholder {
+  color: var(--placeholder);
+}
+
+/* Icons used inside inputs/buttons */
+.icon, .icon-btn {
+  color: var(--white);
+}
+
+/* Shared input-with-icon */
+.input-with-icon { position: relative; }
+.input-with-icon .icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; opacity: 1; }
+.input-with-icon .form-input { padding-left: 44px; padding-right: 44px; }
+.input-with-icon .icon-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); }
 
 button {
   border-radius: 8px;
@@ -42,22 +112,35 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: transparent;
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: rgba(255,255,255,0.06);
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+@media (max-width: 480px) {
+  .btn, .btn-block { width: 100%; }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    /* Force Light palette when OS prefers light */
+    --page-bg: #E0F7FA;
+    --page-text: var(--text-primary);
+    --card-bg: var(--white);
+    --card-text: var(--text-primary);
+    --input-bg: var(--white);
+    --input-text: var(--text-primary);
+    --input-border: #7B7B7D;
+    --text-secondary: #7B7B7D;
+    --accent-primary: #62adb7;
+    --button-bg: #6DB432;
   }
   a:hover {
     color: #747bff;
@@ -65,4 +148,36 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* Dark theme overrides */
+.theme-dark {
+  --page-bg: #353537;
+  --text-primary: #ffffff;
+  --page-text: var(--text-primary);
+  --card-bg: #7B7B7D;
+  --card-text: var(--text-primary);
+  --input-bg: #353537;
+  --input-text: var(--text-primary);
+  --input-border: #353537;
+  --text-secondary: #ffffff;
+  --accent-primary: #62adb7;
+  --button-bg: #6DB432;
+}
+
+/* Light theme helper (explicit) */
+.theme-light {
+  --page-bg: #E0F7FA;
+  --page-text: var(--text-primary);
+  --card-bg: var(--white);
+  --card-text: var(--text-primary);
+  --input-bg: var(--white);
+  --input-text: var(--text-primary);
+  --input-border: #7B7B7D;
+  --text-secondary: #7B7B7D;
+}
+
+/* When toggling theme, apply smooth transitions */
+.theme-transition * {
+  transition: background-color var(--transition-smooth) ease-in-out, color var(--transition-smooth) ease-in-out, border-color var(--transition-smooth) ease-in-out, box-shadow var(--transition-smooth) ease-in-out;
 }

@@ -1,0 +1,50 @@
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--page-bg);
+  color: var(--page-text);
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
+}
+
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--input-border);
+  position: relative; /* allow absolute toggle inside nav */
+} 
+
+.nav-left {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.nav-right { display: flex; gap: 12px; align-items: center; }
+
+.btn-nav {
+  background: transparent;
+  border: 1px solid var(--input-border);
+  color: var(--card-text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-signout {
+  background: var(--button-bg);
+  color: var(--white);
+  border: none;
+}
+
+.dashboard-main {
+  padding: 36px;
+}
+
+@media (max-width: 600px) {
+  .top-nav { padding: 10px 12px; }
+  .nav-left { font-size: 16px; }
+  .dashboard-main { padding: 18px; }
+}
