@@ -1,0 +1,34 @@
+.theme-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--input-border);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  z-index: 40;
+  transition: background-color var(--transition-smooth), border-color var(--transition-smooth), color var(--transition-smooth);
+  color: var(--card-text);
+}
+
+.theme-toggle:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+.theme-toggle .theme-icon { display: block; }
+
+/* wrapper to position toggle consistently */
+.theme-toggle-wrapper { position: absolute; top: 8px; right: 8px; z-index: 40; }
+
+@media (max-width: 480px) {
+  .theme-toggle { top: 8px; right: 8px; width: 32px; height: 32px; font-size: 14px; }
+  .theme-toggle-wrapper { top: 6px; right: 6px; }
+}

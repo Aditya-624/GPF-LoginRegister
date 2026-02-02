@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { userService } from '../services/userService';
 import './ForgotPassword.css';
+import ThemeToggle from './ThemeToggle';
+
+import { useNavigate } from 'react-router-dom';
 
 function ForgotPassword({ onSuccess, onCancel }) {
+  const navigate = useNavigate();
   const [userId, setUserId] = useState('');
   const [answer1, setAnswer1] = useState('');
   const [answer2, setAnswer2] = useState('');
@@ -84,6 +88,8 @@ function ForgotPassword({ onSuccess, onCancel }) {
     if (result.success) {
       setSuccess(result.message);
       setRecoveredPassword(result.password);
+      // mark navigation as user initiated (submit click will lead to redirect)
+      try { window.__ANIMATE_NAV = true; } catch (e) {}
       // Optionally redirect after a delay
       setTimeout(() => {
         onSuccess();
@@ -102,6 +108,7 @@ function ForgotPassword({ onSuccess, onCancel }) {
     <div className="forgot-password-container">
       <div className="forgot-password-card">
         <h1 className="forgot-password-title">Recover Your Password</h1>
+        <div className="theme-toggle-wrapper"><ThemeToggle /></div>
         <p className="forgot-password-subtitle">
           Answer your security questions to retrieve your password
         </p>
@@ -146,7 +153,8 @@ function ForgotPassword({ onSuccess, onCancel }) {
             <label htmlFor="userId" className="form-label">
               User ID <span className="required">*</span>
             </label>
-            <div className="userid-input-group">
+            <div className="userid-input-group input-with-icon">
+              <span className="icon user-icon" aria-hidden>👤</span>
               <input
                 id="userId"
                 type="text"
@@ -245,7 +253,7 @@ function ForgotPassword({ onSuccess, onCancel }) {
           <button
             type="button"
             className="btn btn-back"
-            onClick={onCancel}
+            onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; (onCancel ? onCancel() : navigate('/')); }}
             disabled={isLoading}
           >
             Back to Login
@@ -258,7 +266,7 @@ function ForgotPassword({ onSuccess, onCancel }) {
             <button
               type="button"
               className="link-button"
-              onClick={onCancel}
+              onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; (onCancel ? onCancel() : navigate('/')); }}
               disabled={isLoading}
             >
               Return to login

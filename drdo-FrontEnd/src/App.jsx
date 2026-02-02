@@ -1,99 +1,164 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { userService } from './services/userService';
 import Registration from './components/Registration';
 import Login from './components/Login';
+import LoginPage from './components/LoginPage';
 import ChangePassword from './components/ChangePassword';
 import ForgotPassword from './components/ForgotPassword';
+import Dashboard from './components/Dashboard';
 import './App.css';
 
-function App() {
-  const [currentScreen, setCurrentScreen] = useState('registration'); // registration, login, changePassword, forgotPassword, loggedIn
-  const [loggedInUser, setLoggedInUser] = useState(null);
+// Determine animation name by route pairs
+const getTransitionName = (from = '/', to = '/') => {
+  if (from === '/' && to === '/register') return 'slide-left';
+  if (from === '/register' && to === '/') return 'slide-right';
+  if (from === '/' && to === '/forgot-password') return 'slide-up';
+  if (from === '/forgot-password' && to === '/') return 'slide-down';
+  if (from === '/' && to === '/dashboard') return 'fade-scale';
+  // sensible default for forward nav
+  return 'slide-left';
+};
 
-  const handleRegistrationSuccess = () => {
-    setCurrentScreen('login');
-  };
+function AppRoutes() {
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const prevLocationRef = useRef(location);
+  const [transitionName, setTransitionName] = useState('fade-scale');
+
+  // Refs for DOM nodes to apply classes directly (enter/exit active)
+  const prevRef = useRef(null);
+  const currRef = useRef(null);
+  const timerRef = useRef(null);
+
+  // Respect reduced motion preference
+  const reducedMotion = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const timeout = reducedMotion ? 0 : 400; // between 300-500ms
+
+  // Track previous location so we can render it during animation
+  const [prevLocation, setPrevLocation] = useState(null);
+  useEffect(() => {
+    // on location change, store previous location and set transition name
+    const from = prevLocationRef.current?.pathname || '/';
+    const to = location.pathname;
+    const name = getTransitionName(from, to);
+    setTransitionName(name);
+
+    // Only animate when the navigation was user-initiated (e.g., a click) and reduced motion is not requested
+    const userInitiated = (typeof window !== 'undefined' && window.__ANIMATE_NAV === true);
+
+    if (from !== to && !reducedMotion && userInitiated) {
+      setPrevLocation(prevLocationRef.current);
+      // clear flag immediately so subsequent programmatic navigations don't animate
+      try { window.__ANIMATE_NAV = false; } catch (e) {}
+      // start a timer to clear prev after animation
+      clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        setPrevLocation(null);
+      }, timeout);
+    } else {
+      // no animation or same page; clear prev immediately
+      setPrevLocation(null);
+      // clear any stale flag
+      try { window.__ANIMATE_NAV = false; } catch (e) {}
+    }
+
+    prevLocationRef.current = location;
+
+    return () => clearTimeout(timerRef.current);
+  }, [location, reducedMotion, timeout]);
+
+  // On mount of new or prev elements, toggle active classes on next tick
+  useEffect(() => {
+    if (reducedMotion) return; // nothing to do
+
+    // add enter active to current
+    const curr = currRef.current;
+    const prev = prevRef.current;
+
+    if (curr) {
+      curr.classList.add(`${transitionName}-enter`);
+      // force reflow to allow transition
+      void curr.offsetWidth;
+      curr.classList.add(`${transitionName}-enter-active`);
+      curr.classList.remove(`${transitionName}-enter`);
+    }
+
+    if (prev) {
+      prev.classList.add(`${transitionName}-exit`);
+      // force reflow
+      void prev.offsetWidth;
+      prev.classList.add(`${transitionName}-exit-active`);
+      prev.classList.remove(`${transitionName}-exit`);
+    }
+
+    return () => {
+      // cleanup classes (in case)
+      if (curr) {
+        curr.classList.remove(`${transitionName}-enter-active`);
+      }
+      if (prev) {
+        prev.classList.remove(`${transitionName}-exit-active`);
+      }
+    };
+  }, [transitionName, prevLocation, reducedMotion]);
 
   const handleLoginSuccess = (userId, username) => {
     setLoggedInUser({ userId, username });
-    setCurrentScreen('loggedIn');
-  };
-
-  const handleChangePasswordClick = () => {
-    setCurrentScreen('changePassword');
-  };
-
-  const handleForgotPasswordClick = () => {
-    setCurrentScreen('forgotPassword');
-  };
-
-  const handleForgotPasswordSuccess = () => {
-    setCurrentScreen('login');
-  };
-
-  const handleChangePasswordSuccess = () => {
-    setCurrentScreen('login');
-    setLoggedInUser(null);
-    alert('Password changed successfully! Please login with your new password.');
+    try { localStorage.setItem('currentUser', JSON.stringify({ userId, username })); } catch (err) { }
+    navigate('/dashboard');
   };
 
   const handleLogout = () => {
     // Clear frontend auth token as well
     try { userService.setAuthToken(null); } catch (e) { /* ignore */ }
     setLoggedInUser(null);
-    setCurrentScreen('login');
+    try { localStorage.removeItem('authToken'); localStorage.removeItem('currentUser'); } catch (err) {}
+    navigate('/');
+  };
+
+  const handleChangePasswordSuccess = () => {
+    navigate('/');
+    setLoggedInUser(null);
+    alert('Password changed successfully! Please login with your new password.');
   };
 
 
   return (
     <div className="app">
-      {currentScreen === 'registration' && (
-        <Registration onRegistrationSuccess={handleRegistrationSuccess} />
-      )}
-
-      {currentScreen === 'login' && (
-        <Login
-          onLoginSuccess={handleLoginSuccess}
-          onChangePasswordClick={handleChangePasswordClick}
-          onForgotPasswordClick={handleForgotPasswordClick}
-        />
-      )}
-
-      {currentScreen === 'changePassword' && (
-        <ChangePassword
-          onSuccess={handleChangePasswordSuccess}
-          onCancel={() => setCurrentScreen('login')}
-          loggedInUser={loggedInUser}
-        />
-      )}
-
-      {currentScreen === 'forgotPassword' && (
-        <ForgotPassword
-          onSuccess={handleForgotPasswordSuccess}
-          onCancel={() => setCurrentScreen('login')}
-        />
-      )}
-
-      {currentScreen === 'loggedIn' && (
-        <div className="dashboard">
-          <div className="dashboard-header">
-            <h1>Welcome, {loggedInUser?.username}!</h1>
-            <button className="btn btn-secondary" onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
-          <div className="dashboard-content">
-            <p>You have successfully logged in to the system.</p>
-            <button
-              className="btn btn-primary"
-              onClick={handleChangePasswordClick}
-            >
-              Change Password
-            </button>
-          </div>
+      {/* Render previous route (if any) so it can animate out */}
+      {prevLocation && (
+        <div className="page-wrapper prev" ref={prevRef} aria-hidden="true">
+          <Routes location={prevLocation}>
+            <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+            <Route path="/register" element={<Registration />} />
+            <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} />} />
+            <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
+            <Route path="/dashboard" element={<Dashboard onSignOut={handleLogout} />} />
+          </Routes>
         </div>
       )}
+
+      {/* Current route (animates in) */}
+      <div className="page-wrapper current" ref={currRef} aria-live="polite">
+        <Routes location={location}>
+          <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+          <Route path="/register" element={<Registration />} />
+          <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} />} />
+          <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
+          <Route path="/dashboard" element={<Dashboard onSignOut={handleLogout} />} />
+        </Routes>
+      </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppRoutes />
+    </Router>
   );
 }
 
