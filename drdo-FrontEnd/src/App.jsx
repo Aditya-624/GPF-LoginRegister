@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { userService } from './services/userService';
 import Registration from './components/Registration';
 import Login from './components/Login';
 import ChangePassword from './components/ChangePassword';
@@ -37,9 +38,12 @@ function App() {
   };
 
   const handleLogout = () => {
+    // Clear frontend auth token as well
+    try { userService.setAuthToken(null); } catch (e) { /* ignore */ }
     setLoggedInUser(null);
     setCurrentScreen('login');
   };
+
 
   return (
     <div className="app">
@@ -59,6 +63,7 @@ function App() {
         <ChangePassword
           onSuccess={handleChangePasswordSuccess}
           onCancel={() => setCurrentScreen('login')}
+          loggedInUser={loggedInUser}
         />
       )}
 

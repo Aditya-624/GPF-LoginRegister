@@ -30,9 +30,9 @@ function Login({ onLoginSuccess, onChangePasswordClick, onForgotPasswordClick })
     const result = await userService.validateLogin(userId, password);
 
     if (result.success) {
-      // Store token if provided
+      // Store token if provided via the service (centralized)
       if (result.token) {
-        try { localStorage.setItem('authToken', result.token); } catch (err) { /* ignore */ }
+        try { userService.setAuthToken(result.token); } catch (err) { /* ignore */ }
       }
 
       // Check if password is expired

@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { userService, validatePassword } from '../services/userService';
 import './ChangePassword.css';
 
-function ChangePassword({ onSuccess, onCancel }) {
-  const [userId, setUserId] = useState('');
+function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
+  const [userId, setUserId] = useState(loggedInUser?.userId || '');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -102,6 +102,14 @@ function ChangePassword({ onSuccess, onCancel }) {
       return;
     }
 
+    // Require a valid auth token
+    const token = userService.getAuthToken();
+    if (!token) {
+      setError('You must be logged in to change your password.');
+      setIsLoading(false);
+      return;
+    }
+
     // Call service to change password
     const result = await userService.changePassword(userId, oldPassword, newPassword);
 
@@ -125,6 +133,11 @@ function ChangePassword({ onSuccess, onCancel }) {
 
     setIsLoading(false);
   };
+
+  // Keep userId in sync if user is logged in
+  useEffect(() => {
+    if (loggedInUser?.userId) setUserId(loggedInUser.userId);
+  }, [loggedInUser]);
 
   return (
     <div className="change-password-container">

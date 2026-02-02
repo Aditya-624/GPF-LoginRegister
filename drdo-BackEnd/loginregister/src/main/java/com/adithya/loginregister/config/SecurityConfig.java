@@ -8,6 +8,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @EnableWebSecurity
@@ -18,11 +19,20 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Value("${app.security.disable-auth:false}")
+    private boolean disableAuth;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .cors(cors -> {})
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.disable());
+
+        if (disableAuth) {
+            // Dev mode: allow all requests without authentication
+            http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        } else {
+            http
             .authorizeHttpRequests(auth -> auth
                 // Always allow CORS preflight requests
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
@@ -35,8 +45,9 @@ public class SecurityConfig {
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint(new JsonAuthEntryPoint())
                 .accessDeniedHandler(new JsonAccessDeniedHandler())
-        )
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        }
 
         return http.build();
     }
