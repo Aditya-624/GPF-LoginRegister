@@ -1,0 +1,164 @@
+.floating-particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.floating-particle {
+  position: absolute;
+  animation: floatUp linear infinite;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  will-change: transform, opacity;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Particle shapes */
+.floating-particle.shape-circle {
+  border-radius: 50%;
+}
+
+.floating-particle.shape-square {
+  border-radius: 2px;
+}
+
+.floating-particle.shape-triangle {
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 8px solid var(--accent-primary);
+}
+
+.floating-particle.shape-diamond {
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+
+/* Enhanced animations */
+@keyframes floatUp {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.floating-particle:nth-child(3n) {
+  animation-name: floatDiagonal;
+}
+
+.floating-particle:nth-child(5n) {
+  animation-name: floatWave;
+}
+
+.floating-particle:nth-child(7n) {
+  animation-name: floatSpiral;
+}
+
+@keyframes floatDiagonal {
+  0% {
+    transform: translateY(100vh) translateX(-50px) rotate(0deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(50px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes floatWave {
+  0% {
+    transform: translateY(100vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(75vh) translateX(30px) rotate(90deg);
+  }
+  50% {
+    transform: translateY(50vh) translateX(-30px) rotate(180deg);
+  }
+  75% {
+    transform: translateY(25vh) translateX(30px) rotate(270deg);
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(0) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes floatSpiral {
+  0% {
+    transform: translateY(100vh) translateX(0) rotate(0deg) scale(0.5);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(75vh) translateX(40px) rotate(90deg) scale(0.7);
+  }
+  50% {
+    transform: translateY(50vh) translateX(0) rotate(180deg) scale(1);
+  }
+  75% {
+    transform: translateY(25vh) translateX(-40px) rotate(270deg) scale(1.2);
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(0) rotate(360deg) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* Pulsing effect for some particles */
+.floating-particle:nth-child(11n) {
+  animation: floatUp linear infinite, pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    filter: brightness(1) blur(0.5px);
+  }
+  50% {
+    filter: brightness(1.5) blur(1px);
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .floating-particle {
+    animation: none !important;
+    opacity: 0.1 !important;
+    transform: none !important;
+  }
+}

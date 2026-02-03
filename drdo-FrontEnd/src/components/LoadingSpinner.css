@@ -1,0 +1,89 @@
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.spinner-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top: 2px solid var(--accent-primary);
+  animation: spin 1.5s linear infinite;
+}
+
+.spinner-ring:nth-child(1) {
+  width: 40px;
+  height: 40px;
+  animation-duration: 1.5s;
+  border-top-color: var(--accent-primary);
+}
+
+.spinner-ring:nth-child(2) {
+  width: 32px;
+  height: 32px;
+  animation-duration: 1.2s;
+  animation-direction: reverse;
+  border-top-color: var(--button-bg);
+}
+
+.spinner-ring:nth-child(3) {
+  width: 24px;
+  height: 24px;
+  animation-duration: 0.9s;
+  border-top-color: var(--text-secondary);
+}
+
+.spinner-core {
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, var(--accent-primary), var(--button-bg));
+  border-radius: 50%;
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+.loading-text {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+/* Size variations */
+.loading-spinner.small .spinner-ring:nth-child(1) { width: 24px; height: 24px; }
+.loading-spinner.small .spinner-ring:nth-child(2) { width: 18px; height: 18px; }
+.loading-spinner.small .spinner-ring:nth-child(3) { width: 12px; height: 12px; }
+.loading-spinner.small .spinner-core { width: 4px; height: 4px; }
+.loading-spinner.small .loading-text { font-size: 12px; }
+
+.loading-spinner.large .spinner-ring:nth-child(1) { width: 60px; height: 60px; }
+.loading-spinner.large .spinner-ring:nth-child(2) { width: 48px; height: 48px; }
+.loading-spinner.large .spinner-ring:nth-child(3) { width: 36px; height: 36px; }
+.loading-spinner.large .spinner-core { width: 12px; height: 12px; }
+.loading-spinner.large .loading-text { font-size: 16px; }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.2); opacity: 0.7; }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}

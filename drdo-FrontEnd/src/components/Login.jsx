@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { userService } from '../services/userService';
 import './Login.css';
 
 function Login({ onLoginSuccess }) {
+  const navigate = useNavigate();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
@@ -63,7 +64,7 @@ function Login({ onLoginSuccess }) {
         </div>
       )}
 
-      <form onSubmit={handleLogin} className="login-form" noValidate>
+      <form onSubmit={handleLogin} className="auth-form" noValidate>
         <div className="form-group">
           <label htmlFor="userId" className="form-label">Username</label>
           <div className="input-with-icon">
@@ -109,7 +110,11 @@ function Login({ onLoginSuccess }) {
           {fieldErrors.password && <span id="password-error" className="error-text">{fieldErrors.password}</span>}
         </div>
 
-        <div className="forgot-row"><Link to="/forgot-password" className="link forgot-link" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {} }}>Forgot password?</Link></div>
+        <div className="forgot-row">
+          <span className="auth-link" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/forgot-password'); }}>
+            Forgot password?
+          </span>
+        </div>
 
         <button
           type="submit"
@@ -120,9 +125,9 @@ function Login({ onLoginSuccess }) {
         </button>
       </form>
 
-      <div className="login-footer">
+      <div className="auth-card-footer">
         <p>
-          Don't have an account? <Link to="/register" className="link" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {} }}>Register</Link>
+          Don't have an account? <span className="auth-link" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/register'); }}>Register</span>
         </p>
       </div>
     </>

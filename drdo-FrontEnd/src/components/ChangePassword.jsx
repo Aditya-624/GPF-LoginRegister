@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { userService, validatePassword } from '../services/userService';
+import ThemeSelector from './ThemeSelector';
 import './ChangePassword.css';
 
 function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
@@ -148,12 +149,20 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
   }, [loggedInUser]);
 
   return (
-    <div className="change-password-container">
-      <div className="change-password-card">
-        <h1 className="change-password-title">Change Password</h1>
-        <p className="change-password-subtitle">Update your password securely</p>
+    <div className="auth-page">
+      <div className="auth-theme-selector">
+        <ThemeSelector />
+      </div>
 
-        <form onSubmit={handleChangePassword} className="change-password-form">
+      <main className="auth-content">
+        <div className="auth-card">
+          <div className="auth-card-header">
+            <div className="page-icon">🔒</div>
+            <h1 className="auth-card-title">Change Password</h1>
+            <p className="auth-card-subtitle">Update your password securely</p>
+          </div>
+
+        <form onSubmit={handleChangePassword} className="auth-form">
           {error && (
             <div className="error-message">
               <span className="error-icon">⚠️</span>
@@ -322,7 +331,8 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
             </button>
           </div>
         </form>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import LoginPage from './components/LoginPage';
 import ChangePassword from './components/ChangePassword';
 import ForgotPassword from './components/ForgotPassword';
 import Dashboard from './components/Dashboard';
+import FloatingParticles from './components/FloatingParticles';
 import './App.css';
 
 // Determine animation name by route pairs
@@ -127,6 +128,7 @@ function AppRoutes() {
 
   return (
     <div className="app">
+      <FloatingParticles count={35} speed={0.7} interactive={true} />
       {/* Render previous route (if any) so it can animate out */}
       {prevLocation && (
         <div className="page-wrapper prev" ref={prevRef} aria-hidden="true">

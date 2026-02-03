@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userService, validatePassword } from '../services/userService';
 import './Registration.css';
-import ThemeToggle from './ThemeToggle';
+import ThemeSelector from './ThemeSelector';
 
 function Registration() {
   const navigate = useNavigate();
@@ -55,11 +55,6 @@ function Registration() {
   };
 
   const validateForm = () => {
-        if (!formData.email.trim()) {
-          newErrors.email = 'Email is required';
-        } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email)) {
-          newErrors.email = 'Invalid email address';
-        }
     const newErrors = {};
 
     if (!formData.userId.trim()) {
@@ -72,6 +67,12 @@ function Registration() {
 
     if (!formData.username.trim()) {
       newErrors.username = 'Username is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email address';
     }
 
     if (!formData.dob) {
@@ -156,34 +157,20 @@ function Registration() {
   };
 
   return (
-    <div className="registration-container">
-      <div className="registration-card">
-        <h1 className="registration-title">User Registration</h1>
-        <div className="theme-toggle-wrapper"><ThemeToggle /></div>
-        <p className="registration-subtitle">Create your account to get started</p>
+    <div className="auth-page">
+      <div className="auth-theme-selector">
+        <ThemeSelector />
+      </div>
 
-        <form onSubmit={handleSubmit} className="registration-form">
-                    {/* Email Field */}
-                    <div className="form-group">
-                      <label htmlFor="email" className="form-label">
-                        Email <span className="required">*</span>
-                      </label>
-                      <div className="input-with-icon">
-                        <span className="icon user-icon" aria-hidden>👤</span>
-                        <input
-                          id="email"
-                          type="email"
-                          name="email"
-                          className={`form-input ${errors.email ? 'error' : ''}`}
-                          placeholder="Enter your email address"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          disabled={isLoading}
-                          autoComplete="email"
-                        />
-                      </div>
-                      {errors.email && <span className="error-text">{errors.email}</span>}
-                    </div>
+      <main className="auth-content">
+        <div className="auth-card">
+          <div className="auth-card-header">
+            <div className="page-icon">📝</div>
+            <h1 className="auth-card-title">Create Account</h1>
+            <p className="auth-card-subtitle">Join us to get started</p>
+          </div>
+
+        <form onSubmit={handleSubmit} className="auth-form">
           {errors.submit && (
             <div className="error-message">
               <span className="error-icon">⚠️</span>
@@ -198,67 +185,107 @@ function Registration() {
             </div>
           )}
 
-          {/* User ID Field */}
-          <div className="form-group">
-            <label htmlFor="userId" className="form-label">
-              User ID <span className="required">*</span> <span className="hint">(unique)</span>
-            </label>
-            <div className="input-with-icon">
-              <span className="icon user-icon" aria-hidden>👤</span>
-              <input
-                id="userId"
-                type="text"
-                name="userId"
-                className={`form-input ${errors.userId ? 'error' : ''}`}
-                placeholder="Enter a unique User ID"
-                value={formData.userId}
-                onChange={handleInputChange}
-                disabled={isLoading}
-                autoComplete="off"
-              />
+          {/* Personal Information Section */}
+          <div className="form-section">
+            <h3 className="section-title">Personal Information</h3>
+            
+            {/* Full Name Field */}
+            <div className="form-group">
+              <label htmlFor="username" className="form-label">
+                Full Name <span className="required">*</span>
+              </label>
+              <div className="input-with-icon">
+                <span className="icon user-icon" aria-hidden>👤</span>
+                <input
+                  id="username"
+                  type="text"
+                  name="username"
+                  className={`form-input ${errors.username ? 'error' : ''}`}
+                  placeholder="Enter your full name"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                />
+              </div>
+              {errors.username && <span className="error-text">{errors.username}</span>}
             </div>
-            {errors.userId && <span className="error-text">{errors.userId}</span>}
+
+            {/* Email Field */}
+            <div className="form-group">
+              <label htmlFor="email" className="form-label">
+                Email Address <span className="required">*</span>
+              </label>
+              <div className="input-with-icon">
+                <span className="icon user-icon" aria-hidden>✉️</span>
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  className={`form-input ${errors.email ? 'error' : ''}`}
+                  placeholder="Enter your email address"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  autoComplete="email"
+                />
+              </div>
+              {errors.email && <span className="error-text">{errors.email}</span>}
+            </div>
+
+            {/* Date of Birth Field */}
+            <div className="form-group">
+              <label htmlFor="dob" className="form-label">
+                Date of Birth <span className="required">*</span>
+              </label>
+              <div className="input-with-icon">
+                <span className="icon user-icon" aria-hidden>📅</span>
+                <input
+                  id="dob"
+                  type="date"
+                  name="dob"
+                  className={`form-input ${errors.dob ? 'error' : ''}`}
+                  value={formData.dob}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                />
+              </div>
+              {errors.dob && <span className="error-text">{errors.dob}</span>}
+            </div>
           </div>
 
-          {/* Username Field */}
-          <div className="form-group">
-            <label htmlFor="username" className="form-label">
-              Username <span className="required">*</span>
-            </label>
-            <div className="input-with-icon">
-              <span className="icon user-icon" aria-hidden>👤</span>
-              <input
-                id="username"
-                type="text"
-                name="username"
-                className={`form-input ${errors.username ? 'error' : ''}`}
-                placeholder="Enter your full name"
-                value={formData.username}
-                onChange={handleInputChange}
-                disabled={isLoading}
-              />
+          {/* Account Information Section */}
+          <div className="form-section">
+            <h3 className="section-title">Account Information</h3>
+            
+            {/* User ID Field */}
+            <div className="form-group">
+              <label htmlFor="userId" className="form-label">
+                Username <span className="required">*</span> <span className="hint">(unique identifier)</span>
+              </label>
+              <div className="input-with-icon">
+                <span className="icon user-icon" aria-hidden>🆔</span>
+                <input
+                  id="userId"
+                  type="text"
+                  name="userId"
+                  className={`form-input ${errors.userId ? 'error' : ''}`}
+                  placeholder="Choose a unique username"
+                  value={formData.userId}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  autoComplete="off"
+                />
+              </div>
+              {errors.userId && <span className="error-text">{errors.userId}</span>}
             </div>
-            {errors.username && <span className="error-text">{errors.username}</span>}
-          </div>
-          {/* Date of Birth Field */}
-          <div className="form-group">
-            <label htmlFor="dob" className="form-label">
-              Date of Birth <span className="required">*</span>
-            </label>
-            <input
-              id="dob"
-              type="date"
-              name="dob"
-              className={`form-input ${errors.dob ? 'error' : ''}`}
-              value={formData.dob}
-              onChange={handleInputChange}
-              disabled={isLoading}
-            />
-            {errors.dob && <span className="error-text">{errors.dob}</span>}
           </div>
 
-          {/* Password Field */}
-          <div className="form-group">
+          {/* Password Section */}
+          <div className="form-section">
+            <h3 className="section-title">Password</h3>
+            
+            {/* Password Field */}
+            <div className="form-group">
             <label htmlFor="password" className="form-label">
               Password <span className="required">*</span>
             </label>
@@ -337,81 +364,96 @@ function Registration() {
             )}
             {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
           </div>
+          </div>
 
-          {/* Security Question 1 */}
-          <div className="form-row">
+          {/* Security Questions Section */}
+          <div className="form-section registration-questions">
+            <h3 className="section-title">Security Questions</h3>
+            <p className="section-description">Choose two different security questions for account recovery.</p>
+            
+            {/* Security Question 1 */}
             <div className="form-group">
               <label htmlFor="securityQuestion1" className="form-label">
                 Security Question 1 <span className="required">*</span>
               </label>
-              <select
-                id="securityQuestion1"
-                name="securityQuestion1"
-                className={`form-input ${errors.securityQuestion1 ? 'error' : ''}`}
-                value={formData.securityQuestion1}
-                onChange={handleInputChange}
-                disabled={isLoading}
-              >
-                {securityQuestions.map(q => (
-                  <option key={q} value={q}>{q}</option>
-                ))}
-              </select>
+              <div className="input-with-icon">
+                <span className="icon user-icon" aria-hidden>❓</span>
+                <select
+                  id="securityQuestion1"
+                  name="securityQuestion1"
+                  className={`form-input ${errors.securityQuestion1 ? 'error' : ''}`}
+                  value={formData.securityQuestion1}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                >
+                  {securityQuestions.map(q => (
+                    <option key={q} value={q}>{q}</option>
+                  ))}
+                </select>
+              </div>
               {errors.securityQuestion1 && <span className="error-text">{errors.securityQuestion1}</span>}
             </div>
 
             <div className="form-group">
               <label htmlFor="securityAnswer1" className="form-label">
-                Answer <span className="required">*</span>
+                Answer 1 <span className="required">*</span>
               </label>
-              <input
-                id="securityAnswer1"
-                type="text"
-                name="securityAnswer1"
-                className={`form-input ${errors.securityAnswer1 ? 'error' : ''}`}
-                placeholder="Your answer"
-                value={formData.securityAnswer1}
-                onChange={handleInputChange}
-                disabled={isLoading}
-              />
+              <div className="input-with-icon">
+                <span className="icon user-icon" aria-hidden>💭</span>
+                <input
+                  id="securityAnswer1"
+                  type="text"
+                  name="securityAnswer1"
+                  className={`form-input ${errors.securityAnswer1 ? 'error' : ''}`}
+                  placeholder="Your answer"
+                  value={formData.securityAnswer1}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                />
+              </div>
               {errors.securityAnswer1 && <span className="error-text">{errors.securityAnswer1}</span>}
             </div>
-          </div>
 
-          {/* Security Question 2 */}
-          <div className="form-row">
+            {/* Security Question 2 */}
             <div className="form-group">
               <label htmlFor="securityQuestion2" className="form-label">
                 Security Question 2 <span className="required">*</span>
               </label>
-              <select
-                id="securityQuestion2"
-                name="securityQuestion2"
-                className={`form-input ${errors.securityQuestion2 ? 'error' : ''}`}
-                value={formData.securityQuestion2}
-                onChange={handleInputChange}
-                disabled={isLoading}
-              >
-                {securityQuestions.map(q => (
-                  <option key={q} value={q}>{q}</option>
-                ))}
-              </select>
+              <div className="input-with-icon">
+                <span className="icon user-icon" aria-hidden>❓</span>
+                <select
+                  id="securityQuestion2"
+                  name="securityQuestion2"
+                  className={`form-input ${errors.securityQuestion2 ? 'error' : ''}`}
+                  value={formData.securityQuestion2}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                >
+                  {securityQuestions.map(q => (
+                    <option key={q} value={q}>{q}</option>
+                  ))}
+                </select>
+              </div>
               {errors.securityQuestion2 && <span className="error-text">{errors.securityQuestion2}</span>}
             </div>
 
             <div className="form-group">
               <label htmlFor="securityAnswer2" className="form-label">
-                Answer <span className="required">*</span>
+                Answer 2 <span className="required">*</span>
               </label>
-              <input
-                id="securityAnswer2"
-                type="text"
-                name="securityAnswer2"
-                className={`form-input ${errors.securityAnswer2 ? 'error' : ''}`}
-                placeholder="Your answer"
-                value={formData.securityAnswer2}
-                onChange={handleInputChange}
-                disabled={isLoading}
-              />
+              <div className="input-with-icon">
+                <span className="icon user-icon" aria-hidden>💭</span>
+                <input
+                  id="securityAnswer2"
+                  type="text"
+                  name="securityAnswer2"
+                  className={`form-input ${errors.securityAnswer2 ? 'error' : ''}`}
+                  placeholder="Your answer"
+                  value={formData.securityAnswer2}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                />
+              </div>
               {errors.securityAnswer2 && <span className="error-text">{errors.securityAnswer2}</span>}
             </div>
           </div>
@@ -422,14 +464,15 @@ function Registration() {
             className="btn btn-primary btn-block"
             disabled={isLoading}
           >
-            {isLoading ? 'Creating Account...' : 'Save'}
+            {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
 
-        <p className="registration-footer">
-          Already have an account? <span className="link" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/'); }}>Login</span>
-        </p>
-      </div>
+        <div className="auth-card-footer">
+          <p>Already have an account? <span className="auth-link" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/'); }}>Login</span></p>
+        </div>
+        </div>
+      </main>
     </div>
   );
 }

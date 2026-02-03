@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { userService } from '../services/userService';
 import './ForgotPassword.css';
-import ThemeToggle from './ThemeToggle';
-
+import ThemeSelector from './ThemeSelector';
 import { useNavigate } from 'react-router-dom';
 
 function ForgotPassword({ onSuccess, onCancel }) {
@@ -105,15 +104,20 @@ function ForgotPassword({ onSuccess, onCancel }) {
   };
 
   return (
-    <div className="forgot-password-container">
-      <div className="forgot-password-card">
-        <h1 className="forgot-password-title">Recover Your Password</h1>
-        <div className="theme-toggle-wrapper"><ThemeToggle /></div>
-        <p className="forgot-password-subtitle">
-          Answer your security questions to retrieve your password
-        </p>
+    <div className="auth-page">
+      <div className="auth-theme-selector">
+        <ThemeSelector />
+      </div>
 
-        <form className="forgot-password-form">
+      <main className="auth-content">
+        <div className="auth-card">
+          <div className="auth-card-header">
+            <div className="page-icon">🔓</div>
+            <h1 className="auth-card-title">Recover Password</h1>
+            <p className="auth-card-subtitle">Answer your security questions to retrieve your password</p>
+          </div>
+
+        <form className="auth-form">
           {error && (
             <div className="error-message">
               <span className="error-icon">⚠️</span>
@@ -190,16 +194,19 @@ function ForgotPassword({ onSuccess, onCancel }) {
                 <label htmlFor="answer1" className="form-label answer-label">
                   Your Answer <span className="required">*</span>
                 </label>
-                <input
-                  id="answer1"
-                  type="text"
-                  className="form-input"
-                  placeholder="Enter your answer"
-                  value={answer1}
-                  onChange={(e) => setAnswer1(e.target.value)}
-                  disabled={isLoading}
-                  autoComplete="off"
-                />
+                <div className="input-with-icon">
+                  <span className="icon user-icon" aria-hidden>💭</span>
+                  <input
+                    id="answer1"
+                    type="text"
+                    className="form-input"
+                    placeholder="Enter your answer"
+                    value={answer1}
+                    onChange={(e) => setAnswer1(e.target.value)}
+                    disabled={isLoading}
+                    autoComplete="off"
+                  />
+                </div>
               </div>
 
               {/* Question 2 */}
@@ -213,16 +220,19 @@ function ForgotPassword({ onSuccess, onCancel }) {
                 <label htmlFor="answer2" className="form-label answer-label">
                   Your Answer <span className="required">*</span>
                 </label>
-                <input
-                  id="answer2"
-                  type="text"
-                  className="form-input"
-                  placeholder="Enter your answer"
-                  value={answer2}
-                  onChange={(e) => setAnswer2(e.target.value)}
-                  disabled={isLoading}
-                  autoComplete="off"
-                />
+                <div className="input-with-icon">
+                  <span className="icon user-icon" aria-hidden>💭</span>
+                  <input
+                    id="answer2"
+                    type="text"
+                    className="form-input"
+                    placeholder="Enter your answer"
+                    value={answer2}
+                    onChange={(e) => setAnswer2(e.target.value)}
+                    disabled={isLoading}
+                    autoComplete="off"
+                  />
+                </div>
               </div>
 
               {/* Submit Button */}
@@ -260,20 +270,16 @@ function ForgotPassword({ onSuccess, onCancel }) {
           </button>
         </form>
 
-        <div className="forgot-password-footer">
+        <div className="auth-card-footer">
           <p>
             Remember your password?{' '}
-            <button
-              type="button"
-              className="link-button"
-              onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; (onCancel ? onCancel() : navigate('/')); }}
-              disabled={isLoading}
-            >
+            <span className="auth-link" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/'); }}>
               Return to login
-            </button>
+            </span>
           </p>
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
