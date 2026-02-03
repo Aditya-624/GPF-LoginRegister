@@ -11,7 +11,7 @@ const themes = [
   { id: 'rose-gold', name: 'Rose Gold', icon: '🌸', colors: ['#fdf2f8', '#ec4899', '#f59e0b'] }
 ];
 
-export default function ThemeSelector() {
+export default function ThemeSelector({ compact = false }) {
   const [currentTheme, setCurrentTheme] = useState(() => {
     try {
       const saved = localStorage.getItem('theme');
@@ -67,7 +67,7 @@ export default function ThemeSelector() {
   const currentThemeData = themes.find(t => t.id === currentTheme) || themes[0];
 
   return (
-    <div className="theme-selector">
+    <div className={`theme-selector ${compact ? 'compact' : ''}`}>
       <button
         className="theme-selector-trigger"
         onClick={() => setIsOpen(!isOpen)}
@@ -75,7 +75,7 @@ export default function ThemeSelector() {
         title="Change theme"
       >
         <span className="theme-icon">{currentThemeData.icon}</span>
-        <span className="theme-name">{currentThemeData.name}</span>
+        {!compact && <span className="theme-name">{currentThemeData.name}</span>}
         <span className={`dropdown-arrow ${isOpen ? 'open' : ''}`}>▼</span>
       </button>
 

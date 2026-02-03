@@ -24,6 +24,11 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<?> test() {
+        return ResponseEntity.ok(java.util.Map.of("message", "Backend is working!", "timestamp", java.time.LocalDateTime.now()));
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
         authService.register(req);

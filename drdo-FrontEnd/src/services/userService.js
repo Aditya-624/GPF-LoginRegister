@@ -1,6 +1,6 @@
 // Mock user database with secure password handling
 // In a real application, passwords should be hashed using bcrypt or similar
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
 
 // Auth helpers (localStorage safe access)
 const getAuthToken = () => {
@@ -95,6 +95,10 @@ export const validatePassword = (password) => {
 export const userService = {
   // Register new user (calls backend)
   registerUser: async (userData) => {
+    console.log('API_BASE:', API_BASE);
+    console.log('Full URL:', `${API_BASE}/api/auth/register`);
+    console.log('User data:', userData);
+    
     try {
       const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
@@ -107,6 +111,7 @@ export const userService = {
       if (!res.ok) return { success: false, error: data.message || data.error || res.statusText };
       return { success: true, message: data.message || 'User registered' };
     } catch (err) {
+      console.error('Registration error:', err);
       return { success: false, error: err.message };
     }
   },
@@ -136,18 +141,32 @@ export const userService = {
 
   // Change password via backend
   changePassword: async (userId, oldPassword, newPassword) => {
+    console.log('Calling change password API with:', { userId, oldPassword: '***', newPassword: '***' }); // Debug log
+    
     try {
-      const res = await authFetch(`${API_BASE}/api/auth/change-password`, {
+      const res = await fetch(`${API_BASE}/api/auth/change-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, oldPassword, newPassword })
       });
+      
+      console.log('Change password response status:', res.status); // Debug log
+      
       const text = await res.text();
+      console.log('Change password response text:', text); // Debug log
+      
       let data;
       try { data = text ? JSON.parse(text) : {}; } catch { data = { message: text } }
-      if (!res.ok) return { success: false, error: data.message || data.error || res.statusText };
+      
+      if (!res.ok) {
+        console.error('Change password failed:', data); // Debug log
+        return { success: false, error: data.message || data.error || res.statusText };
+      }
+      
+      console.log('Change password success:', data); // Debug log
       return { success: true, message: data.message || 'Password changed' };
     } catch (err) {
+      console.error('Change password exception:', err); // Debug log
       return { success: false, error: err.message };
     }
   },
@@ -210,5 +229,11 @@ export const userService = {
         error: 'your inputs are wrong..'
       };
     }
-  }
+  },
+
+  // Auth token management
+  getAuthToken,
+  setAuthToken,
+  getAuthHeaders,
+  authFetch
 };

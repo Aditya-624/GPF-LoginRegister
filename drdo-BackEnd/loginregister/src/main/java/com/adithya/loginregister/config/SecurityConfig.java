@@ -36,6 +36,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Always allow CORS preflight requests
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                // Allow test endpoint
+                .requestMatchers("/api/auth/test").permitAll()
                 // Explicitly allow POST to registration endpoint
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/auth/register").permitAll()
                 // Allow other auth endpoints

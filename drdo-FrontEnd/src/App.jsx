@@ -7,6 +7,7 @@ import LoginPage from './components/LoginPage';
 import ChangePassword from './components/ChangePassword';
 import ForgotPassword from './components/ForgotPassword';
 import Dashboard from './components/Dashboard';
+import Profile from './components/Profile';
 import FloatingParticles from './components/FloatingParticles';
 import './App.css';
 
@@ -17,6 +18,10 @@ const getTransitionName = (from = '/', to = '/') => {
   if (from === '/' && to === '/forgot-password') return 'slide-up';
   if (from === '/forgot-password' && to === '/') return 'slide-down';
   if (from === '/' && to === '/dashboard') return 'fade-scale';
+  if (from === '/dashboard' && to === '/profile') return 'slide-left';
+  if (from === '/profile' && to === '/dashboard') return 'slide-right';
+  if (from === '/profile' && to === '/change-password') return 'slide-up';
+  if (from === '/change-password' && to === '/dashboard') return 'slide-down';
   // sensible default for forward nav
   return 'slide-left';
 };
@@ -120,9 +125,16 @@ function AppRoutes() {
   };
 
   const handleChangePasswordSuccess = () => {
-    navigate('/');
-    setLoggedInUser(null);
-    alert('Password changed successfully! Please login with your new password.');
+    navigate('/dashboard');
+    alert('Password changed successfully!');
+  };
+
+  const handleProfileChangePassword = () => {
+    navigate('/change-password');
+  };
+
+  const handleBackToDashboard = () => {
+    navigate('/dashboard');
   };
 
 
@@ -135,9 +147,10 @@ function AppRoutes() {
           <Routes location={prevLocation}>
             <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
             <Route path="/register" element={<Registration />} />
-            <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} />} />
+            <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} loggedInUser={loggedInUser} />} />
             <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
             <Route path="/dashboard" element={<Dashboard onSignOut={handleLogout} />} />
+            <Route path="/profile" element={<Profile onChangePassword={handleProfileChangePassword} onBack={handleBackToDashboard} />} />
           </Routes>
         </div>
       )}
@@ -147,9 +160,10 @@ function AppRoutes() {
         <Routes location={location}>
           <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
           <Route path="/register" element={<Registration />} />
-          <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} />} />
+          <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} loggedInUser={loggedInUser} />} />
           <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
           <Route path="/dashboard" element={<Dashboard onSignOut={handleLogout} />} />
+          <Route path="/profile" element={<Profile onChangePassword={handleProfileChangePassword} onBack={handleBackToDashboard} />} />
         </Routes>
       </div>
     </div>

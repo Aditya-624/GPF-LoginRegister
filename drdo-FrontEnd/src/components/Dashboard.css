@@ -44,8 +44,13 @@
 
 .nav-right { 
   display: flex; 
-  gap: 12px; 
+  gap: 8px; 
   align-items: center; 
+}
+
+/* Compact theme selector for dashboard */
+.theme-selector-compact {
+  position: relative;
 }
 
 .btn-nav {
@@ -73,6 +78,18 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  color: var(--white);
+  border: none;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.btn-profile:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+  color: var(--white);
+  border: none;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
 }
 
 .profile-icon {

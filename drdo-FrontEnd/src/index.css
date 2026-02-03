@@ -1701,3 +1701,283 @@ html.theme-rose-gold .question-display {
   background: linear-gradient(135deg, var(--accent-primary), var(--button-bg));
   border-radius: 6px;
 }
+
+/* Dashboard Theme Overrides */
+
+/* Ocean Dark Theme - Dashboard */
+.theme-ocean-dark .dashboard-page {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .top-nav {
+  background: rgba(30, 41, 59, 0.85);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.theme-ocean-dark .nav-brand,
+.theme-ocean-dark .welcome-title {
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .nav-time {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+}
+
+.theme-ocean-dark .welcome-section,
+.theme-ocean-dark .stat-card,
+.theme-ocean-dark .content-card {
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.theme-ocean-dark .stat-number,
+.theme-ocean-dark .card-title,
+.theme-ocean-dark .activity-text {
+  color: #f8fafc;
+}
+
+/* Sunset Theme - Dashboard */
+.theme-sunset .dashboard-page {
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 30%, #fdba74 70%, #fb923c 100%);
+  color: #7c2d12;
+}
+
+.theme-sunset .top-nav {
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(124, 45, 18, 0.3);
+}
+
+.theme-sunset .nav-brand,
+.theme-sunset .welcome-title {
+  color: #7c2d12;
+}
+
+.theme-sunset .nav-time {
+  background: rgba(249, 115, 22, 0.2);
+  color: #f97316;
+}
+
+.theme-sunset .welcome-section,
+.theme-sunset .stat-card,
+.theme-sunset .content-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(124, 45, 18, 0.3);
+}
+
+.theme-sunset .stat-number,
+.theme-sunset .card-title,
+.theme-sunset .activity-text {
+  color: #7c2d12;
+}
+
+/* Forest Theme - Dashboard */
+.theme-forest .dashboard-page {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%);
+  color: #ecfdf5;
+}
+
+.theme-forest .top-nav {
+  background: rgba(6, 95, 70, 0.85);
+  border-bottom: 1px solid rgba(167, 243, 208, 0.3);
+}
+
+.theme-forest .nav-brand,
+.theme-forest .welcome-title {
+  color: #ecfdf5;
+}
+
+.theme-forest .nav-time {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.theme-forest .welcome-section,
+.theme-forest .stat-card,
+.theme-forest .content-card {
+  background: rgba(6, 95, 70, 0.85);
+  border: 1px solid rgba(167, 243, 208, 0.3);
+}
+
+.theme-forest .stat-number,
+.theme-forest .card-title,
+.theme-forest .activity-text {
+  color: #ecfdf5;
+}
+
+/* Purple Theme - Dashboard */
+.theme-purple .dashboard-page {
+  background: linear-gradient(135deg, #581c87 0%, #7c3aed 30%, #a855f7 70%, #c084fc 100%);
+  color: #faf5ff;
+}
+
+.theme-purple .top-nav {
+  background: rgba(139, 69, 19, 0.15);
+  border-bottom: 1px solid rgba(196, 181, 253, 0.4);
+}
+
+.theme-purple .nav-brand,
+.theme-purple .welcome-title {
+  color: #faf5ff;
+}
+
+.theme-purple .nav-time {
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+}
+
+.theme-purple .welcome-section,
+.theme-purple .stat-card,
+.theme-purple .content-card {
+  background: rgba(139, 69, 19, 0.15);
+  border: 1px solid rgba(196, 181, 253, 0.4);
+}
+
+.theme-purple .stat-number,
+.theme-purple .card-title,
+.theme-purple .activity-text {
+  color: #faf5ff;
+}
+
+/* Cyberpunk Theme - Dashboard */
+.theme-cyberpunk .dashboard-page {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 30%, #330066 70%, #4d0099 100%);
+  color: #00ff88;
+}
+
+.theme-cyberpunk .top-nav {
+  background: rgba(26, 0, 51, 0.85);
+  border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.theme-cyberpunk .nav-brand,
+.theme-cyberpunk .welcome-title {
+  color: #00ff88;
+}
+
+.theme-cyberpunk .nav-time {
+  background: rgba(255, 0, 128, 0.2);
+  color: #ff0080;
+}
+
+.theme-cyberpunk .welcome-section,
+.theme-cyberpunk .stat-card,
+.theme-cyberpunk .content-card {
+  background: rgba(26, 0, 51, 0.85);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.theme-cyberpunk .stat-number,
+.theme-cyberpunk .card-title,
+.theme-cyberpunk .activity-text {
+  color: #00ff88;
+}
+
+/* Rose Gold Theme - Dashboard */
+.theme-rose-gold .dashboard-page {
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #fbcfe8 70%, #f9a8d4 100%);
+  color: #831843;
+}
+
+.theme-rose-gold .top-nav {
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(131, 24, 67, 0.3);
+}
+
+.theme-rose-gold .nav-brand,
+.theme-rose-gold .welcome-title {
+  color: #831843;
+}
+
+.theme-rose-gold .nav-time {
+  background: rgba(236, 72, 153, 0.2);
+  color: #ec4899;
+}
+
+.theme-rose-gold .welcome-section,
+.theme-rose-gold .stat-card,
+.theme-rose-gold .content-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(131, 24, 67, 0.3);
+}
+
+.theme-rose-gold .stat-number,
+.theme-rose-gold .card-title,
+.theme-rose-gold .activity-text {
+  color: #831843;
+}
+
+/* Ocean Light Theme - Dashboard (default) */
+.theme-ocean-light .dashboard-page,
+.theme-light .dashboard-page {
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 30%, #80DEEA 70%, #4DD0E1 100%);
+  color: #353537;
+}
+
+.theme-ocean-light .top-nav,
+.theme-light .top-nav {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(123, 123, 125, 0.3);
+}
+
+.theme-ocean-light .nav-brand,
+.theme-ocean-light .welcome-title,
+.theme-light .nav-brand,
+.theme-light .welcome-title {
+  color: #353537;
+}
+
+.theme-ocean-light .nav-time,
+.theme-light .nav-time {
+  background: rgba(98, 173, 183, 0.2);
+  color: #62adb7;
+}
+
+.theme-ocean-light .welcome-section,
+.theme-ocean-light .stat-card,
+.theme-ocean-light .content-card,
+.theme-light .welcome-section,
+.theme-light .stat-card,
+.theme-light .content-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(123, 123, 125, 0.3);
+}
+
+.theme-ocean-light .stat-number,
+.theme-ocean-light .card-title,
+.theme-ocean-light .activity-text,
+.theme-light .stat-number,
+.theme-light .card-title,
+.theme-light .activity-text {
+  color: #353537;
+}
+/* Profile Button - Unique Purple Color Across All Themes */
+.theme-ocean-dark .btn-profile,
+.theme-sunset .btn-profile,
+.theme-forest .btn-profile,
+.theme-purple .btn-profile,
+.theme-cyberpunk .btn-profile,
+.theme-rose-gold .btn-profile,
+.theme-ocean-light .btn-profile,
+.theme-light .btn-profile {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.theme-ocean-dark .btn-profile:hover,
+.theme-sunset .btn-profile:hover,
+.theme-forest .btn-profile:hover,
+.theme-purple .btn-profile:hover,
+.theme-cyberpunk .btn-profile:hover,
+.theme-rose-gold .btn-profile:hover,
+.theme-ocean-light .btn-profile:hover,
+.theme-light .btn-profile:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}

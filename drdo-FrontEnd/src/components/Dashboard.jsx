@@ -49,8 +49,10 @@ export default function Dashboard({ onSignOut }) {
           <span className="nav-time">{formatTime(currentTime)}</span>
         </div>
         <div className="nav-right">
-          <div className="theme-selector-wrapper"><ThemeSelector /></div>
-          <button className="btn btn-nav btn-profile" onClick={() => alert('Profile - placeholder')}>
+          <div className="theme-selector-compact">
+            <ThemeSelector compact={true} />
+          </div>
+          <button className="btn btn-nav btn-profile" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/profile'); }}>
             <span className="profile-icon">👤</span>
             <span className="profile-name">{currentUser?.username || 'Profile'}</span>
           </button>

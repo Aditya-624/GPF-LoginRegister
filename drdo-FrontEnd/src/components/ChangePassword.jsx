@@ -111,14 +111,6 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
       return;
     }
 
-    // Require a valid auth token
-    const token = userService.getAuthToken();
-    if (!token) {
-      setError('You must be logged in to change your password.');
-      setIsLoading(false);
-      return;
-    }
-
     // Call service to change password
     const result = await userService.changePassword(userId, oldPassword, newPassword);
 
