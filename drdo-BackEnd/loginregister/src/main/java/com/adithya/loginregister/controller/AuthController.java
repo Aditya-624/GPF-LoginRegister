@@ -31,8 +31,30 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
-        authService.register(req);
-        return ResponseEntity.status(HttpStatus.CREATED).body(java.util.Map.of("message", "User registered"));
+        try {
+            authService.register(req);
+            return ResponseEntity.status(HttpStatus.CREATED).body(java.util.Map.of("message", "User registered"));
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // Handle unique constraint violations
+            String errorMessage = e.getMessage();
+            String userFriendlyMessage;
+            
+            if (errorMessage.contains("uniq_users_username") || errorMessage.contains("username")) {
+                userFriendlyMessage = "Username already exists. Please choose a different username.";
+            } else if (errorMessage.contains("uniq_users_email") || errorMessage.contains("email")) {
+                userFriendlyMessage = "Email address already exists. Please use a different email.";
+            } else if (errorMessage.contains("uniq_users_user_id") || errorMessage.contains("user_id")) {
+                userFriendlyMessage = "User ID already exists. Please choose a different User ID.";
+            } else {
+                userFriendlyMessage = "Registration failed. One of the fields (User ID, Username, or Email) already exists.";
+            }
+            
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(java.util.Map.of("error", userFriendlyMessage));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(java.util.Map.of("error", "Registration failed. Please try again."));
+        }
     }
 
     @PostMapping("/login")

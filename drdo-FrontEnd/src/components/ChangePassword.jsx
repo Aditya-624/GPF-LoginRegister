@@ -51,7 +51,9 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
         break;
     }
 
+    // Clear error and success messages when user starts typing
     setError('');
+    setSuccess('');
   };
 
   const handleChangePassword = async (e) => {
@@ -116,8 +118,10 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
 
     if (result.success) {
       setSuccess(result.message);
-      // Clear form
-      setUserId('');
+      // Clear form but keep userId if user is logged in
+      if (!loggedInUser?.userId) {
+        setUserId('');
+      }
       setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -130,6 +134,8 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
       }, 2000);
     } else {
       setError(result.error);
+      // Don't clear the form on error, just clear the old password for security
+      setOldPassword('');
     }
 
     setIsLoading(false);
@@ -299,7 +305,7 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
             <button
               type="submit"
               className="btn btn-save"
-              disabled={isLoading || !passwordsMatch || newPassword !== confirmPassword}
+              disabled={isLoading || (newPassword && confirmPassword && newPassword !== confirmPassword) || (newPassword && passwordErrors.length > 0)}
             >
               {isLoading ? (
                 <>

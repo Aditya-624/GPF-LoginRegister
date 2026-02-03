@@ -27,7 +27,7 @@ function ForgotPassword({ onSuccess, onCancel }) {
     setRecoveredPassword('');
   };
 
-  const handleLoadQuestions = (e) => {
+  const handleLoadQuestions = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
@@ -40,7 +40,7 @@ function ForgotPassword({ onSuccess, onCancel }) {
     }
 
     // Fetch security questions
-    const result = userService.getUserSecurityQuestions(userId);
+    const result = await userService.getUserSecurityQuestions(userId);
 
     if (result.success) {
       setQuestions(result.questions);
@@ -56,7 +56,7 @@ function ForgotPassword({ onSuccess, onCancel }) {
     setIsLoading(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
@@ -82,7 +82,7 @@ function ForgotPassword({ onSuccess, onCancel }) {
     }
 
     // Verify answers
-    const result = userService.verifySecurityAnswers(userId, answer1, answer2);
+    const result = await userService.verifySecurityAnswers(userId, answer1, answer2);
 
     if (result.success) {
       setSuccess(result.message);
@@ -202,7 +202,11 @@ function ForgotPassword({ onSuccess, onCancel }) {
                     className="form-input"
                     placeholder="Enter your answer"
                     value={answer1}
-                    onChange={(e) => setAnswer1(e.target.value)}
+                    onChange={(e) => {
+                      setAnswer1(e.target.value);
+                      setError('');
+                      setSuccess('');
+                    }}
                     disabled={isLoading}
                     autoComplete="off"
                   />
@@ -228,7 +232,11 @@ function ForgotPassword({ onSuccess, onCancel }) {
                     className="form-input"
                     placeholder="Enter your answer"
                     value={answer2}
-                    onChange={(e) => setAnswer2(e.target.value)}
+                    onChange={(e) => {
+                      setAnswer2(e.target.value);
+                      setError('');
+                      setSuccess('');
+                    }}
                     disabled={isLoading}
                     autoComplete="off"
                   />

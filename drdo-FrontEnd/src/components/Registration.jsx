@@ -35,7 +35,8 @@ function Registration() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    setErrors(prev => ({ ...prev, [name]: '' }));
+    setErrors(prev => ({ ...prev, [name]: '', submit: '' })); // Clear both field error and submit error
+    setSuccess(''); // Clear success message when user starts typing
 
     // Real-time password validation
     if (name === 'password') {

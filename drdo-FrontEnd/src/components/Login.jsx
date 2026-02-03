@@ -53,6 +53,8 @@ function Login({ onLoginSuccess }) {
     } else {
       setError(result.error);
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -75,7 +77,12 @@ function Login({ onLoginSuccess }) {
               className={`form-input ${fieldErrors.userId ? 'error' : ''}`}
               placeholder="Enter your username"
               value={userId}
-              onChange={(e) => setUserId(e.target.value)}
+              onChange={(e) => {
+                setUserId(e.target.value);
+                // Clear errors when user starts typing
+                setError('');
+                setFieldErrors(prev => ({ ...prev, userId: '' }));
+              }}
               disabled={isLoading}
               autoComplete="username"
             />
@@ -93,7 +100,12 @@ function Login({ onLoginSuccess }) {
               className={`form-input ${fieldErrors.password ? 'error' : ''}`}
               placeholder="Enter your password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                // Clear errors when user starts typing
+                setError('');
+                setFieldErrors(prev => ({ ...prev, password: '' }));
+              }}
               disabled={isLoading}
               autoComplete="current-password"
               aria-describedby={fieldErrors.password ? 'password-error' : undefined}
