@@ -18,7 +18,7 @@
   box-shadow: var(--card-shadow);
   padding: 36px;
   width: 100%;
-  max-width: 600px;
+  max-width: 1100px;
   max-height: 90vh;
   overflow-y: auto;
   animation: slideUp 0.4s ease-out;
@@ -74,6 +74,47 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--card-text);
+  margin: 0 0 8px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent-primary);
+}
+
+.section-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: -8px 0 8px 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-grid-full {
+  grid-column: 1 / -1;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.btn-container .btn {
+  min-width: 200px;
 }
 
 .form-row {
@@ -212,6 +253,35 @@
 
 .success-icon {
   font-size: 18px;
+}
+
+.security-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background-color: #fff3cd;
+  color: #856404;
+  border-radius: 8px;
+  font-size: 14px;
+  border-left: 4px solid #ffc107;
+  animation: slideDown 0.3s ease;
+  margin-bottom: 12px;
+}
+
+.security-icon {
+  font-size: 18px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Password Strength Indicator */
@@ -390,6 +460,24 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .registration-card {
+    max-width: 700px;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .btn-container {
+    justify-content: center;
+  }
+  
+  .btn-container .btn {
+    width: 100%;
+  }
+}
+
 @media (max-width: 768px) {
   .registration-card {
     padding: 30px 20px;

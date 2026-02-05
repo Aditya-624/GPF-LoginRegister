@@ -3,7 +3,7 @@ import { userService, validatePassword } from '../services/userService';
 import ThemeSelector from './ThemeSelector';
 import './ChangePassword.css';
 
-function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
+function ChangePassword({ onSuccess, onCancel, loggedInUser, fromExpiry }) {
   const [userId, setUserId] = useState(loggedInUser?.userId || '');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -13,6 +13,7 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState([]);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [securityMessage, setSecurityMessage] = useState('');
 
   const [showOld, setShowOld] = useState(false);
   const [showNew, setShowNew] = useState(false);
@@ -21,6 +22,11 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
   const toggleShowOld = () => setShowOld(s => !s);
   const toggleShowNew = () => setShowNew(s => !s);
   const toggleShowConfirm = () => setShowConfirm(s => !s);
+
+  const showSecurityAlert = (message) => {
+    setSecurityMessage(message);
+    setTimeout(() => setSecurityMessage(''), 3000);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -161,6 +167,13 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
           </div>
 
         <form onSubmit={handleChangePassword} className="auth-form">
+          {securityMessage && (
+            <div className="security-alert">
+              <span className="security-icon">🔒</span>
+              {securityMessage}
+            </div>
+          )}
+
           {error && (
             <div className="error-message">
               <span className="error-icon">⚠️</span>
@@ -215,6 +228,9 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
                 placeholder="Enter your current password"
                 value={oldPassword}
                 onChange={handleInputChange}
+                onCopy={(e) => { e.preventDefault(); showSecurityAlert('❌ Copying password is not allowed for security reasons'); }}
+                onPaste={(e) => { e.preventDefault(); showSecurityAlert('❌ Pasting password is not allowed for security reasons'); }}
+                onCut={(e) => { e.preventDefault(); showSecurityAlert('❌ Cutting password is not allowed for security reasons'); }}
                 disabled={isLoading}
                 autoComplete="current-password"
               />
@@ -238,6 +254,9 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
                 placeholder="Enter new password (8-12 characters)"
                 value={newPassword}
                 onChange={handleInputChange}
+                onCopy={(e) => { e.preventDefault(); showSecurityAlert('❌ Copying password is not allowed for security reasons'); }}
+                onPaste={(e) => { e.preventDefault(); showSecurityAlert('❌ Pasting password is not allowed for security reasons'); }}
+                onCut={(e) => { e.preventDefault(); showSecurityAlert('❌ Cutting password is not allowed for security reasons'); }}
                 disabled={isLoading}
                 autoComplete="new-password"
               />
@@ -286,6 +305,9 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
                 placeholder="Re-enter your new password"
                 value={confirmPassword}
                 onChange={handleInputChange}
+                onCopy={(e) => { e.preventDefault(); showSecurityAlert('❌ Copying password is not allowed for security reasons'); }}
+                onPaste={(e) => { e.preventDefault(); showSecurityAlert('❌ Pasting password is not allowed for security reasons'); }}
+                onCut={(e) => { e.preventDefault(); showSecurityAlert('❌ Cutting password is not allowed for security reasons'); }}
                 disabled={isLoading}
                 autoComplete="new-password"
               />
@@ -319,14 +341,16 @@ function ChangePassword({ onSuccess, onCancel, loggedInUser }) {
                 </>
               )}
             </button>
-            <button
-              type="button"
-              className="btn btn-cancel"
-              onClick={onCancel}
-              disabled={isLoading}
-            >
-              Cancel
-            </button>
+            {!fromExpiry && onCancel && (
+              <button
+                type="button"
+                className="btn btn-cancel"
+                onClick={onCancel}
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+            )}
           </div>
         </form>
         </div>

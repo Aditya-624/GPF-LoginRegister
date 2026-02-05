@@ -129,6 +129,10 @@ function AppRoutes() {
     alert('Password changed successfully!');
   };
 
+  const handleCancelChangePassword = () => {
+    navigate('/profile');
+  };
+
   const handleProfileChangePassword = () => {
     navigate('/change-password');
   };
@@ -147,7 +151,7 @@ function AppRoutes() {
           <Routes location={prevLocation}>
             <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
             <Route path="/register" element={<Registration />} />
-            <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} loggedInUser={loggedInUser} />} />
+            <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} onCancel={handleCancelChangePassword} loggedInUser={loggedInUser} fromExpiry={location.state?.fromExpiry} />} />
             <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
             <Route path="/dashboard" element={<Dashboard onSignOut={handleLogout} />} />
             <Route path="/profile" element={<Profile onChangePassword={handleProfileChangePassword} onBack={handleBackToDashboard} />} />
@@ -160,7 +164,7 @@ function AppRoutes() {
         <Routes location={location}>
           <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
           <Route path="/register" element={<Registration />} />
-          <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} loggedInUser={loggedInUser} />} />
+          <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} onCancel={handleCancelChangePassword} loggedInUser={loggedInUser} fromExpiry={location.state?.fromExpiry} />} />
           <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
           <Route path="/dashboard" element={<Dashboard onSignOut={handleLogout} />} />
           <Route path="/profile" element={<Profile onChangePassword={handleProfileChangePassword} onBack={handleBackToDashboard} />} />

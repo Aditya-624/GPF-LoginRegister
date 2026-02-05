@@ -54,7 +54,7 @@ export default function Dashboard({ onSignOut }) {
           </div>
           <button className="btn btn-nav btn-profile" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/profile'); }}>
             <span className="profile-icon">👤</span>
-            <span className="profile-name">{currentUser?.username || 'Profile'}</span>
+            <span className="profile-name">User Profile</span>
           </button>
           <button className="btn btn-nav btn-signout" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; onSignOut(); }}>
             <span>🚪</span> Sign Out

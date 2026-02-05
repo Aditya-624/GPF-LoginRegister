@@ -11,8 +11,14 @@ function Login({ onLoginSuccess }) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [securityMessage, setSecurityMessage] = useState('');
 
   const toggleShowPassword = () => setShowPassword(v => !v);
+
+  const showSecurityAlert = (message) => {
+    setSecurityMessage(message);
+    setTimeout(() => setSecurityMessage(''), 3000);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -41,8 +47,18 @@ function Login({ onLoginSuccess }) {
 
       try { localStorage.setItem('currentUser', JSON.stringify({ userId: result.userId, username: result.username })); } catch (err) {}
 
+      // Check if password is expired
       if (result.isPasswordExpired) {
-        setError(result.passwordExpiredMessage);
+        // Show alert and redirect to change password
+        if (window.confirm('Your password has expired. Please change your password to continue.')) {
+          setUserId('');
+          setPassword('');
+          try { window.__ANIMATE_NAV = true; } catch (e) {}
+          // Navigate to change password with user info
+          navigate('/change-password', { state: { userId: result.userId, fromExpiry: true } });
+          setIsLoading(false);
+          return;
+        }
       }
 
       setUserId('');
@@ -59,6 +75,13 @@ function Login({ onLoginSuccess }) {
 
   return (
     <>
+      {securityMessage && (
+        <div className="security-alert">
+          <span className="security-icon">🔒</span>
+          {securityMessage}
+        </div>
+      )}
+
       {error && (
         <div className="error-message">
           <span className="error-icon">⚠️</span>
@@ -106,6 +129,9 @@ function Login({ onLoginSuccess }) {
                 setError('');
                 setFieldErrors(prev => ({ ...prev, password: '' }));
               }}
+              onCopy={(e) => { e.preventDefault(); showSecurityAlert('❌ Copying password is not allowed for security reasons'); }}
+              onPaste={(e) => { e.preventDefault(); showSecurityAlert('❌ Pasting password is not allowed for security reasons'); }}
+              onCut={(e) => { e.preventDefault(); showSecurityAlert('❌ Cutting password is not allowed for security reasons'); }}
               disabled={isLoading}
               autoComplete="current-password"
               aria-describedby={fieldErrors.password ? 'password-error' : undefined}

@@ -8,11 +8,11 @@ function Registration() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     userId: '',
-    username: '',
-    email: '', // Add email field
+    email: '',
     dob: '',
     password: '',
     confirmPassword: '',
+    passwordExpiryDays: '0',
     securityQuestion1: 'What is your Nickname?',
     securityAnswer1: '',
     securityQuestion2: 'What is your First School Name?',
@@ -26,15 +26,39 @@ function Registration() {
   const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [securityMessage, setSecurityMessage] = useState('');
 
   const toggleShowPassword = () => setShowPassword(s => !s);
   const toggleShowConfirmPassword = () => setShowConfirmPassword(s => !s);
 
+  const showSecurityAlert = (message) => {
+    setSecurityMessage(message);
+    setTimeout(() => setSecurityMessage(''), 3000);
+  };
+
   const securityQuestions = userService.getSecurityQuestions();
+
+  // Filter questions for dropdown 2 (exclude question 1)
+  const availableQuestionsForQ2 = securityQuestions.filter(
+    q => q !== formData.securityQuestion1
+  );
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // If changing security question 1, check if question 2 needs to be updated
+    if (name === 'securityQuestion1' && value === formData.securityQuestion2) {
+      // Find the first available question that's not the newly selected one
+      const newQ2 = securityQuestions.find(q => q !== value);
+      setFormData(prev => ({ 
+        ...prev, 
+        [name]: value,
+        securityQuestion2: newQ2 || securityQuestions[0]
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+    
     setErrors(prev => ({ ...prev, [name]: '', submit: '' })); // Clear both field error and submit error
     setSuccess(''); // Clear success message when user starts typing
 
@@ -64,10 +88,6 @@ function Registration() {
       newErrors.userId = 'User ID cannot contain spaces';
     } else if (userService.userExists(formData.userId)) {
       newErrors.userId = 'User ID already exists';
-    }
-
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
     }
 
     if (!formData.email.trim()) {
@@ -114,8 +134,13 @@ function Registration() {
       newErrors.securityAnswer2 = 'Answer to Question 2 is required';
     }
 
-    if (formData.securityQuestion1 === formData.securityQuestion2) {
-      newErrors.securityQuestion2 = 'Security questions must be different';
+    if (!formData.passwordExpiryDays) {
+      newErrors.passwordExpiryDays = 'Password expiry days is required';
+    } else {
+      const days = parseInt(formData.passwordExpiryDays);
+      if (isNaN(days) || days < 0 || days > 30) {
+        newErrors.passwordExpiryDays = 'Password expiry must be between 0 and 30 days';
+      }
     }
 
     setErrors(newErrors);
@@ -134,10 +159,11 @@ function Registration() {
 
     const result = await userService.registerUser({
       userId: formData.userId,
-      username: formData.username,
-      email: formData.email, // Add email to payload
+      username: formData.userId, // Use userId as username
+      email: formData.email,
       password: formData.password,
       dob: formData.dob,
+      passwordExpiryDays: parseInt(formData.passwordExpiryDays),
       securityQuestions: [
         { question: formData.securityQuestion1, answer: formData.securityAnswer1.toLowerCase() },
         { question: formData.securityQuestion2, answer: formData.securityAnswer2.toLowerCase() }
@@ -158,7 +184,7 @@ function Registration() {
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page registration-page">
       <div className="auth-theme-selector">
         <ThemeSelector />
       </div>
@@ -172,6 +198,13 @@ function Registration() {
           </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
+          {securityMessage && (
+            <div className="security-alert">
+              <span className="security-icon">🔒</span>
+              {securityMessage}
+            </div>
+          )}
+
           {errors.submit && (
             <div className="error-message">
               <span className="error-icon">⚠️</span>
@@ -190,94 +223,94 @@ function Registration() {
           <div className="form-section">
             <h3 className="section-title">Personal Information</h3>
             
-            {/* Full Name Field */}
-            <div className="form-group">
-              <label htmlFor="username" className="form-label">
-                Full Name <span className="required">*</span>
-              </label>
-              <div className="input-with-icon">
-                <span className="icon user-icon" aria-hidden>👤</span>
-                <input
-                  id="username"
-                  type="text"
-                  name="username"
-                  className={`form-input ${errors.username ? 'error' : ''}`}
-                  placeholder="Enter your full name"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                />
+            <div className="form-grid">
+              {/* Email Field */}
+              <div className="form-group">
+                <label htmlFor="email" className="form-label">
+                  Email Address <span className="required">*</span>
+                </label>
+                <div className="input-with-icon">
+                  <span className="icon user-icon" aria-hidden>✉️</span>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    className={`form-input ${errors.email ? 'error' : ''}`}
+                    placeholder="Enter your email address"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                    autoComplete="email"
+                  />
+                </div>
+                {errors.email && <span className="error-text">{errors.email}</span>}
               </div>
-              {errors.username && <span className="error-text">{errors.username}</span>}
-            </div>
 
-            {/* Email Field */}
-            <div className="form-group">
-              <label htmlFor="email" className="form-label">
-                Email Address <span className="required">*</span>
-              </label>
-              <div className="input-with-icon">
-                <span className="icon user-icon" aria-hidden>✉️</span>
-                <input
-                  id="email"
-                  type="email"
-                  name="email"
-                  className={`form-input ${errors.email ? 'error' : ''}`}
-                  placeholder="Enter your email address"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  autoComplete="email"
-                />
+              {/* Date of Birth Field */}
+              <div className="form-group">
+                <label htmlFor="dob" className="form-label">
+                  Date of Birth <span className="required">*</span>
+                </label>
+                <div className="input-with-icon">
+                  <span className="icon user-icon" aria-hidden>📅</span>
+                  <input
+                    id="dob"
+                    type="date"
+                    name="dob"
+                    className={`form-input ${errors.dob ? 'error' : ''}`}
+                    value={formData.dob}
+                    onChange={handleInputChange}
+                    onKeyDown={(e) => e.preventDefault()}
+                    disabled={isLoading}
+                  />
+                </div>
+                {errors.dob && <span className="error-text">{errors.dob}</span>}
               </div>
-              {errors.email && <span className="error-text">{errors.email}</span>}
-            </div>
 
-            {/* Date of Birth Field */}
-            <div className="form-group">
-              <label htmlFor="dob" className="form-label">
-                Date of Birth <span className="required">*</span>
-              </label>
-              <div className="input-with-icon">
-                <span className="icon user-icon" aria-hidden>📅</span>
-                <input
-                  id="dob"
-                  type="date"
-                  name="dob"
-                  className={`form-input ${errors.dob ? 'error' : ''}`}
-                  value={formData.dob}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                />
+              {/* User ID Field */}
+              <div className="form-group">
+                <label htmlFor="userId" className="form-label">
+                  Username <span className="required">*</span> <span className="hint">(unique identifier)</span>
+                </label>
+                <div className="input-with-icon">
+                  <span className="icon user-icon" aria-hidden>🆔</span>
+                  <input
+                    id="userId"
+                    type="text"
+                    name="userId"
+                    className={`form-input ${errors.userId ? 'error' : ''}`}
+                    placeholder="Choose a unique username"
+                    value={formData.userId}
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                    autoComplete="off"
+                  />
+                </div>
+                {errors.userId && <span className="error-text">{errors.userId}</span>}
               </div>
-              {errors.dob && <span className="error-text">{errors.dob}</span>}
-            </div>
-          </div>
 
-          {/* Account Information Section */}
-          <div className="form-section">
-            <h3 className="section-title">Account Information</h3>
-            
-            {/* User ID Field */}
-            <div className="form-group">
-              <label htmlFor="userId" className="form-label">
-                Username <span className="required">*</span> <span className="hint">(unique identifier)</span>
-              </label>
-              <div className="input-with-icon">
-                <span className="icon user-icon" aria-hidden>🆔</span>
-                <input
-                  id="userId"
-                  type="text"
-                  name="userId"
-                  className={`form-input ${errors.userId ? 'error' : ''}`}
-                  placeholder="Choose a unique username"
-                  value={formData.userId}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  autoComplete="off"
-                />
+              {/* Password Expiry Days Field */}
+              <div className="form-group">
+                <label htmlFor="passwordExpiryDays" className="form-label">
+                  Password Expiry (Days) <span className="required">*</span> <span className="hint">(0-30 days)</span>
+                </label>
+                <div className="input-with-icon">
+                  <span className="icon user-icon" aria-hidden>⏰</span>
+                  <input
+                    id="passwordExpiryDays"
+                    type="number"
+                    name="passwordExpiryDays"
+                    className={`form-input ${errors.passwordExpiryDays ? 'error' : ''}`}
+                    placeholder="Enter days (0-30)"
+                    value={formData.passwordExpiryDays}
+                    onChange={handleInputChange}
+                    min="0"
+                    max="30"
+                    disabled={isLoading}
+                  />
+                </div>
+                {errors.passwordExpiryDays && <span className="error-text">{errors.passwordExpiryDays}</span>}
               </div>
-              {errors.userId && <span className="error-text">{errors.userId}</span>}
             </div>
           </div>
 
@@ -285,6 +318,7 @@ function Registration() {
           <div className="form-section">
             <h3 className="section-title">Password</h3>
             
+            <div className="form-grid">
             {/* Password Field */}
             <div className="form-group">
             <label htmlFor="password" className="form-label">
@@ -300,6 +334,9 @@ function Registration() {
                 placeholder="Enter password (8-12 characters)"
                 value={formData.password}
                 onChange={handleInputChange}
+                onCopy={(e) => { e.preventDefault(); showSecurityAlert('❌ Copying password is not allowed for security reasons'); }}
+                onPaste={(e) => { e.preventDefault(); showSecurityAlert('❌ Pasting password is not allowed for security reasons'); }}
+                onCut={(e) => { e.preventDefault(); showSecurityAlert('❌ Cutting password is not allowed for security reasons'); }}
                 disabled={isLoading}
                 autoComplete="new-password"
               />
@@ -314,25 +351,6 @@ function Registration() {
                   {passwordStrength === 'medium' && '◐ Medium password'}
                   {passwordStrength === 'weak' && '✗ Weak password'}
                 </span>
-              </div>
-            )}
-            {passwordErrors.length > 0 && (
-              <div className="password-requirements">
-                <p className="requirements-title">Password must contain:</p>
-                <ul>
-                  <li className={/^.{8,12}$/.test(formData.password) ? 'valid' : 'invalid'}>
-                    8-12 characters
-                  </li>
-                  <li className={/[A-Z]/.test(formData.password) ? 'valid' : 'invalid'}>
-                    At least 1 capital letter
-                  </li>
-                  <li className={/[0-9]/.test(formData.password) ? 'valid' : 'invalid'}>
-                    At least 1 number
-                  </li>
-                  <li className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password) ? 'valid' : 'invalid'}>
-                    At least 1 special character
-                  </li>
-                </ul>
               </div>
             )}
             {errors.password && <span className="error-text">{errors.password}</span>}
@@ -353,6 +371,9 @@ function Registration() {
                 placeholder="Re-enter your password"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
+                onCopy={(e) => { e.preventDefault(); showSecurityAlert('❌ Copying password is not allowed for security reasons'); }}
+                onPaste={(e) => { e.preventDefault(); showSecurityAlert('❌ Pasting password is not allowed for security reasons'); }}
+                onCut={(e) => { e.preventDefault(); showSecurityAlert('❌ Cutting password is not allowed for security reasons'); }}
                 disabled={isLoading}
                 autoComplete="new-password"
               />
@@ -366,12 +387,35 @@ function Registration() {
             {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
           </div>
           </div>
+          
+          {/* Password Requirements - Full Width */}
+          {passwordErrors.length > 0 && (
+            <div className="password-requirements">
+              <p className="requirements-title">Password must contain:</p>
+              <ul>
+                <li className={/^.{8,12}$/.test(formData.password) ? 'valid' : 'invalid'}>
+                  8-12 characters
+                </li>
+                <li className={/[A-Z]/.test(formData.password) ? 'valid' : 'invalid'}>
+                  At least 1 capital letter
+                </li>
+                <li className={/[0-9]/.test(formData.password) ? 'valid' : 'invalid'}>
+                  At least 1 number
+                </li>
+                <li className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password) ? 'valid' : 'invalid'}>
+                  At least 1 special character
+                </li>
+              </ul>
+            </div>
+          )}
+          </div>
 
           {/* Security Questions Section */}
           <div className="form-section registration-questions">
             <h3 className="section-title">Security Questions</h3>
             <p className="section-description">Choose two different security questions for account recovery.</p>
             
+            <div className="form-grid">
             {/* Security Question 1 */}
             <div className="form-group">
               <label htmlFor="securityQuestion1" className="form-label">
@@ -430,7 +474,7 @@ function Registration() {
                   onChange={handleInputChange}
                   disabled={isLoading}
                 >
-                  {securityQuestions.map(q => (
+                  {availableQuestionsForQ2.map(q => (
                     <option key={q} value={q}>{q}</option>
                   ))}
                 </select>
@@ -457,16 +501,19 @@ function Registration() {
               </div>
               {errors.securityAnswer2 && <span className="error-text">{errors.securityAnswer2}</span>}
             </div>
+            </div>
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            className="btn btn-primary btn-block"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Creating Account...' : 'Create Account'}
-          </button>
+          <div className="btn-container">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Creating Account...' : 'Create Account'}
+            </button>
+          </div>
         </form>
 
         <div className="auth-card-footer">

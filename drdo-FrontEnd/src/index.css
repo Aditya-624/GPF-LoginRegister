@@ -792,6 +792,11 @@ button:focus-visible {
   overflow-x: hidden;
 }
 
+/* Wider card for registration page */
+.auth-page.registration-page .auth-card {
+  max-width: 1100px;
+}
+
 /* Custom scrollbar for auth card */
 .auth-card::-webkit-scrollbar {
   width: 6px;
@@ -993,6 +998,25 @@ button:focus-visible {
     max-width: 100%;
   }
   
+  /* Registration page stays full width on mobile */
+  .auth-page.registration-page .auth-card {
+    max-width: 100%;
+  }
+  
+  /* Single column layout for registration on mobile */
+  .auth-page.registration-page .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Center button on mobile */
+  .auth-page.registration-page .btn-container {
+    justify-content: center;
+  }
+  
+  .auth-page.registration-page .btn-container .btn {
+    width: 100%;
+  }
+  
   .auth-card-title {
     font-size: 24px;
   }
@@ -1000,6 +1024,21 @@ button:focus-visible {
   .form-row {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+}
+
+/* Tablet breakpoint for registration */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .auth-page.registration-page .auth-card {
+    max-width: 750px;
+  }
+  
+  .auth-page.registration-page .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .auth-page.registration-page .btn-container {
+    justify-content: center;
   }
 }
 
@@ -1980,4 +2019,196 @@ html.theme-rose-gold .question-display {
   border: none !important;
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+/* ===== PROFILE PAGE THEME OVERRIDES ===== */
+
+/* Ocean Dark Theme - Profile */
+.theme-ocean-dark .profile-page {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+}
+
+.theme-ocean-dark .profile-card {
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .profile-title,
+.theme-ocean-dark .section-title {
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .info-label {
+  color: #cbd5e1;
+}
+
+.theme-ocean-dark .info-value {
+  color: #f8fafc;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+/* Sunset Theme - Profile */
+.theme-sunset .profile-page {
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 30%, #fdba74 70%, #fb923c 100%);
+}
+
+.theme-sunset .profile-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(124, 45, 18, 0.3);
+  color: #7c2d12;
+}
+
+.theme-sunset .profile-title,
+.theme-sunset .section-title {
+  color: #7c2d12;
+}
+
+.theme-sunset .info-label {
+  color: #a16207;
+}
+
+.theme-sunset .info-value {
+  color: #7c2d12;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+/* Forest Theme - Profile */
+.theme-forest .profile-page {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%);
+}
+
+.theme-forest .profile-card {
+  background: rgba(6, 95, 70, 0.85);
+  border: 1px solid rgba(167, 243, 208, 0.3);
+  color: #ecfdf5;
+}
+
+.theme-forest .profile-title,
+.theme-forest .section-title {
+  color: #ecfdf5;
+}
+
+.theme-forest .info-label {
+  color: #a7f3d0;
+}
+
+.theme-forest .info-value {
+  color: #ecfdf5;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+/* Purple Theme - Profile */
+.theme-purple .profile-page {
+  background: linear-gradient(135deg, #581c87 0%, #7c3aed 30%, #a855f7 70%, #c084fc 100%);
+}
+
+.theme-purple .profile-card {
+  background: rgba(139, 69, 19, 0.15);
+  border: 1px solid rgba(196, 181, 253, 0.4);
+  color: #faf5ff;
+}
+
+.theme-purple .profile-title,
+.theme-purple .section-title {
+  color: #faf5ff;
+}
+
+.theme-purple .info-label {
+  color: #c4b5fd;
+}
+
+.theme-purple .info-value {
+  color: #faf5ff;
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+/* Cyberpunk Theme - Profile */
+.theme-cyberpunk .profile-page {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 30%, #330066 70%, #4d0099 100%);
+}
+
+.theme-cyberpunk .profile-card {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 255, 136, 0.5);
+  color: #00ff88;
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+}
+
+.theme-cyberpunk .profile-title,
+.theme-cyberpunk .section-title {
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.theme-cyberpunk .info-label {
+  color: #ff0080;
+}
+
+.theme-cyberpunk .info-value {
+  color: #00ff88;
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+/* Rose Gold Theme - Profile */
+.theme-rose-gold .profile-page {
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #fbcfe8 70%, #f9a8d4 100%);
+}
+
+.theme-rose-gold .profile-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(131, 24, 67, 0.3);
+  color: #831843;
+}
+
+.theme-rose-gold .profile-title,
+.theme-rose-gold .section-title {
+  color: #831843;
+}
+
+.theme-rose-gold .info-label {
+  color: #be185d;
+}
+
+.theme-rose-gold .info-value {
+  color: #831843;
+  background: rgba(236, 72, 153, 0.1);
+  border: 1px solid rgba(236, 72, 153, 0.2);
+}
+
+/* Ocean Light Theme - Profile (default) */
+.theme-ocean-light .profile-page,
+.theme-light .profile-page {
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 30%, #80DEEA 70%, #4DD0E1 100%);
+}
+
+.theme-ocean-light .profile-card,
+.theme-light .profile-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(123, 123, 125, 0.3);
+  color: #353537;
+}
+
+.theme-ocean-light .profile-title,
+.theme-ocean-light .section-title,
+.theme-light .profile-title,
+.theme-light .section-title {
+  color: #353537;
+}
+
+.theme-ocean-light .info-label,
+.theme-light .info-label {
+  color: #7B7B7D;
+}
+
+.theme-ocean-light .info-value,
+.theme-light .info-value {
+  color: #353537;
+  background: rgba(98, 173, 183, 0.1);
+  border: 1px solid rgba(98, 173, 183, 0.2);
 }

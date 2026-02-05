@@ -4,6 +4,7 @@ public class JwtResponse {
     private String token;
     private String userId;
     private String username;
+    private boolean passwordExpired;
 
     public JwtResponse() {}
 
@@ -11,6 +12,14 @@ public class JwtResponse {
         this.token = token;
         this.userId = userId;
         this.username = username;
+        this.passwordExpired = false;
+    }
+
+    public JwtResponse(String token, String userId, String username, boolean passwordExpired) {
+        this.token = token;
+        this.userId = userId;
+        this.username = username;
+        this.passwordExpired = passwordExpired;
     }
 
     public String getToken() { return token; }
@@ -21,4 +30,7 @@ public class JwtResponse {
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
+
+    public boolean isPasswordExpired() { return passwordExpired; }
+    public void setPasswordExpired(boolean passwordExpired) { this.passwordExpired = passwordExpired; }
 }

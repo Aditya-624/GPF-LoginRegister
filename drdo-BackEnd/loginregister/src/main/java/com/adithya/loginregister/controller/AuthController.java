@@ -68,4 +68,26 @@ public class AuthController {
         authService.changePassword(req);
         return ResponseEntity.ok(java.util.Map.of("message", "Password changed"));
     }
+
+    @GetMapping("/security-questions/{userId}")
+    public ResponseEntity<?> getSecurityQuestions(@PathVariable String userId) {
+        try {
+            com.adithya.loginregister.payload.SecurityQuestionsResponse response = authService.getSecurityQuestions(userId);
+            return ResponseEntity.ok(response);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                .body(java.util.Map.of("error", e.getReason()));
+        }
+    }
+
+    @PostMapping("/verify-security-answers")
+    public ResponseEntity<?> verifySecurityAnswers(@Valid @RequestBody com.adithya.loginregister.payload.VerifySecurityAnswersRequest req) {
+        try {
+            com.adithya.loginregister.payload.PasswordRecoveryResponse response = authService.verifySecurityAnswers(req);
+            return ResponseEntity.ok(response);
+        } catch (org.springframework.web.server.ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode())
+                .body(java.util.Map.of("error", e.getReason()));
+        }
+    }
 }
