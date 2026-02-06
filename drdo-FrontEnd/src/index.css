@@ -2212,3 +2212,548 @@ html.theme-rose-gold .question-display {
   background: rgba(98, 173, 183, 0.1);
   border: 1px solid rgba(98, 173, 183, 0.2);
 }
+
+/* ===== GPF PAGE THEME OVERRIDES ===== */
+
+/* Ocean Dark Theme - GPF */
+.theme-ocean-dark .gpf-page {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+}
+
+.theme-ocean-dark .gpf-menu-header {
+  border-bottom-color: rgba(148, 163, 184, 0.3);
+}
+
+.theme-ocean-dark .gpf-menu-title {
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .gpf-menu-subtitle {
+  color: #cbd5e1;
+}
+
+.theme-ocean-dark .gpf-menu-card {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.theme-ocean-dark .card-title {
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .card-description {
+  color: #cbd5e1;
+}
+
+.theme-ocean-dark .card-arrow {
+  color: #38bdf8;
+}
+
+.theme-ocean-dark .gpf-menu-card:hover {
+  border-color: #38bdf8;
+  box-shadow: 0 8px 24px rgba(56, 189, 248, 0.2);
+}
+
+/* Sunset Theme - GPF */
+.theme-sunset .gpf-page {
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 30%, #fdba74 70%, #fb923c 100%);
+}
+
+.theme-sunset .gpf-menu-header {
+  border-bottom-color: rgba(124, 45, 18, 0.3);
+}
+
+.theme-sunset .gpf-menu-title {
+  color: #7c2d12;
+}
+
+.theme-sunset .gpf-menu-subtitle {
+  color: #a16207;
+}
+
+.theme-sunset .gpf-menu-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(124, 45, 18, 0.3);
+}
+
+.theme-sunset .card-title {
+  color: #7c2d12;
+}
+
+.theme-sunset .card-description {
+  color: #a16207;
+}
+
+.theme-sunset .card-arrow {
+  color: #f97316;
+}
+
+.theme-sunset .gpf-menu-card:hover {
+  border-color: #f97316;
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.2);
+}
+
+/* Forest Theme - GPF */
+.theme-forest .gpf-page {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%);
+}
+
+.theme-forest .gpf-menu-header {
+  border-bottom-color: rgba(167, 243, 208, 0.3);
+}
+
+.theme-forest .gpf-menu-title {
+  color: #ecfdf5;
+}
+
+.theme-forest .gpf-menu-subtitle {
+  color: #a7f3d0;
+}
+
+.theme-forest .gpf-menu-card {
+  background: rgba(6, 95, 70, 0.85);
+  border-color: rgba(167, 243, 208, 0.3);
+}
+
+.theme-forest .card-title {
+  color: #ecfdf5;
+}
+
+.theme-forest .card-description {
+  color: #a7f3d0;
+}
+
+.theme-forest .card-arrow {
+  color: #10b981;
+}
+
+.theme-forest .gpf-menu-card:hover {
+  border-color: #10b981;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2);
+}
+
+/* Purple Theme - GPF */
+.theme-purple .gpf-page {
+  background: linear-gradient(135deg, #581c87 0%, #7c3aed 30%, #a855f7 70%, #c084fc 100%);
+}
+
+.theme-purple .gpf-menu-header {
+  border-bottom-color: rgba(196, 181, 253, 0.4);
+}
+
+.theme-purple .gpf-menu-title {
+  color: #faf5ff;
+}
+
+.theme-purple .gpf-menu-subtitle {
+  color: #c4b5fd;
+}
+
+.theme-purple .gpf-menu-card {
+  background: rgba(139, 69, 19, 0.15);
+  border-color: rgba(196, 181, 253, 0.4);
+}
+
+.theme-purple .card-title {
+  color: #faf5ff;
+}
+
+.theme-purple .card-description {
+  color: #c4b5fd;
+}
+
+.theme-purple .card-arrow {
+  color: #a855f7;
+}
+
+.theme-purple .gpf-menu-card:hover {
+  border-color: #a855f7;
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
+}
+
+/* Cyberpunk Theme - GPF */
+.theme-cyberpunk .gpf-page {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 30%, #330066 70%, #4d0099 100%);
+}
+
+.theme-cyberpunk .gpf-menu-header {
+  border-bottom-color: rgba(0, 255, 136, 0.3);
+}
+
+.theme-cyberpunk .gpf-menu-title {
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.theme-cyberpunk .gpf-menu-subtitle {
+  color: #ff0080;
+}
+
+.theme-cyberpunk .gpf-menu-card {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(0, 255, 136, 0.5);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+}
+
+.theme-cyberpunk .card-title {
+  color: #00ff88;
+}
+
+.theme-cyberpunk .card-description {
+  color: #ff0080;
+}
+
+.theme-cyberpunk .card-arrow {
+  color: #00ff88;
+}
+
+.theme-cyberpunk .gpf-menu-card:hover {
+  border-color: #00ff88;
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+}
+
+/* Rose Gold Theme - GPF */
+.theme-rose-gold .gpf-page {
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #fbcfe8 70%, #f9a8d4 100%);
+}
+
+.theme-rose-gold .gpf-menu-header {
+  border-bottom-color: rgba(131, 24, 67, 0.3);
+}
+
+.theme-rose-gold .gpf-menu-title {
+  color: #831843;
+}
+
+.theme-rose-gold .gpf-menu-subtitle {
+  color: #be185d;
+}
+
+.theme-rose-gold .gpf-menu-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(131, 24, 67, 0.3);
+}
+
+.theme-rose-gold .card-title {
+  color: #831843;
+}
+
+.theme-rose-gold .card-description {
+  color: #be185d;
+}
+
+.theme-rose-gold .card-arrow {
+  color: #ec4899;
+}
+
+.theme-rose-gold .gpf-menu-card:hover {
+  border-color: #ec4899;
+  box-shadow: 0 8px 24px rgba(236, 72, 153, 0.2);
+}
+
+/* Ocean Light Theme - GPF (default) */
+.theme-ocean-light .gpf-page,
+.theme-light .gpf-page {
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 30%, #80DEEA 70%, #4DD0E1 100%);
+}
+
+.theme-ocean-light .gpf-menu-header,
+.theme-light .gpf-menu-header {
+  border-bottom-color: rgba(123, 123, 125, 0.3);
+}
+
+.theme-ocean-light .gpf-menu-title,
+.theme-light .gpf-menu-title {
+  color: #353537;
+}
+
+.theme-ocean-light .gpf-menu-subtitle,
+.theme-light .gpf-menu-subtitle {
+  color: #7B7B7D;
+}
+
+.theme-ocean-light .gpf-menu-card,
+.theme-light .gpf-menu-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(123, 123, 125, 0.3);
+}
+
+.theme-ocean-light .card-title,
+.theme-light .card-title {
+  color: #353537;
+}
+
+.theme-ocean-light .card-description,
+.theme-light .card-description {
+  color: #7B7B7D;
+}
+
+.theme-ocean-light .card-arrow,
+.theme-light .card-arrow {
+  color: #62adb7;
+}
+
+.theme-ocean-light .gpf-menu-card:hover,
+.theme-light .gpf-menu-card:hover {
+  border-color: #62adb7;
+  box-shadow: 0 8px 24px rgba(98, 173, 183, 0.2);
+}
+
+/* ===== ADD GPF SLIPS PAGE THEME OVERRIDES ===== */
+
+/* Ocean Dark Theme - Add GPF Slips */
+.theme-ocean-dark .add-gpf-slips-page {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+}
+
+.theme-ocean-dark .page-header {
+  border-bottom-color: rgba(148, 163, 184, 0.3);
+}
+
+.theme-ocean-dark .page-title {
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .page-subtitle {
+  color: #cbd5e1;
+}
+
+.theme-ocean-dark .form-container {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.theme-ocean-dark .section-title,
+.theme-ocean-dark .form-label {
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .form-input {
+  background: rgba(51, 65, 85, 0.7);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .form-input::placeholder {
+  color: #94a3b8;
+}
+
+/* Sunset Theme - Add GPF Slips */
+.theme-sunset .add-gpf-slips-page {
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 30%, #fdba74 70%, #fb923c 100%);
+}
+
+.theme-sunset .page-header {
+  border-bottom-color: rgba(124, 45, 18, 0.3);
+}
+
+.theme-sunset .page-title {
+  color: #7c2d12;
+}
+
+.theme-sunset .page-subtitle {
+  color: #a16207;
+}
+
+.theme-sunset .form-container {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(124, 45, 18, 0.3);
+}
+
+.theme-sunset .section-title,
+.theme-sunset .form-label {
+  color: #7c2d12;
+}
+
+.theme-sunset .form-input {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(124, 45, 18, 0.3);
+  color: #7c2d12;
+}
+
+/* Forest Theme - Add GPF Slips */
+.theme-forest .add-gpf-slips-page {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%);
+}
+
+.theme-forest .page-header {
+  border-bottom-color: rgba(167, 243, 208, 0.3);
+}
+
+.theme-forest .page-title {
+  color: #ecfdf5;
+}
+
+.theme-forest .page-subtitle {
+  color: #a7f3d0;
+}
+
+.theme-forest .form-container {
+  background: rgba(6, 95, 70, 0.85);
+  border-color: rgba(167, 243, 208, 0.3);
+}
+
+.theme-forest .section-title,
+.theme-forest .form-label {
+  color: #ecfdf5;
+}
+
+.theme-forest .form-input {
+  background: rgba(4, 120, 87, 0.7);
+  border-color: rgba(167, 243, 208, 0.3);
+  color: #ecfdf5;
+}
+
+.theme-forest .form-input::placeholder {
+  color: #a7f3d0;
+}
+
+/* Purple Theme - Add GPF Slips */
+.theme-purple .add-gpf-slips-page {
+  background: linear-gradient(135deg, #581c87 0%, #7c3aed 30%, #a855f7 70%, #c084fc 100%);
+}
+
+.theme-purple .page-header {
+  border-bottom-color: rgba(196, 181, 253, 0.4);
+}
+
+.theme-purple .page-title {
+  color: #faf5ff;
+}
+
+.theme-purple .page-subtitle {
+  color: #c4b5fd;
+}
+
+.theme-purple .form-container {
+  background: rgba(139, 69, 19, 0.15);
+  border-color: rgba(196, 181, 253, 0.4);
+}
+
+.theme-purple .section-title,
+.theme-purple .form-label {
+  color: #faf5ff;
+}
+
+.theme-purple .form-input {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(196, 181, 253, 0.4);
+  color: #faf5ff;
+}
+
+.theme-purple .form-input::placeholder {
+  color: #c4b5fd;
+}
+
+/* Cyberpunk Theme - Add GPF Slips */
+.theme-cyberpunk .add-gpf-slips-page {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 30%, #330066 70%, #4d0099 100%);
+}
+
+.theme-cyberpunk .page-header {
+  border-bottom-color: rgba(0, 255, 136, 0.3);
+}
+
+.theme-cyberpunk .page-title {
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.theme-cyberpunk .page-subtitle {
+  color: #ff0080;
+}
+
+.theme-cyberpunk .form-container {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(0, 255, 136, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.theme-cyberpunk .section-title,
+.theme-cyberpunk .form-label {
+  color: #00ff88;
+}
+
+.theme-cyberpunk .form-input {
+  background: rgba(26, 0, 51, 0.8);
+  border-color: rgba(0, 255, 136, 0.5);
+  color: #00ff88;
+}
+
+.theme-cyberpunk .form-input::placeholder {
+  color: #ff0080;
+}
+
+/* Rose Gold Theme - Add GPF Slips */
+.theme-rose-gold .add-gpf-slips-page {
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #fbcfe8 70%, #f9a8d4 100%);
+}
+
+.theme-rose-gold .page-header {
+  border-bottom-color: rgba(131, 24, 67, 0.3);
+}
+
+.theme-rose-gold .page-title {
+  color: #831843;
+}
+
+.theme-rose-gold .page-subtitle {
+  color: #be185d;
+}
+
+.theme-rose-gold .form-container {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(131, 24, 67, 0.3);
+}
+
+.theme-rose-gold .section-title,
+.theme-rose-gold .form-label {
+  color: #831843;
+}
+
+.theme-rose-gold .form-input {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(131, 24, 67, 0.3);
+  color: #831843;
+}
+
+/* Ocean Light Theme - Add GPF Slips (default) */
+.theme-ocean-light .add-gpf-slips-page,
+.theme-light .add-gpf-slips-page {
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 30%, #80DEEA 70%, #4DD0E1 100%);
+}
+
+.theme-ocean-light .page-header,
+.theme-light .page-header {
+  border-bottom-color: rgba(123, 123, 125, 0.3);
+}
+
+.theme-ocean-light .page-title,
+.theme-light .page-title {
+  color: #353537;
+}
+
+.theme-ocean-light .page-subtitle,
+.theme-light .page-subtitle {
+  color: #7B7B7D;
+}
+
+.theme-ocean-light .form-container,
+.theme-light .form-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(123, 123, 125, 0.3);
+}
+
+.theme-ocean-light .section-title,
+.theme-ocean-light .form-label,
+.theme-light .section-title,
+.theme-light .form-label {
+  color: #353537;
+}
+
+.theme-ocean-light .form-input,
+.theme-light .form-input {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(123, 123, 125, 0.3);
+  color: #353537;
+}

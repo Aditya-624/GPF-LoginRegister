@@ -8,6 +8,8 @@ import ChangePassword from './components/ChangePassword';
 import ForgotPassword from './components/ForgotPassword';
 import Dashboard from './components/Dashboard';
 import Profile from './components/Profile';
+import GPF from './components/GPF';
+import AddGPFSlips from './components/AddGPFSlips';
 import FloatingParticles from './components/FloatingParticles';
 import './App.css';
 
@@ -22,6 +24,12 @@ const getTransitionName = (from = '/', to = '/') => {
   if (from === '/profile' && to === '/dashboard') return 'slide-right';
   if (from === '/profile' && to === '/change-password') return 'slide-up';
   if (from === '/change-password' && to === '/dashboard') return 'slide-down';
+  if (from === '/dashboard' && to === '/gpf') return 'slide-left';
+  if (from === '/gpf' && to === '/dashboard') return 'slide-right';
+  if (from === '/gpf' && to === '/profile') return 'slide-left';
+  if (from === '/profile' && to === '/gpf') return 'slide-right';
+  if (from === '/gpf' && to === '/gpf/add-slips') return 'slide-left';
+  if (from === '/gpf/add-slips' && to === '/gpf') return 'slide-right';
   // sensible default for forward nav
   return 'slide-left';
 };
@@ -155,6 +163,8 @@ function AppRoutes() {
             <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
             <Route path="/dashboard" element={<Dashboard onSignOut={handleLogout} />} />
             <Route path="/profile" element={<Profile onChangePassword={handleProfileChangePassword} onBack={handleBackToDashboard} />} />
+            <Route path="/gpf" element={<GPF />} />
+            <Route path="/gpf/add-slips" element={<AddGPFSlips />} />
           </Routes>
         </div>
       )}
@@ -168,6 +178,8 @@ function AppRoutes() {
           <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
           <Route path="/dashboard" element={<Dashboard onSignOut={handleLogout} />} />
           <Route path="/profile" element={<Profile onChangePassword={handleProfileChangePassword} onBack={handleBackToDashboard} />} />
+          <Route path="/gpf" element={<GPF />} />
+          <Route path="/gpf/add-slips" element={<AddGPFSlips />} />
         </Routes>
       </div>
     </div>

@@ -1,14 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ThemeSelector from './ThemeSelector';
 import './Profile.css';
 
 export default function Profile({ onChangePassword, onBack }) {
   const navigate = useNavigate();
+  const [currentTime, setCurrentTime] = useState(new Date());
   
   const currentUser = (() => {
     try { return JSON.parse(localStorage.getItem('currentUser') || 'null'); } catch (e) { return null; }
   })();
+
+  // Update time every second
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', { 
+      hour12: true, 
+      hour: '2-digit', 
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
 
   const handleChangePassword = () => {
     try { window.__ANIMATE_NAV = true; } catch (e) {}
@@ -22,9 +38,20 @@ export default function Profile({ onChangePassword, onBack }) {
 
   return (
     <div className="profile-page">
-      <div className="profile-theme-selector">
-        <ThemeSelector />
-      </div>
+      <nav className="top-nav">
+        <div className="nav-left">
+          <button className="btn btn-nav btn-back" onClick={handleBack}>
+            <span>←</span> Back to Dashboard
+          </button>
+          <span className="nav-brand">User Profile</span>
+          <span className="nav-time">{formatTime(currentTime)}</span>
+        </div>
+        <div className="nav-right">
+          <div className="theme-selector-compact">
+            <ThemeSelector compact={true} />
+          </div>
+        </div>
+      </nav>
 
       <main className="profile-content">
         <div className="profile-card">
@@ -94,15 +121,6 @@ export default function Profile({ onChangePassword, onBack }) {
                 </div>
               </button>
             </div>
-          </div>
-
-          <div className="profile-footer">
-            <button 
-              className="btn btn-back"
-              onClick={handleBack}
-            >
-              ← Back to Dashboard
-            </button>
           </div>
         </div>
       </main>

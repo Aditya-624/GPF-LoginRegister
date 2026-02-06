@@ -1,0 +1,228 @@
+.add-gpf-slips-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--page-bg);
+  color: var(--page-text);
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
+}
+
+.add-gpf-slips-main {
+  flex: 1;
+  padding: 40px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--input-border);
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: var(--card-text);
+  letter-spacing: -0.5px;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: 400;
+}
+
+.form-container {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 32px;
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--input-border);
+}
+
+.gpf-slip-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--card-text);
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent-primary);
+  background: linear-gradient(135deg, var(--accent-primary), var(--button-bg));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--card-text);
+  letter-spacing: 0.3px;
+}
+
+.form-input {
+  padding: 12px 16px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  border-radius: var(--border-radius-small);
+  font-size: 14px;
+  font-family: inherit;
+  transition: all var(--transition-smooth) ease;
+  color: var(--input-text);
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(var(--accent-primary-rgb), 0.1);
+  transform: translateY(-1px);
+}
+
+.form-input::placeholder {
+  color: var(--placeholder);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  padding-top: 24px;
+  border-top: 1px solid var(--input-border);
+}
+
+.btn-submit,
+.btn-reset {
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 180px;
+  justify-content: center;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, var(--button-bg), var(--accent-primary));
+  color: var(--white);
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-submit:hover {
+  background: linear-gradient(135deg, var(--accent-primary), var(--button-bg));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.btn-reset {
+  background: var(--glass-bg);
+  color: var(--card-text);
+  border: 1px solid var(--input-border);
+  backdrop-filter: blur(15px);
+}
+
+.btn-reset:hover {
+  background: var(--input-bg);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .add-gpf-slips-main {
+    padding: 24px 16px;
+  }
+
+  .page-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+  }
+
+  .form-container {
+    padding: 24px 20px;
+  }
+
+  .gpf-slip-form {
+    gap: 24px;
+  }
+
+  .form-section {
+    gap: 16px;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-submit,
+  .btn-reset {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* Tablet responsive */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .add-gpf-slips-main {
+    padding: 32px 20px;
+  }
+
+  .form-container {
+    padding: 28px;
+  }
+}

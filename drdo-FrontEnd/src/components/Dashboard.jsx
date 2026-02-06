@@ -108,6 +108,10 @@ export default function Dashboard({ onSignOut }) {
           <div className="content-card">
             <h2 className="card-title">🚀 Quick Actions</h2>
             <div className="action-grid">
+              <button className="action-btn btn-gpf" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/gpf'); }}>
+                <span className="action-icon">💰</span>
+                <span>General Provident Fund (GPF)</span>
+              </button>
               <button className="action-btn" onClick={() => alert('New Project - Coming Soon!')}>
                 <span className="action-icon">➕</span>
                 <span>New Project</span>
