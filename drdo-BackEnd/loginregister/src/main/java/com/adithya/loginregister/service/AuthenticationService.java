@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,13 +19,11 @@ import com.adithya.loginregister.util.JwtUtil;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     @Autowired
-    public AuthenticationService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public AuthenticationService(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
     }
 
@@ -36,7 +33,7 @@ public class AuthenticationService {
         user.setUserId(req.getUserId());
         user.setUsername(req.getUsername());
         user.setEmail(req.getEmail());
-        user.setPassword(passwordEncoder.encode(req.getPassword()));
+        user.setPassword(req.getPassword());
         if (req.getDob() != null && !req.getDob().isBlank()) {
             user.setDob(LocalDate.parse(req.getDob()));
         }
@@ -58,7 +55,7 @@ public class AuthenticationService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username");
         }
         User user = maybe.get();
-        if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
+        if (!req.getPassword().equals(user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
 
@@ -81,10 +78,10 @@ public class AuthenticationService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "user does not exist");
         }
         User user = maybe.get();
-        if (!passwordEncoder.matches(req.getOldPassword(), user.getPassword())) {
+        if (!req.getOldPassword().equals(user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "old password does not match");
         }
-        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        user.setPassword(req.getNewPassword());
         // Update last password change date
         user.setLastPasswordChangeDate(LocalDate.now());
         userRepository.save(user);
@@ -126,7 +123,7 @@ public class AuthenticationService {
         String tempPassword = generateTemporaryPassword();
         
         // Update user's password with temporary password
-        user.setPassword(passwordEncoder.encode(tempPassword));
+        user.setPassword(tempPassword);
         user.setLastPasswordChangeDate(LocalDate.now());
         userRepository.save(user);
         

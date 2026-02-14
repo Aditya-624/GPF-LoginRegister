@@ -1,7 +1,5 @@
 package com.adithya.loginregister.controller;
 
-import com.adithya.loginregister.entity.User;
-import com.adithya.loginregister.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +9,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
+
+import com.adithya.loginregister.entity.User;
+import com.adithya.loginregister.repository.UserRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AuthControllerTest {
@@ -24,9 +24,6 @@ public class AuthControllerTest {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void cleanup() {
@@ -65,7 +62,7 @@ public class AuthControllerTest {
         u.setUserId("u1");
         u.setUsername("User One");
         u.setEmail("u1@example.com");
-        u.setPassword(passwordEncoder.encode("Password@123"));
+        u.setPassword("Password@123");
         userRepository.save(u);
 
         String url = "http://localhost:" + port + "/api/auth/login";
