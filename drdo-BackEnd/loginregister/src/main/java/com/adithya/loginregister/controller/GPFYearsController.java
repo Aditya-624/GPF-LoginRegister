@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,6 +72,36 @@ public class GPFYearsController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("Error fetching GPF Years: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Save or Update GPF Year closing balance
+     * POST /api/gpf-years/save
+     */
+    @PostMapping("/save")
+    public ResponseEntity<?> saveGPFYear(@RequestBody GPFYears gpfYear) {
+        try {
+            if (gpfYear.getPassNumber() == null || gpfYear.getPassNumber().trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Pass Number is required"));
+            }
+
+            if (gpfYear.getGpfYears() == null) {
+                return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("GPF Year is required"));
+            }
+
+            if (gpfYear.getClosingBalance() == null) {
+                return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Closing Balance is required"));
+            }
+
+            GPFYears savedRecord = gpfYearsRepository.save(gpfYear);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedRecord);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("Error saving GPF Year: " + e.getMessage()));
         }
     }
 

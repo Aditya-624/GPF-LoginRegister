@@ -12,6 +12,16 @@ export default function AddGPFSlips() {
   const [showResults, setShowResults] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [userDetails, setUserDetails] = useState(null); // For displaying user details in table
+  const [allEmployees, setAllEmployees] = useState([]); // For dropdown list
+  const [isLoadingEmployees, setIsLoadingEmployees] = useState(false);
+  const [gpfYearData, setGpfYearData] = useState({
+    year: new Date().getFullYear(),
+    closingBalance: ''
+  });
+  const [isSavingGpfYear, setIsSavingGpfYear] = useState(false);
+  const [gpfYearsRecords, setGpfYearsRecords] = useState([]); // For displaying saved GPF years
+  const [isLoadingGpfYears, setIsLoadingGpfYears] = useState(false);
   const [formData, setFormData] = useState({
     employeeId: '',
     employeeName: '',
@@ -35,6 +45,24 @@ export default function AddGPFSlips() {
     return () => clearInterval(timer);
   }, []);
 
+  // Load all employees on component mount
+  useEffect(() => {
+    const fetchAllEmployees = async () => {
+      setIsLoadingEmployees(true);
+      try {
+        const response = await axios.get('http://localhost:8081/api/gpf/all');
+        setAllEmployees(response.data);
+      } catch (error) {
+        console.error('Error loading employees:', error);
+        // Don't show alert on initial load, just log the error
+      } finally {
+        setIsLoadingEmployees(false);
+      }
+    };
+
+    fetchAllEmployees();
+  }, []);
+
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', { 
       hour12: true, 
@@ -51,13 +79,13 @@ export default function AddGPFSlips() {
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      alert('Please enter a search term (Pass Number)');
+      alert('Please enter an Account Number or Personnel Number');
       return;
     }
 
     setIsSearching(true);
     try {
-      const response = await axios.get(`http://localhost:8081/api/gpf-years/search`, {
+      const response = await axios.get(`http://localhost:8081/api/gpf/search`, {
         params: { query: searchQuery }
       });
       
@@ -65,10 +93,10 @@ export default function AddGPFSlips() {
       setShowResults(true);
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        alert('No GPF Years record found matching your search criteria');
+        alert('No GPF account found matching your search');
         setSearchResults([]);
       } else if (error.response) {
-        alert(`Error: ${error.response.data.message || 'Failed to search GPF Years'}`);
+        alert(`Error: ${error.response.data.message || 'Failed to search GPF accounts'}`);
       } else if (error.request) {
         alert('Cannot connect to backend server. Please ensure the server is running on port 8081');
       } else {
@@ -87,15 +115,34 @@ export default function AddGPFSlips() {
   };
 
   const handleSelectEmployee = (record) => {
+    setUserDetails(record); // Set user details to display in table
     setSelectedEmployee(record);
     setFormData(prev => ({
       ...prev,
-      employeeId: record.passNumber,
-      employeeName: `GPF Years: ${record.gpfYears}`
+      employeeId: record.persNumber || '',
+      employeeName: record.employeeName || ''
     }));
     setSearchQuery('');
     setShowResults(false);
     setSearchResults([]);
+    
+    // Fetch GPF years records for this employee
+    fetchGpfYearsRecords(record.gpfAccountNumber);
+  };
+
+  const fetchGpfYearsRecords = async (accountNumber) => {
+    setIsLoadingGpfYears(true);
+    try {
+      const response = await axios.get(`http://localhost:8081/api/gpf-years/search`, {
+        params: { query: accountNumber }
+      });
+      setGpfYearsRecords(response.data);
+    } catch (error) {
+      console.error('Error fetching GPF years records:', error);
+      setGpfYearsRecords([]);
+    } finally {
+      setIsLoadingGpfYears(false);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -150,9 +197,63 @@ export default function AddGPFSlips() {
       remarks: ''
     });
     setSelectedEmployee(null);
+    setUserDetails(null); // Clear user details table
     setSearchQuery('');
     setShowResults(false);
     setSearchResults([]);
+  };
+
+  const handleGpfYearChange = (e) => {
+    const { name, value } = e.target;
+    setGpfYearData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleGpfYearSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!userDetails?.gpfAccountNumber) {
+      alert('Please select an employee first');
+      return;
+    }
+
+    if (!gpfYearData.closingBalance || gpfYearData.closingBalance <= 0) {
+      alert('Please enter a valid closing balance');
+      return;
+    }
+
+    setIsSavingGpfYear(true);
+    try {
+      const payload = {
+        passNumber: userDetails.gpfAccountNumber,
+        gpfYears: parseFloat(gpfYearData.year),
+        closingBalance: parseFloat(gpfYearData.closingBalance)
+      };
+
+      const response = await axios.post('http://localhost:8081/api/gpf-years/save', payload);
+      
+      alert(`GPF Year ${gpfYearData.year} closing balance saved successfully!`);
+      setGpfYearData({
+        year: new Date().getFullYear(),
+        closingBalance: ''
+      });
+      
+      // Refresh the GPF years records table
+      fetchGpfYearsRecords(userDetails.gpfAccountNumber);
+    } catch (error) {
+      if (error.response) {
+        alert(`Error: ${error.response.data.message || 'Failed to save GPF year data'}`);
+      } else if (error.request) {
+        alert('Cannot connect to backend server. Please ensure the server is running on port 8081');
+      } else {
+        alert('An error occurred while saving GPF year data');
+      }
+      console.error('Error saving GPF year:', error);
+    } finally {
+      setIsSavingGpfYear(false);
+    }
   };
 
   return (
@@ -186,12 +287,12 @@ export default function AddGPFSlips() {
           <div className="left-section">
             {/* Search Section */}
             <div className="search-container">
-              <h3 className="search-title">Search GPF Years Record</h3>
+              <h3 className="search-title">Search GPF Account</h3>
               <div className="search-bar">
                 <input
                   type="text"
                   className="search-input"
-                  placeholder="Enter Pass Number"
+                  placeholder="Enter GPF Account Number, Personnel Number, or Employee Name"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleSearchKeyPress}
@@ -211,18 +312,20 @@ export default function AddGPFSlips() {
                   <table className="results-table">
                     <thead>
                       <tr>
-                        <th>Pass Number</th>
-                        <th>GPF Years</th>
-                        <th>Closing Balance</th>
+                        <th>Account No</th>
+                        <th>Pers Number</th>
+                        <th>Employee Name</th>
+                        <th>Designation</th>
                         <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       {searchResults.map((record) => (
-                        <tr key={record.passNumber}>
-                          <td>{record.passNumber}</td>
-                          <td>{record.gpfYears}</td>
-                          <td>₹{Number(record.closingBalance).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <tr key={record.gpfAccountNumber}>
+                          <td>{record.gpfAccountNumber}</td>
+                          <td>{record.persNumber || 'N/A'}</td>
+                          <td>{record.employeeName}</td>
+                          <td>{record.designation || 'N/A'}</td>
                           <td>
                             <button 
                               className="btn-select"
@@ -237,10 +340,169 @@ export default function AddGPFSlips() {
                   </table>
                 </div>
               )}
-            </div>
 
-            {/* Form Section */}
-            <div className="form-container">
+              {/* Employee List Dropdown - Always visible */}
+              <div className="employee-list-container">
+                <h4 className="employee-list-title">Or Select from Employee List</h4>
+                {isLoadingEmployees ? (
+                  <div className="loading-message">Loading employees...</div>
+                ) : allEmployees.length > 0 ? (
+                  <select 
+                    className="employee-dropdown"
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      if (selectedId) {
+                        const employee = allEmployees.find(emp => emp.gpfAccountNumber.toString() === selectedId);
+                        if (employee) {
+                          handleSelectEmployee(employee);
+                        }
+                      }
+                    }}
+                    value={userDetails?.gpfAccountNumber || ''}
+                  >
+                    <option value="">-- Select an Employee --</option>
+                    {allEmployees.map((employee) => (
+                      <option 
+                        key={employee.gpfAccountNumber} 
+                        value={employee.gpfAccountNumber}
+                      >
+                        {employee.gpfAccountNumber} - {employee.employeeName} ({employee.persNumber})
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="no-employees-message">No employees found in the system</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Section - User Details and GPF Year */}
+          <div className="right-section">
+            {/* User Details Table - Shows when user is selected */}
+            {userDetails && (
+            <div className="user-details-container">
+              <h3 className="section-title">User Details</h3>
+              <table className="user-details-table">
+                <tbody>
+                  {/* Row 1 */}
+                  <tr>
+                    <td className="table-label">GPF Account Number</td>
+                    <td className="table-value">{userDetails?.gpfAccountNumber || '-'}</td>
+                    <td className="table-label">Personnel Number</td>
+                    <td className="table-value">{userDetails?.persNumber || '-'}</td>
+                  </tr>
+                  {/* Row 2 */}
+                  <tr>
+                    <td className="table-label">Employee Name</td>
+                    <td className="table-value">{userDetails?.employeeName || '-'}</td>
+                    <td className="table-label">Designation</td>
+                    <td className="table-value">{userDetails?.designation || '-'}</td>
+                  </tr>
+                  {/* Row 3 */}
+                  <tr>
+                    <td className="table-label">Date of Birth</td>
+                    <td className="table-value">{userDetails?.dob ? formatDate(userDetails.dob) : '-'}</td>
+                    <td className="table-label">Date of Retirement</td>
+                    <td className="table-value">{userDetails?.dateOfRetirement ? formatDate(userDetails.dateOfRetirement) : '-'}</td>
+                  </tr>
+                  {/* Row 4 */}
+                  <tr>
+                    <td className="table-label">Basic Pay</td>
+                    <td className="table-value">{userDetails?.basicPay ? `₹${Number(userDetails.basicPay).toLocaleString('en-IN')}` : '-'}</td>
+                    <td className="table-label">Phone Number</td>
+                    <td className="table-value">{userDetails?.phoneNumber || '-'}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            )}
+
+            {/* GPF Year Closing Balance Section */}
+            {userDetails && (
+              <div className="gpf-year-container">
+                <h3 className="section-title">GPF Year Closing Balance</h3>
+                
+                <div className="gpf-year-content">
+                  {/* Left: Saved Records Table */}
+                  <div className="gpf-years-records">
+                    <h4 className="records-title">Saved Records</h4>
+                    {isLoadingGpfYears ? (
+                      <div className="loading-message">Loading records...</div>
+                    ) : gpfYearsRecords.length > 0 ? (
+                      <table className="records-table">
+                        <thead>
+                          <tr>
+                            <th>Year</th>
+                            <th>Closing Balance</th>
+                            <th>Account No</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {gpfYearsRecords.map((record, index) => (
+                            <tr key={index}>
+                              <td>{record.gpfYears}</td>
+                              <td>₹{Number(record.closingBalance).toLocaleString('en-IN')}</td>
+                              <td>{record.passNumber}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="no-records-message">No records found for this employee</div>
+                    )}
+                  </div>
+
+                  {/* Right: Add New Record Form */}
+                  <div className="gpf-year-form-wrapper">
+                    <h4 className="form-title">Add New Record</h4>
+                    <form className="gpf-year-form" onSubmit={handleGpfYearSubmit}>
+                  <div className="gpf-year-inputs">
+                    <div className="gpf-year-field">
+                      <label className="gpf-year-label">GPF Year</label>
+                      <input
+                        type="number"
+                        name="year"
+                        className="gpf-year-input"
+                        value={gpfYearData.year}
+                        onChange={handleGpfYearChange}
+                        min="1900"
+                        max="2100"
+                        required
+                      />
+                    </div>
+                    <div className="gpf-year-field">
+                      <label className="gpf-year-label"><strong>Closing Balance</strong></label>
+                      <input
+                        type="number"
+                        name="closingBalance"
+                        className="gpf-year-input"
+                        value={gpfYearData.closingBalance}
+                        onChange={handleGpfYearChange}
+                        placeholder="Enter closing balance"
+                        step="0.01"
+                        min="0"
+                        required
+                      />
+                    </div>
+                    <button 
+                      type="submit" 
+                      className="btn-gpf-year-submit"
+                      disabled={isSavingGpfYear}
+                    >
+                      {isSavingGpfYear ? 'Saving...' : 'Submit'}
+                    </button>
+                  </div>
+                </form>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Form Section */}
+        <div className="form-container">
               <form className="gpf-slip-form" onSubmit={handleSubmit}>
             <div className="form-section">
               <h3 className="section-title">Employee Information</h3>
@@ -428,38 +690,6 @@ export default function AddGPFSlips() {
               </button>
             </div>
           </form>
-            </div>
-          </div>
-
-          {/* GPF Years Record Card - Right Side */}
-          {selectedEmployee && (
-            <div className="employee-profile-card">
-              <div className="profile-header">
-                <h3 className="profile-title">Selected GPF Years Record</h3>
-                <button 
-                  className="btn-clear-selection"
-                  onClick={() => setSelectedEmployee(null)}
-                  title="Clear selection"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="profile-content">
-                <div className="profile-item">
-                  <span className="profile-label">Pass Number:</span>
-                  <span className="profile-value">{selectedEmployee.passNumber}</span>
-                </div>
-                <div className="profile-item">
-                  <span className="profile-label">GPF Years:</span>
-                  <span className="profile-value">{selectedEmployee.gpfYears}</span>
-                </div>
-                <div className="profile-item">
-                  <span className="profile-label">Closing Balance:</span>
-                  <span className="profile-value">₹{Number(selectedEmployee.closingBalance).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </main>
     </div>
