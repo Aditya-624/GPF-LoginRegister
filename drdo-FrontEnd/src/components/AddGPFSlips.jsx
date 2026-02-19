@@ -460,16 +460,16 @@ export default function AddGPFSlips() {
                   <div className="gpf-year-inputs">
                     <div className="gpf-year-field">
                       <label className="gpf-year-label">GPF Year</label>
-                      <input
-                        type="number"
+                      <select
                         name="year"
                         className="gpf-year-input"
                         value={gpfYearData.year}
                         onChange={handleGpfYearChange}
-                        min="1900"
-                        max="2100"
                         required
-                      />
+                      >
+                        <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
+                        <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
+                      </select>
                     </div>
                     <div className="gpf-year-field">
                       <label className="gpf-year-label"><strong>Closing Balance</strong></label>
@@ -499,197 +499,6 @@ export default function AddGPFSlips() {
               </div>
             )}
           </div>
-        </div>
-
-        {/* Form Section */}
-        <div className="form-container">
-              <form className="gpf-slip-form" onSubmit={handleSubmit}>
-            <div className="form-section">
-              <h3 className="section-title">Employee Information</h3>
-              
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Employee ID *</label>
-                  <input
-                    type="text"
-                    name="employeeId"
-                    className="form-input"
-                    value={formData.employeeId}
-                    onChange={handleInputChange}
-                    placeholder="Enter employee ID"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Employee Name *</label>
-                  <input
-                    type="text"
-                    name="employeeName"
-                    className="form-input"
-                    value={formData.employeeName}
-                    onChange={handleInputChange}
-                    placeholder="Enter employee name"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="form-section">
-              <h3 className="section-title">Period Details</h3>
-              
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Month *</label>
-                  <select
-                    name="month"
-                    className="form-input"
-                    value={formData.month}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Select Month</option>
-                    <option value="January">January</option>
-                    <option value="February">February</option>
-                    <option value="March">March</option>
-                    <option value="April">April</option>
-                    <option value="May">May</option>
-                    <option value="June">June</option>
-                    <option value="July">July</option>
-                    <option value="August">August</option>
-                    <option value="September">September</option>
-                    <option value="October">October</option>
-                    <option value="November">November</option>
-                    <option value="December">December</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Year *</label>
-                  <input
-                    type="number"
-                    name="year"
-                    className="form-input"
-                    value={formData.year}
-                    onChange={handleInputChange}
-                    placeholder="Enter year (e.g., 2024)"
-                    min="2000"
-                    max="2100"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="form-section">
-              <h3 className="section-title">Financial Details</h3>
-              
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Basic Pay *</label>
-                  <input
-                    type="number"
-                    name="basicPay"
-                    className="form-input"
-                    value={formData.basicPay}
-                    onChange={handleInputChange}
-                    placeholder="Enter basic pay"
-                    step="0.01"
-                    min="0"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">GPF Subscription *</label>
-                  <input
-                    type="number"
-                    name="gpfSubscription"
-                    className="form-input"
-                    value={formData.gpfSubscription}
-                    onChange={handleInputChange}
-                    placeholder="Enter GPF subscription amount"
-                    step="0.01"
-                    min="0"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Refund of Advance</label>
-                  <input
-                    type="number"
-                    name="refundAdvance"
-                    className="form-input"
-                    value={formData.refundAdvance}
-                    onChange={handleInputChange}
-                    placeholder="Enter refund amount (if any)"
-                    step="0.01"
-                    min="0"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Interest on Refund</label>
-                  <input
-                    type="number"
-                    name="interestRefund"
-                    className="form-input"
-                    value={formData.interestRefund}
-                    onChange={handleInputChange}
-                    placeholder="Enter interest amount (if any)"
-                    step="0.01"
-                    min="0"
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Total Amount *</label>
-                  <input
-                    type="number"
-                    name="totalAmount"
-                    className="form-input"
-                    value={formData.totalAmount}
-                    onChange={handleInputChange}
-                    placeholder="Enter total amount"
-                    step="0.01"
-                    min="0"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="form-section">
-              <h3 className="section-title">Additional Information</h3>
-              
-              <div className="form-group">
-                <label className="form-label">Remarks</label>
-                <textarea
-                  name="remarks"
-                  className="form-input form-textarea"
-                  value={formData.remarks}
-                  onChange={handleInputChange}
-                  placeholder="Enter any additional remarks or notes"
-                  rows="4"
-                />
-              </div>
-            </div>
-
-            <div className="form-actions">
-              <button type="submit" className="btn btn-primary btn-submit">
-                <span>💾</span> Submit GPF Slip
-              </button>
-              <button type="button" className="btn btn-secondary btn-reset" onClick={handleReset}>
-                <span>🔄</span> Reset Form
-              </button>
-            </div>
-          </form>
         </div>
       </main>
     </div>

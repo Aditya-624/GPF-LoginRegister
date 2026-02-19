@@ -82,6 +82,7 @@ public class GPFYearsController {
     @PostMapping("/save")
     public ResponseEntity<?> saveGPFYear(@RequestBody GPFYears gpfYear) {
         try {
+            // Validate required fields
             if (gpfYear.getPassNumber() == null || gpfYear.getPassNumber().trim().isEmpty()) {
                 return ResponseEntity.badRequest()
                     .body(new ErrorResponse("Pass Number is required"));
@@ -97,6 +98,30 @@ public class GPFYearsController {
                     .body(new ErrorResponse("Closing Balance is required"));
             }
 
+            // Validate year is not in the future
+            int currentYear = java.time.Year.now().getValue();
+            int inputYear = gpfYear.getGpfYears().intValue();
+            if (inputYear > currentYear) {
+                return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Year cannot be in the future. Current year is " + currentYear));
+            }
+
+            // Validate closing balance is positive
+            if (gpfYear.getClosingBalance().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+                return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Closing Balance must be a positive value"));
+            }
+
+            // Check for duplicate year entry
+            if (gpfYearsRepository.existsByPassNumberAndGpfYears(
+                    gpfYear.getPassNumber(), gpfYear.getGpfYears())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse(
+                        "A record for year " + gpfYear.getGpfYears() + 
+                        " already exists for account " + gpfYear.getPassNumber()));
+            }
+
+            // Save new record
             GPFYears savedRecord = gpfYearsRepository.save(gpfYear);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedRecord);
         } catch (Exception e) {

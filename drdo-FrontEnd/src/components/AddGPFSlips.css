@@ -814,3 +814,14 @@
     font-size: 15px;
   }
 }
+
+/* Hide number input spinner arrows */
+.gpf-year-input[type="number"]::-webkit-outer-spin-button,
+.gpf-year-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.gpf-year-input[type="number"] {
+  -moz-appearance: textfield;
+}
