@@ -1,14 +1,20 @@
 package com.adithya.loginregister.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.adithya.loginregister.service.AuthenticationService;
-import com.adithya.loginregister.payload.RegisterRequest;
-import com.adithya.loginregister.payload.LoginRequest;
 import com.adithya.loginregister.payload.JwtResponse;
+import com.adithya.loginregister.payload.LoginRequest;
+import com.adithya.loginregister.payload.RegisterRequest;
+import com.adithya.loginregister.service.AuthenticationService;
 
 import jakarta.validation.Valid;
 
@@ -41,12 +47,10 @@ public class AuthController {
             
             if (errorMessage.contains("uniq_users_username") || errorMessage.contains("username")) {
                 userFriendlyMessage = "Username already exists. Please choose a different username.";
-            } else if (errorMessage.contains("uniq_users_email") || errorMessage.contains("email")) {
-                userFriendlyMessage = "Email address already exists. Please use a different email.";
             } else if (errorMessage.contains("uniq_users_user_id") || errorMessage.contains("user_id")) {
                 userFriendlyMessage = "User ID already exists. Please choose a different User ID.";
             } else {
-                userFriendlyMessage = "Registration failed. One of the fields (User ID, Username, or Email) already exists.";
+                userFriendlyMessage = "Registration failed. One of the fields (User ID or Username) already exists.";
             }
             
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

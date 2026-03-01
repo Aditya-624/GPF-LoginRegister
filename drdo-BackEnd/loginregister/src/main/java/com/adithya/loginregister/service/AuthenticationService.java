@@ -32,7 +32,7 @@ public class AuthenticationService {
         User user = new User();
         user.setUserId(req.getUserId());
         user.setUsername(req.getUsername());
-        user.setEmail(req.getEmail());
+        user.setWorkStatus(req.getWorkStatus());
         user.setPassword(req.getPassword());
         if (req.getDob() != null && !req.getDob().isBlank()) {
             user.setDob(LocalDate.parse(req.getDob()));

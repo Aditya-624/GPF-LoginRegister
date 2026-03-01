@@ -104,7 +104,7 @@ export const userService = {
       const payload = {
         userId: userData.userId,
         username: userData.username,
-        email: userData.email,
+        workStatus: userData.workStatus,
         password: userData.password,
         dob: userData.dob,
         passwordExpiryDays: userData.passwordExpiryDays,

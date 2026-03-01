@@ -8,7 +8,7 @@ function Registration() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     userId: '',
-    email: '',
+    workStatus: '',
     dob: '',
     password: '',
     confirmPassword: '',
@@ -45,6 +45,11 @@ function Registration() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Debug: Log workStatus changes
+    if (name === 'workStatus') {
+      console.log('Work Status changed to:', value);
+    }
     
     // If changing security question 1, check if question 2 needs to be updated
     if (name === 'securityQuestion1' && value === formData.securityQuestion2) {
@@ -90,10 +95,8 @@ function Registration() {
       newErrors.userId = 'User ID already exists';
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email address';
+    if (!formData.workStatus) {
+      newErrors.workStatus = 'Work Status is required';
     }
 
     if (!formData.dob) {
@@ -157,10 +160,20 @@ function Registration() {
       return;
     }
 
+    // Debug: Log the form data
+    console.log('Form Data being sent:', {
+      userId: formData.userId,
+      username: formData.userId,
+      workStatus: formData.workStatus,
+      password: '***',
+      dob: formData.dob,
+      passwordExpiryDays: parseInt(formData.passwordExpiryDays)
+    });
+
     const result = await userService.registerUser({
       userId: formData.userId,
       username: formData.userId, // Use userId as username
-      email: formData.email,
+      workStatus: formData.workStatus,
       password: formData.password,
       dob: formData.dob,
       passwordExpiryDays: parseInt(formData.passwordExpiryDays),
@@ -224,26 +237,28 @@ function Registration() {
             <h3 className="section-title">Personal Information</h3>
             
             <div className="form-grid">
-              {/* Email Field */}
+              {/* Work Status Field */}
               <div className="form-group">
-                <label htmlFor="email" className="form-label">
-                  Email Address <span className="required">*</span>
+                <label htmlFor="workStatus" className="form-label">
+                  Employee Work Status <span className="required">*</span>
                 </label>
                 <div className="input-with-icon">
-                  <span className="icon user-icon" aria-hidden>✉️</span>
-                  <input
-                    id="email"
-                    type="email"
-                    name="email"
-                    className={`form-input ${errors.email ? 'error' : ''}`}
-                    placeholder="Enter your email address"
-                    value={formData.email}
+                  <span className="icon user-icon" aria-hidden>👔</span>
+                  <select
+                    id="workStatus"
+                    name="workStatus"
+                    className={`form-input ${errors.workStatus ? 'error' : ''}`}
+                    value={formData.workStatus}
                     onChange={handleInputChange}
                     disabled={isLoading}
-                    autoComplete="email"
-                  />
+                  >
+                    <option value="">-- Select Work Status --</option>
+                    <option value="OFFICER">Government Officer</option>
+                    <option value="INDUSTRIAL">Industrial</option>
+                    <option value="NON_INDUSTRIAL">Non Industrial</option>
+                  </select>
                 </div>
-                {errors.email && <span className="error-text">{errors.email}</span>}
+                {errors.workStatus && <span className="error-text">{errors.workStatus}</span>}
               </div>
 
               {/* Date of Birth Field */}

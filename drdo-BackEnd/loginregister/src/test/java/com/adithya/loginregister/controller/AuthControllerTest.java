@@ -35,7 +35,7 @@ public class AuthControllerTest {
         String url = "http://localhost:" + port + "/api/auth/register";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        String body = "{\"userId\":\"u1\",\"username\":\"User One\",\"email\":\"u1@example.com\",\"password\":\"Password@123\"}";
+        String body = "{\"userId\":\"u1\",\"username\":\"User One\",\"workStatus\":\"OFFICER\",\"password\":\"Password@123\"}";
 
         ResponseEntity<String> resp = restTemplate.postForEntity(url, new HttpEntity<>(body, headers), String.class);
         org.assertj.core.api.Assertions.assertThat(resp.getStatusCode().value()).isEqualTo(201);
@@ -48,7 +48,7 @@ public class AuthControllerTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Origin", "http://localhost:5173");
-        String body = "{\"userId\":\"u2\",\"username\":\"User Two\",\"email\":\"u2@example.com\",\"password\":\"Password@123\"}";
+        String body = "{\"userId\":\"u2\",\"username\":\"User Two\",\"workStatus\":\"INDUSTRIAL\",\"password\":\"Password@123\"}";
 
         ResponseEntity<String> resp = restTemplate.postForEntity(url, new HttpEntity<>(body, headers), String.class);
         org.assertj.core.api.Assertions.assertThat(resp.getStatusCode().value()).isEqualTo(201);
@@ -61,7 +61,7 @@ public class AuthControllerTest {
         User u = new User();
         u.setUserId("u1");
         u.setUsername("User One");
-        u.setEmail("u1@example.com");
+        u.setWorkStatus("OFFICER");
         u.setPassword("Password@123");
         userRepository.save(u);
 

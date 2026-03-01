@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test GPF Slip Details API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .test-section h2 {
+            color: #555;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        select {
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .controls {
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 GPF Slip Details API Test</h1>
+
+        <!-- Test 1: Check Backend Connection -->
+        <div class="test-section">
+            <h2>Test 1: Backend Connection</h2>
+            <button onclick="testBackendConnection()">Test Connection</button>
+            <div id="result1"></div>
+        </div>
+
+        <!-- Test 2: Check GPF Data -->
+        <div class="test-section">
+            <h2>Test 2: Check GPF Employee Data</h2>
+            <button onclick="checkGPFData()">Check GPF Data</button>
+            <div id="result2"></div>
+        </div>
+
+        <!-- Test 3: Check GPF Years Data -->
+        <div class="test-section">
+            <h2>Test 3: Check GPF Years Data</h2>
+            <button onclick="checkGPFYearsData()">Check GPF Years Data</button>
+            <div id="result3"></div>
+        </div>
+
+        <!-- Test 4: Test By Work Status API -->
+        <div class="test-section">
+            <h2>Test 4: Get Employees by Work Status</h2>
+            <div class="controls">
+                <select id="workStatus">
+                    <option value="">-- Select Work Status --</option>
+                    <option value="OFFICER">OFFICER</option>
+                    <option value="INDUSTRIAL">INDUSTRIAL</option>
+                    <option value="NON_INDUSTRIAL">NON_INDUSTRIAL</option>
+                </select>
+                <select id="year">
+                    <option value="">-- Select Year --</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                </select>
+                <button onclick="testByWorkStatus()">Fetch Employees</button>
+            </div>
+            <div id="result4"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8081';
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = message;
+        }
+
+        async function testBackendConnection() {
+            showResult('result1', 'Testing connection...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/test`);
+                const data = await response.json();
+                showResult('result1', 
+                    `✅ Backend is running!\n\nResponse:\n${JSON.stringify(data, null, 2)}`, 
+                    'success'
+                );
+            } catch (error) {
+                showResult('result1', 
+                    `❌ Backend connection failed!\n\nError: ${error.message}\n\nMake sure the backend server is running on port 8081`, 
+                    'error'
+                );
+            }
+        }
+
+        async function checkGPFData() {
+            showResult('result2', 'Fetching GPF data...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/api/gpf/search?query=`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    let tableHTML = `<table>
+                        <thead>
+                            <tr>
+                                <th>GPF Account</th>
+                                <th>PERS No.</th>
+                                <th>Name</th>
+                                <th>Designation</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                    
+                    data.slice(0, 10).forEach(emp => {
+                        tableHTML += `<tr>
+                            <td>${emp.gpfAccountNumber || 'N/A'}</td>
+                            <td>${emp.persNumber || 'N/A'}</td>
+                            <td>${emp.employeeName || 'N/A'}</td>
+                            <td>${emp.designation || 'N/A'}</td>
+                        </tr>`;
+                    });
+                    
+                    tableHTML += `</tbody></table>`;
+                    
+                    const resultDiv = document.getElementById('result2');
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ Found ${data.length} GPF employees\n\nShowing first 10:${tableHTML}`;
+                } else {
+                    showResult('result2', 
+                        `⚠️ No GPF data found!\n\nThe GPF table is empty. Please add some employee data first.`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('result2', 
+                    `❌ Failed to fetch GPF data!\n\nError: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function checkGPFYearsData() {
+            showResult('result3', 'Fetching GPF Years data...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/api/gpf-years/all`);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    let tableHTML = `<table>
+                        <thead>
+                            <tr>
+                                <th>Pass Number</th>
+                                <th>Year</th>
+                                <th>Closing Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                    
+                    data.slice(0, 10).forEach(record => {
+                        tableHTML += `<tr>
+                            <td>${record.passNumber || 'N/A'}</td>
+                            <td>${record.gpfYears || 'N/A'}</td>
+                            <td>₹${record.closingBalance || 0}</td>
+                        </tr>`;
+                    });
+                    
+                    tableHTML += `</tbody></table>`;
+                    
+                    const resultDiv = document.getElementById('result3');
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ Found ${data.length} GPF Years records\n\nShowing first 10:${tableHTML}`;
+                } else {
+                    showResult('result3', 
+                        `⚠️ No GPF Years data found!\n\nThe GPF_YEARS table is empty. Please add some closing balance data first.`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('result3', 
+                    `❌ Failed to fetch GPF Years data!\n\nError: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testByWorkStatus() {
+            const workStatus = document.getElementById('workStatus').value;
+            const year = document.getElementById('year').value;
+
+            if (!workStatus || !year) {
+                showResult('result4', '⚠️ Please select both Work Status and Year', 'error');
+                return;
+            }
+
+            showResult('result4', `Fetching employees for ${workStatus} in year ${year}...`, 'info');
+            
+            try {
+                const url = `${API_BASE}/api/gpf-years/by-work-status?workStatus=${workStatus}&year=${year}`;
+                console.log('Fetching:', url);
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Received data:', data);
+                
+                if (Array.isArray(data) && data.length > 0) {
+                    let tableHTML = `<table>
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>PERS No.</th>
+                                <th>Name</th>
+                                <th>Designation</th>
+                                <th>GPF Account</th>
+                                <th>Closing Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                    
+                    data.forEach(emp => {
+                        tableHTML += `<tr>
+                            <td>${emp.sno}</td>
+                            <td>${emp.persNumber || 'N/A'}</td>
+                            <td>${emp.name || 'N/A'}</td>
+                            <td>${emp.designation || 'N/A'}</td>
+                            <td>${emp.gpfAccountNumber || 'N/A'}</td>
+                            <td>₹${emp.closingBalance || 0}</td>
+                        </tr>`;
+                    });
+                    
+                    tableHTML += `</tbody></table>`;
+                    
+                    const resultDiv = document.getElementById('result4');
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ Found ${data.length} employees for ${workStatus} in year ${year}${tableHTML}`;
+                } else {
+                    showResult('result4', 
+                        `⚠️ No employees found for ${workStatus} in year ${year}\n\nThis could mean:\n1. No employees with this designation\n2. No closing balance records for this year\n3. Designation names don't match the work status`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('result4', 
+                    `❌ API call failed!\n\nError: ${error.message}\n\nURL: ${API_BASE}/api/gpf-years/by-work-status?workStatus=${workStatus}&year=${year}`, 
+                    'error'
+                );
+            }
+        }
+
+        // Auto-run connection test on page load
+        window.addEventListener('load', () => {
+            testBackendConnection();
+        });
+    </script>
+</body>
+</html>

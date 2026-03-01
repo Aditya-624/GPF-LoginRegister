@@ -70,7 +70,7 @@ export default function GPF() {
             <div className="card-arrow">→</div>
           </div>
 
-          <div className="gpf-menu-card" onClick={() => alert('GPF Slip Details - Coming Soon!')}>
+          <div className="gpf-menu-card" onClick={() => { try { window.__ANIMATE_NAV = true; } catch (e) {}; navigate('/gpf/slip-details'); }}>
             <div className="card-icon-wrapper">
               <span className="card-icon">📄</span>
             </div>
@@ -154,6 +154,17 @@ export default function GPF() {
             <div className="card-content">
               <h3 className="card-title">List of GPF Account Numbers</h3>
               <p className="card-description">Browse all registered GPF accounts</p>
+            </div>
+            <div className="card-arrow">→</div>
+          </div>
+
+          <div className="gpf-menu-card" onClick={() => { try { window.__ANIMATE_NAV = true; } catch (e) {}; navigate('/gpf/user-application'); }}>
+            <div className="card-icon-wrapper">
+              <span className="card-icon">👥</span>
+            </div>
+            <div className="card-content">
+              <h3 className="card-title">User Application GPF</h3>
+              <p className="card-description">Manage user GPF applications and requests</p>
             </div>
             <div className="card-arrow">→</div>
           </div>

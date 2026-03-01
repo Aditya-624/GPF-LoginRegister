@@ -1,6 +1,9 @@
 package com.adithya.loginregister.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.adithya.loginregister.entity.GPF;
 import com.adithya.loginregister.entity.GPFYears;
+import com.adithya.loginregister.repository.GPFRepository;
 import com.adithya.loginregister.repository.GPFYearsRepository;
 
 @RestController
@@ -22,10 +27,12 @@ import com.adithya.loginregister.repository.GPFYearsRepository;
 public class GPFYearsController {
 
     private final GPFYearsRepository gpfYearsRepository;
+    private final GPFRepository gpfRepository;
 
     @Autowired
-    public GPFYearsController(GPFYearsRepository gpfYearsRepository) {
+    public GPFYearsController(GPFYearsRepository gpfYearsRepository, GPFRepository gpfRepository) {
         this.gpfYearsRepository = gpfYearsRepository;
+        this.gpfRepository = gpfRepository;
     }
 
     /**
@@ -127,6 +134,85 @@ public class GPFYearsController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("Error saving GPF Year: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Get employees by work status with closing balance for a specific year
+     * GET /api/gpf-years/by-work-status?workStatus={OFFICER|INDUSTRIAL|NON_INDUSTRIAL}&year={year}
+     */
+    @GetMapping("/by-work-status")
+    public ResponseEntity<?> getEmployeesByWorkStatus(
+            @RequestParam String workStatus,
+            @RequestParam int year) {
+        try {
+            // Validate work status
+            if (!workStatus.equals("OFFICER") && !workStatus.equals("INDUSTRIAL") && !workStatus.equals("NON_INDUSTRIAL")) {
+                return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("Invalid work status. Must be OFFICER, INDUSTRIAL, or NON_INDUSTRIAL"));
+            }
+
+            // Get all GPF employees
+            List<GPF> allEmployees = gpfRepository.findAll();
+            
+            // Filter by designation (work status)
+            List<Map<String, Object>> results = new ArrayList<>();
+            int sno = 1;
+            
+            for (GPF employee : allEmployees) {
+                String designation = employee.getDesignation();
+                if (designation == null) continue;
+                
+                // Match work status with designation
+                boolean matches = false;
+                if (workStatus.equals("OFFICER") && designation.toUpperCase().contains("OFFICER")) {
+                    matches = true;
+                } else if (workStatus.equals("INDUSTRIAL") && designation.toUpperCase().contains("INDUSTRIAL")) {
+                    matches = true;
+                } else if (workStatus.equals("NON_INDUSTRIAL") && 
+                          (designation.toUpperCase().contains("NON") || 
+                           designation.toUpperCase().contains("NON-INDUSTRIAL"))) {
+                    matches = true;
+                }
+                
+                if (matches) {
+                    // Get closing balance for this employee and year
+                    String passNumber = employee.getPersNumber();
+                    if (passNumber != null) {
+                        List<GPFYears> yearRecords = gpfYearsRepository.findByPassNumberOrderByGpfYearsDesc(passNumber);
+                        
+                        // Find the record for the specific year
+                        java.math.BigDecimal closingBalance = java.math.BigDecimal.ZERO;
+                        for (GPFYears yearRecord : yearRecords) {
+                            if (yearRecord.getGpfYears().intValue() == year) {
+                                closingBalance = yearRecord.getClosingBalance();
+                                break;
+                            }
+                        }
+                        
+                        Map<String, Object> employeeData = new HashMap<>();
+                        employeeData.put("sno", sno++);
+                        employeeData.put("persNumber", employee.getPersNumber());
+                        employeeData.put("name", employee.getEmployeeName());
+                        employeeData.put("designation", employee.getDesignation());
+                        employeeData.put("gpfAccountNumber", employee.getGpfAccountNumber());
+                        employeeData.put("closingBalance", closingBalance);
+                        employeeData.put("year", year);
+                        
+                        results.add(employeeData);
+                    }
+                }
+            }
+            
+            if (results.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("No employees found for work status: " + workStatus + " in year " + year));
+            }
+            
+            return ResponseEntity.ok(results);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("Error fetching employees: " + e.getMessage()));
         }
     }
 
