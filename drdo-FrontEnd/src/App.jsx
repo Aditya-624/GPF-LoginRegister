@@ -129,8 +129,11 @@ function AppRoutes() {
   };
 
   const handleLogout = () => {
-    // Clear frontend auth token as well
-    try { userService.setAuthToken(null); } catch (e) { /* ignore */ }
+    // Clear all user session data
+    try { 
+      userService.clearUserSession();
+      userService.setAuthToken(null); 
+    } catch (e) { /* ignore */ }
     setLoggedInUser(null);
     try { localStorage.removeItem('authToken'); localStorage.removeItem('currentUser'); } catch (err) {}
     navigate('/');

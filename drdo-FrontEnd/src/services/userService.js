@@ -93,6 +93,43 @@ export const validatePassword = (password) => {
 
 // User management service
 export const userService = {
+  // Session management
+  setUserSession(userData) {
+    try {
+      sessionStorage.setItem('userSession', JSON.stringify(userData));
+      localStorage.setItem('userSession', JSON.stringify(userData));
+    } catch (error) {
+      console.error('Error storing user session:', error);
+    }
+  },
+
+  getUserSession() {
+    try {
+      const sessionData = sessionStorage.getItem('userSession') || localStorage.getItem('userSession');
+      return sessionData ? JSON.parse(sessionData) : null;
+    } catch (error) {
+      console.error('Error retrieving user session:', error);
+      return null;
+    }
+  },
+
+  clearUserSession() {
+    try {
+      sessionStorage.removeItem('userSession');
+      localStorage.removeItem('userSession');
+      sessionStorage.removeItem('authToken');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('currentUser');
+    } catch (error) {
+      console.error('Error clearing user session:', error);
+    }
+  },
+
+  getUserField(fieldName) {
+    const session = this.getUserSession();
+    return session ? session[fieldName] : null;
+  },
+
   // Register new user (calls backend)
   registerUser: async (userData) => {
     console.log('API_BASE:', API_BASE);
@@ -143,10 +180,23 @@ export const userService = {
       let data;
       try { data = text ? JSON.parse(text) : {}; } catch { data = { message: text } }
       if (!res.ok) return { success: false, error: data.message || data.error || res.statusText };
+      
+      // Store user session data
+      const userSession = {
+        userId: data.userId,
+        username: data.username,
+        workStatus: data.workStatus,
+        dob: data.dob,
+        token: data.token
+      };
+      userService.setUserSession(userSession);
+      
       return {
         success: true,
         userId: data.userId,
         username: data.username,
+        workStatus: data.workStatus,
+        dob: data.dob,
         token: data.token || data.token,
         isPasswordExpired: data.passwordExpired || false
       };
