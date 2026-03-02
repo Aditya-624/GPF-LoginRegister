@@ -285,21 +285,44 @@ export default function AddGPFSlips() {
 
         <div className="content-wrapper">
           <div className="left-section">
-            {/* Search Section */}
+            {/* Combined Search/Dropdown Section */}
             <div className="search-container">
               <h3 className="search-title">Search GPF Account</h3>
-              <div className="search-bar">
-                <input
-                  type="text"
-                  className="search-input"
-                  placeholder="Enter GPF Account Number, Personnel Number, or Employee Name"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={handleSearchKeyPress}
-                />
+              <div className="search-bar-combined">
+                <select 
+                  className="search-select-combo"
+                  onChange={(e) => {
+                    const selectedValue = e.target.value;
+                    if (selectedValue) {
+                      // Extract account number from the value
+                      const accountNumber = selectedValue.split(' - ')[0];
+                      const employee = allEmployees.find(emp => emp.gpfAccountNumber.toString() === accountNumber);
+                      if (employee) {
+                        handleSelectEmployee(employee);
+                      }
+                    }
+                  }}
+                  value={userDetails?.gpfAccountNumber ? `${userDetails.gpfAccountNumber} - ${userDetails.employeeName} (${userDetails.persNumber})` : ''}
+                >
+                  <option value="">-- Select or Search Employee --</option>
+                  {allEmployees.map((employee) => (
+                    <option 
+                      key={employee.gpfAccountNumber} 
+                      value={`${employee.gpfAccountNumber} - ${employee.employeeName} (${employee.persNumber})`}
+                    >
+                      {employee.gpfAccountNumber} - {employee.employeeName} ({employee.persNumber})
+                    </option>
+                  ))}
+                </select>
                 <button 
                   className="btn-search" 
-                  onClick={handleSearch}
+                  onClick={() => {
+                    if (searchQuery.trim()) {
+                      handleSearch();
+                    } else {
+                      alert('Please select an employee from the dropdown');
+                    }
+                  }}
                   disabled={isSearching}
                 >
                   {isSearching ? '🔍 Searching...' : '🔍 Search'}
@@ -340,40 +363,6 @@ export default function AddGPFSlips() {
                   </table>
                 </div>
               )}
-
-              {/* Employee List Dropdown - Always visible */}
-              <div className="employee-list-container">
-                <h4 className="employee-list-title">Or Select from Employee List</h4>
-                {isLoadingEmployees ? (
-                  <div className="loading-message">Loading employees...</div>
-                ) : allEmployees.length > 0 ? (
-                  <select 
-                    className="employee-dropdown"
-                    onChange={(e) => {
-                      const selectedId = e.target.value;
-                      if (selectedId) {
-                        const employee = allEmployees.find(emp => emp.gpfAccountNumber.toString() === selectedId);
-                        if (employee) {
-                          handleSelectEmployee(employee);
-                        }
-                      }
-                    }}
-                    value={userDetails?.gpfAccountNumber || ''}
-                  >
-                    <option value="">-- Select an Employee --</option>
-                    {allEmployees.map((employee) => (
-                      <option 
-                        key={employee.gpfAccountNumber} 
-                        value={employee.gpfAccountNumber}
-                      >
-                        {employee.gpfAccountNumber} - {employee.employeeName} ({employee.persNumber})
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <div className="no-employees-message">No employees found in the system</div>
-                )}
-              </div>
             </div>
           </div>
 
@@ -467,8 +456,9 @@ export default function AddGPFSlips() {
                         onChange={handleGpfYearChange}
                         required
                       >
-                        <option value={new Date().getFullYear()}>{new Date().getFullYear()}</option>
-                        <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
+                        <option value={new Date().getFullYear()}>{new Date().getFullYear()}-{String(new Date().getFullYear() + 1).slice(-2)}</option>
+                        <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}-{String(new Date().getFullYear()).slice(-2)}</option>
+                        <option value={new Date().getFullYear() - 2}>{new Date().getFullYear() - 2}-{String(new Date().getFullYear() - 1).slice(-2)}</option>
                       </select>
                     </div>
                     <div className="gpf-year-field">

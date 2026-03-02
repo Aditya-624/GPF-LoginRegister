@@ -27,7 +27,23 @@ export default function UserApplicationGPF() {
     previousFinalMonth: ''
   });
 
-  // Load user session on component mount
+  const [gpfDetails, setGpfDetails] = useState(null);
+  const [purposeOptions, setPurposeOptions] = useState([]);
+  
+  // GPF Accumulation state
+  const [gpfAccumulation, setGpfAccumulation] = useState({
+    closingBalance: 0,
+    gpfSubscription: 0,
+    gpfRefund: 0,
+    recoveryFromArrears: 0
+  });
+
+  // GPF Withdrawals state
+  const [gpfWithdrawals, setGpfWithdrawals] = useState({
+    approved: 0
+  });
+
+  // Load user session and GPF details on component mount
   useEffect(() => {
     const session = userService.getUserSession();
     if (session) {
@@ -39,8 +55,22 @@ export default function UserApplicationGPF() {
         const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
         setJoiningDate(formattedDate);
       }
+
+      // Fetch GPF details and GPF Years data for the logged-in user
+      fetchGPFDetails(session.userId);
+      fetchGPFYearsData(session.userId);
     }
   }, []);
+
+  // Fetch purposes when GPF loan type changes
+  useEffect(() => {
+    if (formData.gpfLoanType) {
+      fetchPurposes(formData.gpfLoanType);
+    } else {
+      setPurposeOptions([]);
+      setFormData(prev => ({ ...prev, purposeRequired: '' }));
+    }
+  }, [formData.gpfLoanType]);
 
   // Update time every second
   useEffect(() => {
@@ -108,6 +138,130 @@ export default function UserApplicationGPF() {
       `${startYear - 1}-${startYear}`,
       `${startYear - 2}-${startYear - 1}`
     ];
+  };
+
+  const getCurrentFinancialYear = () => {
+    const currentMonth = currentTime.getMonth();
+    const currentYear = currentTime.getFullYear();
+    
+    let startYear;
+    if (currentMonth >= 3) {
+      startYear = currentYear;
+    } else {
+      startYear = currentYear - 1;
+    }
+    
+    return `${startYear}-${String(startYear + 1).slice(-2)}`;
+  };
+
+  const calculateTotalA = () => {
+    const { closingBalance, gpfSubscription, gpfRefund, recoveryFromArrears } = gpfAccumulation;
+    return closingBalance + gpfSubscription - gpfRefund - recoveryFromArrears;
+  };
+
+  const calculateTotalB = () => {
+    return gpfWithdrawals.approved;
+  };
+
+  const calculateTotalAMinusB = () => {
+    return calculateTotalA() - calculateTotalB();
+  };
+
+  const handleAccumulationChange = (field, value) => {
+    setGpfAccumulation(prev => ({
+      ...prev,
+      [field]: parseFloat(value) || 0
+    }));
+  };
+
+  const handleWithdrawalsChange = (field, value) => {
+    setGpfWithdrawals(prev => ({
+      ...prev,
+      [field]: parseFloat(value) || 0
+    }));
+  };
+
+  const fetchGPFDetails = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:8081/api/gpf/search?query=${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('GPF Details Data:', data); // Debug log
+        if (data && data.length > 0) {
+          const gpfData = data[0];
+          setGpfDetails(gpfData); // Take the first matching record
+          console.log('Phone Number:', gpfData.phoneNumber, 'Basic Pay:', gpfData.basicPay); // Debug log
+          
+          // Auto-fill phone number and basic pay from GPF data
+          setFormData(prev => ({
+            ...prev,
+            phoneNo: gpfData.phoneNumber || '',
+            presentBasicPay: gpfData.basicPay || ''
+          }));
+        }
+      } else {
+        console.error('Failed to fetch GPF details:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching GPF details:', error);
+    }
+  };
+
+  const fetchGPFYearsData = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:8081/api/gpf-years/search?query=${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('GPF Years Data:', data); // Debug log
+        if (data && data.length > 0) {
+          // Get the most recent year's closing balance (last record)
+          const latestYear = data[data.length - 1];
+          console.log('Latest Year Closing Balance:', latestYear.closingBalance); // Debug log
+          
+          // Auto-fill closing balance in the GPF Accumulation section
+          setGpfAccumulation(prev => ({
+            ...prev,
+            closingBalance: parseFloat(latestYear.closingBalance) || 0
+          }));
+        }
+      } else {
+        console.error('Failed to fetch GPF Years data:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching GPF Years data:', error);
+    }
+  };
+
+  const fetchPurposes = async (loanType) => {
+    try {
+      let endpoint = '';
+      if (loanType === 'TEMPORARY') {
+        // Fetch from GPF_PURPOSE_E table (Temporary advances)
+        endpoint = 'http://localhost:8081/api/gpf-purpose-e/all';
+      } else if (loanType === 'FINAL') {
+        // Fetch from GPF_PURPOSE_F table (Final withdrawals)
+        endpoint = 'http://localhost:8081/api/gpf-purpose/all';
+      }
+
+      if (endpoint) {
+        const response = await fetch(endpoint);
+        if (response.ok) {
+          const data = await response.json();
+          setPurposeOptions(data);
+        } else {
+          setPurposeOptions([]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching purposes:', error);
+      setPurposeOptions([]);
+    }
+  };
+
+  const formatDateDisplay = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
   };
 
   const handleInputChange = (e) => {
@@ -190,6 +344,12 @@ export default function UserApplicationGPF() {
                   placeholder="DD/MM/YYYY"
                 />
               </div>
+
+              <div className="user-details-center">
+                <p className="user-info-text">
+                  {userSession?.username || 'N/A'} | {gpfDetails?.designation || userSession?.workStatus || 'N/A'} | DOB: {formatDateDisplay(userSession?.dob || gpfDetails?.dob)} | ID: {gpfDetails?.persNumber || userSession?.userId || 'N/A'}
+                </p>
+              </div>
               
               <div className="date-field date-field-inline">
                 <label className="date-label">CURRENT DATE:</label>
@@ -204,12 +364,96 @@ export default function UserApplicationGPF() {
                 <h3 className="info-box-title">
                   GPF ACCUMULATED UP TO {getCurrentMonthYear()}
                 </h3>
+                <div className="gpf-accumulation-details">
+                  <div className="accumulation-item-inline">
+                    <label className="accumulation-label-inline">
+                      1) Closing Balance as per GPF-DS Statements {getCurrentFinancialYear()}:
+                    </label>
+                    <input
+                      type="number"
+                      className="accumulation-input-inline"
+                      value={gpfAccumulation.closingBalance}
+                      onChange={(e) => handleAccumulationChange('closingBalance', e.target.value)}
+                      placeholder="Auto-filled from GPF Years"
+                      readOnly
+                      style={{ backgroundColor: '#f0f0f0', cursor: 'not-allowed' }}
+                    />
+                  </div>
+
+                  <div className="accumulation-item-inline">
+                    <label className="accumulation-label-inline">
+                      2) GPF Subscription from {getFinancialYearRange()}:
+                    </label>
+                    <input
+                      type="number"
+                      className="accumulation-input-inline"
+                      value={gpfAccumulation.gpfSubscription}
+                      onChange={(e) => handleAccumulationChange('gpfSubscription', e.target.value)}
+                      placeholder="0.00"
+                    />
+                  </div>
+
+                  <div className="accumulation-item-inline">
+                    <label className="accumulation-label-inline">
+                      3) GPF Refund from Current FY to Current Month:
+                    </label>
+                    <input
+                      type="number"
+                      className="accumulation-input-inline"
+                      value={gpfAccumulation.gpfRefund}
+                      onChange={(e) => handleAccumulationChange('gpfRefund', e.target.value)}
+                      placeholder="0.00"
+                    />
+                  </div>
+
+                  <div className="accumulation-item-inline">
+                    <label className="accumulation-label-inline">
+                      4) Recovery from Pay Fixation Arrears:
+                    </label>
+                    <input
+                      type="number"
+                      className="accumulation-input-inline"
+                      value={gpfAccumulation.recoveryFromArrears}
+                      onChange={(e) => handleAccumulationChange('recoveryFromArrears', e.target.value)}
+                      placeholder="0.00"
+                    />
+                  </div>
+
+                  <div className="accumulation-total-inline">
+                    <label className="total-label-inline">TOTAL (A):</label>
+                    <span className="total-value-inline">₹ {calculateTotalA().toFixed(2)}</span>
+                  </div>
+                </div>
               </div>
               
               <div className="info-box info-box-right">
                 <h3 className="info-box-title">
                   GPF WITHDRAWALS B/W {getFinancialYearRange()}
                 </h3>
+                <div className="gpf-withdrawals-details">
+                  <div className="accumulation-item-inline">
+                    <label className="accumulation-label-inline">
+                      Approved:
+                    </label>
+                    <input
+                      type="number"
+                      className="accumulation-input-inline"
+                      value={gpfWithdrawals.approved}
+                      onChange={(e) => handleWithdrawalsChange('approved', e.target.value)}
+                      placeholder="0.00"
+                    />
+                  </div>
+
+                  <div className="accumulation-total-inline">
+                    <label className="total-label-inline">TOTAL (B):</label>
+                    <span className="total-value-inline">₹ {calculateTotalB().toFixed(2)}</span>
+                  </div>
+
+                  <div className="accumulation-total-inline total-final">
+                    <label className="total-label-inline">TOTAL (A - B):</label>
+                    <span className="total-value-inline">₹ {calculateTotalAMinusB().toFixed(2)}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -223,7 +467,9 @@ export default function UserApplicationGPF() {
                     className="field-input"
                     value={formData.phoneNo}
                     onChange={handleInputChange}
-                    placeholder="Enter phone number"
+                    placeholder="Auto-filled from profile"
+                    readOnly
+                    style={{ backgroundColor: '#f0f0f0', cursor: 'not-allowed' }}
                   />
                 </div>
 
@@ -235,7 +481,9 @@ export default function UserApplicationGPF() {
                     className="field-input"
                     value={formData.presentBasicPay}
                     onChange={handleInputChange}
-                    placeholder="Enter basic pay"
+                    placeholder="Auto-filled from profile"
+                    readOnly
+                    style={{ backgroundColor: '#f0f0f0', cursor: 'not-allowed' }}
                   />
                 </div>
 
@@ -308,13 +556,16 @@ export default function UserApplicationGPF() {
                     className="field-select"
                     value={formData.purposeRequired}
                     onChange={handleInputChange}
+                    disabled={!formData.gpfLoanType}
                   >
-                    <option value="">Select Purpose</option>
-                    <option value="Medical">Medical Treatment</option>
-                    <option value="Education">Education</option>
-                    <option value="House">House Construction/Purchase</option>
-                    <option value="Marriage">Marriage</option>
-                    <option value="Other">Other</option>
+                    <option value="">
+                      {formData.gpfLoanType ? 'Select Purpose' : 'Please select GPF Loan Type first'}
+                    </option>
+                    {purposeOptions.map((purpose) => (
+                      <option key={purpose.code} value={purpose.purpose}>
+                        {purpose.purpose}
+                      </option>
+                    ))}
                   </select>
                 </div>
 

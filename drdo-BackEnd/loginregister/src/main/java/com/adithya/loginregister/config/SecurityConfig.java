@@ -19,30 +19,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable());
-
-        if (disableAuth) {
-            // Dev mode: allow all requests without authentication
-            http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-        } else {
-            http
-            .authorizeHttpRequests(auth -> auth
-                // Always allow CORS preflight requests
-                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                // Allow test endpoint
-                .requestMatchers("/api/auth/test").permitAll()
-                // Explicitly allow POST to registration endpoint
-                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/auth/register").permitAll()
-                // Allow other auth endpoints
-                .requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .exceptionHandling(ex -> ex
-                .authenticationEntryPoint(new JsonAuthEntryPoint())
-                .accessDeniedHandler(new JsonAccessDeniedHandler())
-            )
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        }
 
         return http.build();
     }
