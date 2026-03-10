@@ -236,6 +236,57 @@ export default function TemporaryAdvance() {
     navigate('/gpf');
   };
 
+  const handleSubmitApplication = async () => {
+    if (!selectedPurpose || !billNo || !billDate || !recFrom || !applicationDate || !applicationAmount) {
+      alert('Please fill all required fields');
+      return;
+    }
+
+    const payload = {
+      persNo: selectedUserData.personnelNumber,
+      gpfLoanType: 'T', // T for Temporary Advance
+      applicationDate: applicationDate,
+      purpose: selectedPurpose,
+      billNo: billNo,
+      billDate: billDate,
+      recoveryFromDate: recFrom,
+      appliedAmount: parseFloat(applicationAmount),
+      loanTakenCurrentYear: loanTakenCurrentYear ? parseFloat(loanTakenCurrentYear) : null,
+      loanDate: loanDate || null
+    };
+
+    try {
+      const response = await fetch('http://localhost:8081/api/gpf-sanction-details', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        alert('Temporary Advance Application submitted successfully!');
+        // Reset form
+        setSelectedUser('');
+        setSearchQuery('');
+        setApplicationDate('');
+        setApplicationAmount('');
+        setLoanTakenCurrentYear('');
+        setLoanDate('');
+        setSelectedPurpose('');
+        setBillNo('');
+        setBillDate('');
+        setRecFrom('');
+      } else {
+        alert('Failed to submit application. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      alert('Error submitting application: ' + error.message);
+    }
+  };
+
   return (
     <div className="temporary-advance-page">
       <nav className="top-nav">
@@ -520,13 +571,7 @@ export default function TemporaryAdvance() {
             <div className="submit-section">
               <button 
                 className="submit-btn"
-                onClick={() => {
-                  if (!selectedPurpose || !billNo || !billDate || !recFrom || !applicationDate || !applicationAmount) {
-                    alert('Please fill all required fields');
-                    return;
-                  }
-                  alert(`Submitting Temporary Advance Application:\nUser: ${selectedUserData.name}\nPurpose: ${selectedPurpose}\nAmount: ${applicationAmount}\nBill No: ${billNo}`);
-                }}
+                onClick={handleSubmitApplication}
               >
                 Submit Application
               </button>

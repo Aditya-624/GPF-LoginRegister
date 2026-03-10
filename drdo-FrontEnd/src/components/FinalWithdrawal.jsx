@@ -216,6 +216,55 @@ export default function FinalWithdrawal() {
     navigate('/gpf');
   };
 
+  const handleSubmitWithdrawal = async () => {
+    if (!withdrawalDate || !withdrawalAmount || !withdrawalReason || !bankName || !accountNumber || !ifscCode) {
+      alert('Please fill all required fields');
+      return;
+    }
+
+    const payload = {
+      persNo: selectedUserData.personnelNumber,
+      gpfLoanType: 'F', // F for Final Withdrawal
+      applicationDate: withdrawalDate,
+      sanctionDate: withdrawalDate,
+      sanctionAmount: parseFloat(withdrawalAmount),
+      purpose: withdrawalReason,
+      recoveryFromDate: withdrawalDate,
+      appliedAmount: parseFloat(withdrawalAmount),
+      remarks: `Bank: ${bankName}, Account: ${accountNumber}, IFSC: ${ifscCode}, Closing Balance: ${closingBalance}`
+    };
+
+    try {
+      const response = await fetch('http://localhost:8081/api/gpf-sanction-details', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        alert('Final Withdrawal Application submitted successfully!');
+        // Reset form
+        setSelectedUser('');
+        setSearchQuery('');
+        setWithdrawalDate('');
+        setWithdrawalAmount('');
+        setClosingBalance('');
+        setWithdrawalReason('');
+        setBankName('');
+        setAccountNumber('');
+        setIfscCode('');
+      } else {
+        alert('Failed to submit withdrawal request. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting withdrawal:', error);
+      alert('Error submitting withdrawal: ' + error.message);
+    }
+  };
+
   return (
     <div className="temporary-advance-page">
       <nav className="top-nav">
@@ -486,13 +535,7 @@ export default function FinalWithdrawal() {
             <div className="submit-section">
               <button 
                 className="submit-btn"
-                onClick={() => {
-                  if (!withdrawalDate || !withdrawalAmount || !withdrawalReason || !bankName || !accountNumber || !ifscCode) {
-                    alert('Please fill all required fields');
-                    return;
-                  }
-                  alert(`Submitting Final Withdrawal Application:\nUser: ${selectedUserData.name}\nAmount: ${withdrawalAmount}\nReason: ${withdrawalReason}\nBank: ${bankName}`);
-                }}
+                onClick={handleSubmitWithdrawal}
               >
                 Submit Withdrawal Request
               </button>
