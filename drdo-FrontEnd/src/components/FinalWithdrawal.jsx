@@ -21,6 +21,13 @@ export default function FinalWithdrawal() {
   const [bankName, setBankName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [ifscCode, setIfscCode] = useState('');
+  const [eligibleAmount, setEligibleAmount] = useState('');
+  const [previousBalance, setPreviousBalance] = useState('');
+  const [outstandingBalance, setOutstandingBalance] = useState('');
+  const [noOfInstallments, setNoOfInstallments] = useState('');
+  const [sanctionDate, setSanctionDate] = useState('');
+  const [balanceInstallmentAmount, setBalanceInstallmentAmount] = useState('');
+  const [sanctionAmount, setSanctionAmount] = useState('');
 
   const reasons = [
     'Retirement',
@@ -539,6 +546,154 @@ export default function FinalWithdrawal() {
               >
                 Submit Withdrawal Request
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Sanction Details Section */}
+        {selectedUserData && (
+          <div className="sanction-details-section">
+            <h3 className="form-section-title">💰 Sanction Details</h3>
+            
+            <div className="sanction-grid">
+              <div className="form-field">
+                <label className="form-label">
+                  Eligible Amount:
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="Enter eligible amount"
+                  value={eligibleAmount}
+                  onChange={(e) => setEligibleAmount(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  Previous Balance:
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="Enter previous balance"
+                  value={previousBalance}
+                  onChange={(e) => setPreviousBalance(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  Outstanding Balance:
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="Enter outstanding balance"
+                  value={outstandingBalance}
+                  onChange={(e) => setOutstandingBalance(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  No. of Installments:
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="Enter number of installments"
+                  value={noOfInstallments}
+                  onChange={(e) => setNoOfInstallments(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  Sanction Date:
+                </label>
+                <input
+                  type="date"
+                  className="form-input"
+                  value={sanctionDate}
+                  onChange={(e) => setSanctionDate(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  Balance Installment Amount:
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="Enter balance installment amount"
+                  value={balanceInstallmentAmount}
+                  onChange={(e) => setBalanceInstallmentAmount(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  Sanction Amount:
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="Enter sanction amount"
+                  value={sanctionAmount}
+                  onChange={(e) => setSanctionAmount(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tables Section - Side by Side */}
+        {selectedUserData && (
+          <div className="tables-section">
+            <div className="tables-container">
+              {/* Table 1 - Slip Details */}
+              <div className="table-wrapper">
+                <h3 className="table-title">📋 SLIP DETAILS</h3>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>PERS NO.</th>
+                      <th>GPF YEARS</th>
+                      <th>CLOSING BALANCE</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{selectedUserData.personnelNumber || '-'}</td>
+                      <td>2024-25</td>
+                      <td>₹{closingBalance || '-'}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Table 2 - Recovery From Pay Bill */}
+              <div className="table-wrapper">
+                <h3 className="table-title">💳 RECOVERY FROM PAY BILL</h3>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>DT/MONTH/YEAR</th>
+                      <th>GPF SUBSCRIPTION</th>
+                      <th>REFU NO.</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{withdrawalDate ? new Date(withdrawalDate).toLocaleDateString('en-GB') : '-'}</td>
+                      <td>₹{withdrawalAmount || '-'}</td>
+                      <td>{withdrawalReason || '-'}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
