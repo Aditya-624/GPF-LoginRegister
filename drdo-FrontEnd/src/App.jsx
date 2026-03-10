@@ -11,6 +11,8 @@ import Profile from './components/Profile';
 import GPF from './components/GPF';
 import AddGPFSlips from './components/AddGPFSlips';
 import GPFSlipDetails from './components/GPFSlipDetails';
+import TemporaryAdvance from './components/TemporaryAdvance';
+import FinalWithdrawal from './components/FinalWithdrawal';
 import UserApplicationGPF from './components/UserApplicationGPF';
 import FloatingParticles from './components/FloatingParticles';
 import './App.css';
@@ -34,6 +36,10 @@ const getTransitionName = (from = '/', to = '/') => {
   if (from === '/gpf/add-slips' && to === '/gpf') return 'slide-right';
   if (from === '/gpf' && to === '/gpf/slip-details') return 'slide-left';
   if (from === '/gpf/slip-details' && to === '/gpf') return 'slide-right';
+  if (from === '/gpf' && to === '/temporary-advance') return 'slide-left';
+  if (from === '/temporary-advance' && to === '/gpf') return 'slide-right';
+  if (from === '/gpf' && to === '/final-withdrawal') return 'slide-left';
+  if (from === '/final-withdrawal' && to === '/gpf') return 'slide-right';
   // sensible default for forward nav
   return 'slide-left';
 };
@@ -173,6 +179,8 @@ function AppRoutes() {
             <Route path="/gpf" element={<GPF />} />
             <Route path="/gpf/add-slips" element={<AddGPFSlips />} />
             <Route path="/gpf/slip-details" element={<GPFSlipDetails />} />
+            <Route path="/temporary-advance" element={<TemporaryAdvance />} />
+            <Route path="/final-withdrawal" element={<FinalWithdrawal />} />
             <Route path="/gpf/user-application" element={<UserApplicationGPF />} />
           </Routes>
         </div>
@@ -190,6 +198,8 @@ function AppRoutes() {
           <Route path="/gpf" element={<GPF />} />
           <Route path="/gpf/add-slips" element={<AddGPFSlips />} />
           <Route path="/gpf/slip-details" element={<GPFSlipDetails />} />
+          <Route path="/temporary-advance" element={<TemporaryAdvance />} />
+          <Route path="/final-withdrawal" element={<FinalWithdrawal />} />
           <Route path="/gpf/user-application" element={<UserApplicationGPF />} />
         </Routes>
       </div>

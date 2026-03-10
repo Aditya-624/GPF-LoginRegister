@@ -81,7 +81,7 @@ export default function GPF() {
             <div className="card-arrow">→</div>
           </div>
 
-          <div className="gpf-menu-card" onClick={() => alert('Temporary Advance - Coming Soon!')}>
+          <div className="gpf-menu-card" onClick={() => { try { window.__ANIMATE_NAV = true; } catch (e) {}; navigate('/temporary-advance'); }}>
             <div className="card-icon-wrapper">
               <span className="card-icon">💳</span>
             </div>
@@ -92,7 +92,7 @@ export default function GPF() {
             <div className="card-arrow">→</div>
           </div>
 
-          <div className="gpf-menu-card" onClick={() => alert('Final Withdrawal - Coming Soon!')}>
+          <div className="gpf-menu-card" onClick={() => { try { window.__ANIMATE_NAV = true; } catch (e) {}; navigate('/final-withdrawal'); }}>
             <div className="card-icon-wrapper">
               <span className="card-icon">🏦</span>
             </div>
