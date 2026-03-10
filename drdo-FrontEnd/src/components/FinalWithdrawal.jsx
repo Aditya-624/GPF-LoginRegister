@@ -1,0 +1,505 @@
+import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import './TemporaryAdvance.css';
+import ThemeSelector from './ThemeSelector';
+
+export default function FinalWithdrawal() {
+  const navigate = useNavigate();
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedType, setSelectedType] = useState({
+    staff: false,
+    officer: false,
+    onlineApplication: false
+  });
+  const [selectedUser, setSelectedUser] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [withdrawalDate, setWithdrawalDate] = useState('');
+  const [withdrawalAmount, setWithdrawalAmount] = useState('');
+  const [closingBalance, setClosingBalance] = useState('');
+  const [withdrawalReason, setWithdrawalReason] = useState('');
+  const [bankName, setBankName] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [ifscCode, setIfscCode] = useState('');
+
+  const reasons = [
+    'Retirement',
+    'Resignation',
+    'Medical Emergency',
+    'Personal Reasons',
+    'Transfer',
+    'Other'
+  ];
+
+  const userDetails = [
+    { 
+      id: 1, 
+      name: 'John Doe', 
+      gpfNumber: 'GPF001', 
+      type: 'staff',
+      personnelNumber: 'WS001',
+      dob: '15 Jan 1985',
+      designation: 'Technical Assistant',
+      retirementDate: '15 Jan 2045',
+      basicPay: '₹45,000',
+      payInPayBand: '₹35,000',
+      gradePay: '₹5,400',
+      phoneNumber: '9876543210'
+    },
+    { 
+      id: 2, 
+      name: 'Jane Smith', 
+      gpfNumber: 'GPF002', 
+      type: 'officer',
+      personnelNumber: 'WS002',
+      dob: '22 Mar 1980',
+      designation: 'Senior Scientist',
+      retirementDate: '22 Mar 2040',
+      basicPay: '₹85,000',
+      payInPayBand: '₹67,000',
+      gradePay: '₹8,700',
+      phoneNumber: '9876543211'
+    },
+    { 
+      id: 3, 
+      name: 'Robert Johnson', 
+      gpfNumber: 'GPF003', 
+      type: 'staff',
+      personnelNumber: 'WS003',
+      dob: '10 Jul 1990',
+      designation: 'Junior Technician',
+      retirementDate: '10 Jul 2050',
+      basicPay: '₹35,000',
+      payInPayBand: '₹25,000',
+      gradePay: '₹4,200',
+      phoneNumber: '9876543212'
+    },
+    { 
+      id: 4, 
+      name: 'Emily Davis', 
+      gpfNumber: 'GPF004', 
+      type: 'officer',
+      personnelNumber: 'WS004',
+      dob: '05 Dec 1982',
+      designation: 'Principal Scientist',
+      retirementDate: '05 Dec 2042',
+      basicPay: '₹95,000',
+      payInPayBand: '₹75,000',
+      gradePay: '₹10,000',
+      phoneNumber: '9876543213'
+    },
+    { 
+      id: 5, 
+      name: 'Michael Brown', 
+      gpfNumber: 'GPF005', 
+      type: 'onlineApplication',
+      personnelNumber: 'WS005',
+      dob: '18 Sep 1988',
+      designation: 'Research Associate',
+      retirementDate: '18 Sep 2048',
+      basicPay: '₹55,000',
+      payInPayBand: '₹42,000',
+      gradePay: '₹6,600',
+      phoneNumber: '9876543214'
+    },
+    { 
+      id: 6, 
+      name: 'Sarah Wilson', 
+      gpfNumber: 'GPF006', 
+      type: 'staff',
+      personnelNumber: 'WS006',
+      dob: '30 Apr 1992',
+      designation: 'Lab Assistant',
+      retirementDate: '30 Apr 2052',
+      basicPay: '₹32,000',
+      payInPayBand: '₹22,000',
+      gradePay: '₹3,600',
+      phoneNumber: '9876543215'
+    },
+    { 
+      id: 7, 
+      name: 'David Lee', 
+      gpfNumber: 'GPF007', 
+      type: 'officer',
+      personnelNumber: 'WS007',
+      dob: '12 Nov 1978',
+      designation: 'Director',
+      retirementDate: '12 Nov 2038',
+      basicPay: '₹125,000',
+      payInPayBand: '₹100,000',
+      gradePay: '₹12,000',
+      phoneNumber: '9876543216'
+    },
+    { 
+      id: 8, 
+      name: 'Lisa Anderson', 
+      gpfNumber: 'GPF008', 
+      type: 'onlineApplication',
+      personnelNumber: 'WS008',
+      dob: '25 Jun 1995',
+      designation: 'Project Fellow',
+      retirementDate: '25 Jun 2055',
+      basicPay: '₹40,000',
+      payInPayBand: '₹31,000',
+      gradePay: '₹5,000',
+      phoneNumber: '9876543217'
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const dropdown = document.querySelector('.search-dropdown-wrapper');
+      if (dropdown && !dropdown.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleTypeChange = (type) => {
+    setSelectedType(prev => ({
+      ...prev,
+      [type]: !prev[type]
+    }));
+    setSelectedUser('');
+  };
+
+  const getFilteredUsers = () => {
+    let filtered = userDetails;
+
+    const selectedTypes = Object.keys(selectedType).filter(key => selectedType[key]);
+    if (selectedTypes.length > 0) {
+      filtered = filtered.filter(user => selectedTypes.includes(user.type));
+    }
+
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(user => 
+        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.gpfNumber.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    return filtered;
+  };
+
+  const filteredUsers = getFilteredUsers();
+
+  const handleUserSelect = (userId) => {
+    setSelectedUser(userId);
+    setIsDropdownOpen(false);
+    const user = userDetails.find(u => u.id === userId);
+    if (user) {
+      setSearchQuery(`${user.name} - ${user.gpfNumber}`);
+    }
+  };
+
+  const selectedUserData = userDetails.find(u => u.id === selectedUser);
+
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', { 
+      hour12: true, 
+      hour: '2-digit', 
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+
+  const handleBackToGPF = () => {
+    try { window.__ANIMATE_NAV = true; } catch (e) {}
+    navigate('/gpf');
+  };
+
+  return (
+    <div className="temporary-advance-page">
+      <nav className="top-nav">
+        <div className="nav-left">
+          <button className="btn btn-nav btn-back" onClick={handleBackToGPF}>
+            <span>←</span> Back to GPF
+          </button>
+          <span className="nav-brand">Final Withdrawal</span>
+          <span className="nav-time">{formatTime(currentTime)}</span>
+        </div>
+        <div className="nav-right">
+          <div className="theme-selector-compact">
+            <ThemeSelector compact={true} />
+          </div>
+          <button className="btn btn-nav btn-profile" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/profile'); }}>
+            <span className="profile-icon">👤</span>
+            <span className="profile-name">User Profile</span>
+          </button>
+        </div>
+      </nav>
+
+      <main className="temporary-advance-main">
+        <div className="content-layout">
+          <div className="search-section">
+            <h2 className="section-title">🔍 Search User</h2>
+            
+            <div className="search-container">
+              <div className="filter-options">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={selectedType.staff}
+                    onChange={() => handleTypeChange('staff')}
+                  />
+                  <span className="checkbox-text">Staff</span>
+                </label>
+
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={selectedType.officer}
+                    onChange={() => handleTypeChange('officer')}
+                  />
+                  <span className="checkbox-text">Officer</span>
+                </label>
+
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={selectedType.onlineApplication}
+                    onChange={() => handleTypeChange('onlineApplication')}
+                  />
+                  <span className="checkbox-text">Online</span>
+                </label>
+              </div>
+
+              <div className="search-dropdown-wrapper">
+                <div className="search-input-wrapper">
+                  <input
+                    type="text"
+                    className="search-input"
+                    placeholder="Search or select user..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setIsDropdownOpen(true);
+                    }}
+                    onFocus={() => setIsDropdownOpen(true)}
+                  />
+                  <span className="search-icon">🔍</span>
+                  <button 
+                    className="dropdown-toggle"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  >
+                    ▼
+                  </button>
+                </div>
+
+                {isDropdownOpen && (
+                  <div className="dropdown-menu">
+                    {filteredUsers.length > 0 ? (
+                      filteredUsers.map(user => (
+                        <div
+                          key={user.id}
+                          className={`dropdown-item ${selectedUser === user.id ? 'selected' : ''}`}
+                          onClick={() => handleUserSelect(user.id)}
+                        >
+                          <div className="user-info">
+                            <span className="user-name">{user.name}</span>
+                            <span className="user-gpf">{user.gpfNumber}</span>
+                          </div>
+                          <span className={`user-type-badge ${user.type}`}>
+                            {user.type === 'staff' ? 'Staff' : 
+                             user.type === 'officer' ? 'Officer' : 
+                             'Online'}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="dropdown-item no-results">
+                        No users found
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="user-details-section">
+            <h2 className="section-title">👤 User Details</h2>
+            
+            {selectedUserData ? (
+              <div className="user-details-card">
+                <table className="details-table">
+                  <tbody>
+                    <tr>
+                      <td className="table-label">PERS NO.</td>
+                      <td className="table-value">{selectedUserData.personnelNumber}</td>
+                      <td className="table-label">GPF ACC. NO.</td>
+                      <td className="table-value">{selectedUserData.gpfNumber}</td>
+                    </tr>
+                    <tr>
+                      <td className="table-label">NAME</td>
+                      <td className="table-value">{selectedUserData.name}</td>
+                      <td className="table-label">PAY IN PAY BAND</td>
+                      <td className="table-value">{selectedUserData.payInPayBand}</td>
+                    </tr>
+                    <tr>
+                      <td className="table-label">DOB</td>
+                      <td className="table-value">{selectedUserData.dob}</td>
+                      <td className="table-label">GRADE PAY</td>
+                      <td className="table-value">{selectedUserData.gradePay}</td>
+                    </tr>
+                    <tr>
+                      <td className="table-label">DESIGNATION</td>
+                      <td className="table-value">{selectedUserData.designation}</td>
+                      <td className="table-label">BASIC PAY</td>
+                      <td className="table-value">{selectedUserData.basicPay}</td>
+                    </tr>
+                    <tr>
+                      <td className="table-label">RETIREMENT DATE</td>
+                      <td className="table-value">{selectedUserData.retirementDate}</td>
+                      <td className="table-label">PHONE NUMBER</td>
+                      <td className="table-value">{selectedUserData.phoneNumber}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="no-selection">
+                <div className="no-selection-icon">📋</div>
+                <p className="no-selection-text">Select a user to view details</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {selectedUserData && (
+          <div className="application-form-section">
+            <h3 className="form-section-title">📝 Withdrawal Details</h3>
+            
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-label">
+                  Withdrawal Date: <span className="required">*</span>
+                </label>
+                <input
+                  type="date"
+                  className="form-input"
+                  value={withdrawalDate}
+                  onChange={(e) => setWithdrawalDate(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  Withdrawal Amount: <span className="required">*</span>
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="Enter amount"
+                  value={withdrawalAmount}
+                  onChange={(e) => setWithdrawalAmount(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  Closing Balance:
+                </label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="Enter closing balance"
+                  value={closingBalance}
+                  onChange={(e) => setClosingBalance(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  Withdrawal Reason: <span className="required">*</span>
+                </label>
+                <select
+                  className="form-input form-select"
+                  value={withdrawalReason}
+                  onChange={(e) => setWithdrawalReason(e.target.value)}
+                >
+                  <option value="">-- Select Reason --</option>
+                  {reasons.map((reason, index) => (
+                    <option key={index} value={reason}>
+                      {reason}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {selectedUserData && (
+          <div className="additional-section">
+            <h3 className="form-section-title">🏦 Bank Details</h3>
+            
+            <div className="purpose-bill-grid">
+              <div className="form-field">
+                <label className="form-label">
+                  Bank Name: <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Enter bank name"
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  Account Number: <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Enter account number"
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label">
+                  IFSC Code: <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Enter IFSC code"
+                  value={ifscCode}
+                  onChange={(e) => setIfscCode(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="submit-section">
+              <button 
+                className="submit-btn"
+                onClick={() => {
+                  if (!withdrawalDate || !withdrawalAmount || !withdrawalReason || !bankName || !accountNumber || !ifscCode) {
+                    alert('Please fill all required fields');
+                    return;
+                  }
+                  alert(`Submitting Final Withdrawal Application:\nUser: ${selectedUserData.name}\nAmount: ${withdrawalAmount}\nReason: ${withdrawalReason}\nBank: ${bankName}`);
+                }}
+              >
+                Submit Withdrawal Request
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
