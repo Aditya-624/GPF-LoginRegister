@@ -30,6 +30,7 @@ export default function TemporaryAdvance() {
   const [balanceInstallmentAmount, setBalanceInstallmentAmount] = useState('');
   const [sanctionAmount, setSanctionAmount] = useState('');
   const [changeSanctionAmount, setChangeSanctionAmount] = useState('');
+  const [gpfUsrDetailsData, setGpfUsrDetailsData] = useState([]);
 
   // Sample purposes - replace with actual API call
   const purposes = [
@@ -167,6 +168,26 @@ export default function TemporaryAdvance() {
     return () => clearInterval(timer);
   }, []);
 
+  // Fetch GPF User Details from database
+  useEffect(() => {
+    fetchGpfUsrDetails();
+  }, []);
+
+  const fetchGpfUsrDetails = async () => {
+    try {
+      const response = await fetch('http://localhost:8081/api/gpf-usr-details/all');
+      if (response.ok) {
+        const data = await response.json();
+        setGpfUsrDetailsData(data);
+        console.log('GPF User Details fetched:', data);
+      } else {
+        console.error('Failed to fetch GPF User Details');
+      }
+    } catch (error) {
+      console.error('Error fetching GPF User Details:', error);
+    }
+  };
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -190,7 +211,23 @@ export default function TemporaryAdvance() {
 
   // Filter users based on selected types and search query
   const getFilteredUsers = () => {
-    let filtered = userDetails;
+    // Use GPF User Details data if available, otherwise use hardcoded data
+    const usersToFilter = gpfUsrDetailsData.length > 0 ? gpfUsrDetailsData.map(detail => ({
+      id: detail.id || detail.persNo,
+      name: detail.persNo,
+      gpfNumber: detail.persNo,
+      type: 'staff',
+      personnelNumber: detail.persNo,
+      dob: '15 Jan 1985',
+      designation: 'Employee',
+      retirementDate: '15 Jan 2045',
+      basicPay: `₹${detail.presentBasicPay || 0}`,
+      payInPayBand: `₹${detail.presentBasicPay || 0}`,
+      gradePay: '₹5,400',
+      phoneNumber: detail.phoneNo || '9876543210'
+    })) : userDetails;
+
+    let filtered = usersToFilter;
 
     // Filter by type checkboxes
     const selectedTypes = Object.keys(selectedType).filter(key => selectedType[key]);

@@ -272,9 +272,66 @@ export default function UserApplicationGPF() {
     }));
   };
 
-  const handleSave = () => {
-    console.log('Form Data:', formData);
-    alert('Form saved successfully!');
+  const handleSave = async () => {
+    if (!userSession) {
+      alert('User session not found');
+      return;
+    }
+
+    // Validate required fields
+    if (!formData.gpfLoanType || !formData.purposeRequired || !formData.amountApplied) {
+      alert('Please fill in all required fields: GPF Loan Type, Purpose, and Amount Applied');
+      return;
+    }
+
+    const payload = {
+      persNo: gpfDetails?.persNumber || userSession.userId,
+      phoneNo: formData.phoneNo,
+      presentBasicPay: parseFloat(formData.presentBasicPay) || 0,
+      previousAdvanceAmount: parseFloat(formData.previousAdvanceAmount) || 0,
+      monthDrawn: formData.monthDrawn,
+      purposeDrawn: formData.purposeDrawn,
+      outstandingAmount: parseFloat(formData.outstandingAmount) || 0,
+      gpfLoanType: formData.gpfLoanType,
+      purposeRequired: formData.purposeRequired,
+      amountApplied: parseFloat(formData.amountApplied),
+      enclosures: formData.enclosures,
+      finalWithdrawalDrawn: formData.finalWithdrawalDrawn,
+      previousFinalAmount: parseFloat(formData.previousFinalAmount) || 0,
+      previousFinalMonth: formData.previousFinalMonth,
+      closingBalance: gpfAccumulation.closingBalance,
+      gpfSubscription: gpfAccumulation.gpfSubscription,
+      gpfRefund: gpfAccumulation.gpfRefund,
+      recoveryFromArrears: gpfAccumulation.recoveryFromArrears,
+      approvedWithdrawals: gpfWithdrawals.approved,
+      applicationDate: new Date().toISOString().split('T')[0]
+    };
+
+    try {
+      const response = await fetch('http://localhost:8081/api/gpf-usr-details', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Data saved successfully:', result);
+        alert('User GPF Application saved successfully!');
+        // Optionally clear form after successful save
+        // handleClear();
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to save data:', errorData);
+        alert('Failed to save data: ' + (errorData.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error saving data:', error);
+      alert('Error saving data: ' + error.message);
+    }
   };
 
   const handleClear = () => {

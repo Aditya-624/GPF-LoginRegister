@@ -19,7 +19,7 @@ import com.adithya.loginregister.repository.GPFRepository;
 
 @RestController
 @RequestMapping("/api/gpf")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"}, allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:*"}, allowCredentials = "true")
 public class GPFController {
 
     private final GPFRepository gpfRepository;
