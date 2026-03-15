@@ -103,7 +103,7 @@ export default function GPF() {
             <div className="card-arrow">→</div>
           </div>
 
-          <div className="gpf-menu-card" onClick={() => alert('Add DV Number - Coming Soon!')}>
+          <div className="gpf-menu-card" onClick={() => { try { window.__ANIMATE_NAV = true; } catch (e) {}; navigate('/gpf/add-dv-number'); }}>
             <div className="card-icon-wrapper">
               <span className="card-icon">🔢</span>
             </div>
@@ -114,7 +114,7 @@ export default function GPF() {
             <div className="card-arrow">→</div>
           </div>
 
-          <div className="gpf-menu-card" onClick={() => alert('Reports - Coming Soon!')}>
+          <div className="gpf-menu-card" onClick={() => { try { window.__ANIMATE_NAV = true; } catch (e) {}; navigate('/gpf/reports'); }}>
             <div className="card-icon-wrapper">
               <span className="card-icon">📊</span>
             </div>
@@ -125,7 +125,7 @@ export default function GPF() {
             <div className="card-arrow">→</div>
           </div>
 
-          <div className="gpf-menu-card" onClick={() => alert('Add Subscription - Coming Soon!')}>
+          <div className="gpf-menu-card" onClick={() => { try { window.__ANIMATE_NAV = true; } catch (e) {}; navigate('/gpf/add-subscription'); }}>
             <div className="card-icon-wrapper">
               <span className="card-icon">➕</span>
             </div>
@@ -136,7 +136,7 @@ export default function GPF() {
             <div className="card-arrow">→</div>
           </div>
 
-          <div className="gpf-menu-card" onClick={() => alert('Subscription - Coming Soon!')}>
+          <div className="gpf-menu-card" onClick={() => { try { window.__ANIMATE_NAV = true; } catch (e) {}; navigate('/gpf/subscription'); }}>
             <div className="card-icon-wrapper">
               <span className="card-icon">📋</span>
             </div>
@@ -147,7 +147,7 @@ export default function GPF() {
             <div className="card-arrow">→</div>
           </div>
 
-          <div className="gpf-menu-card" onClick={() => alert('List of GPF Account Numbers - Coming Soon!')}>
+          <div className="gpf-menu-card" onClick={() => { try { window.__ANIMATE_NAV = true; } catch (e) {}; navigate('/gpf/account-numbers'); }}>
             <div className="card-icon-wrapper">
               <span className="card-icon">📑</span>
             </div>

@@ -26,6 +26,7 @@ html, body {
   --card-bg: rgba(255, 255, 255, 0.95);
   --card-text: var(--text-primary);
   --input-bg: rgba(255, 255, 255, 0.9);
+  --input-bg-focus: rgba(255, 255, 255, 0.95);
   --input-text: var(--text-primary);
   --input-border: rgba(123, 123, 125, 0.3);
   --spotlight-color: rgba(255,255,255,0.15);
@@ -493,6 +494,7 @@ button:focus-visible {
   --card-bg: rgba(30, 41, 59, 0.85);
   --card-text: var(--text-primary);
   --input-bg: rgba(51, 65, 85, 0.7);
+  --input-bg-focus: rgba(51, 65, 85, 0.9);
   --input-text: var(--text-primary);
   --input-border: rgba(148, 163, 184, 0.3);
   --text-secondary: #cbd5e1;
@@ -516,6 +518,7 @@ button:focus-visible {
   --card-bg: rgba(255, 255, 255, 0.9);
   --card-text: var(--text-primary);
   --input-bg: rgba(255, 255, 255, 0.8);
+  --input-bg-focus: rgba(255, 255, 255, 0.95);
   --input-text: var(--text-primary);
   --input-border: rgba(124, 45, 18, 0.3);
   --text-secondary: #a16207;
@@ -539,6 +542,7 @@ button:focus-visible {
   --card-bg: rgba(6, 95, 70, 0.85);
   --card-text: var(--text-primary);
   --input-bg: rgba(4, 120, 87, 0.7);
+  --input-bg-focus: rgba(4, 120, 87, 0.9);
   --input-text: var(--text-primary);
   --input-border: rgba(167, 243, 208, 0.3);
   --text-secondary: #a7f3d0;
@@ -562,6 +566,7 @@ button:focus-visible {
   --card-bg: rgba(139, 69, 19, 0.15);
   --card-text: var(--text-primary);
   --input-bg: rgba(168, 85, 247, 0.2);
+  --input-bg-focus: rgba(168, 85, 247, 0.3);
   --input-text: var(--text-primary);
   --input-border: rgba(196, 181, 253, 0.4);
   --text-secondary: #c4b5fd;
@@ -585,6 +590,7 @@ button:focus-visible {
   --card-bg: rgba(0, 0, 0, 0.8);
   --card-text: var(--text-primary);
   --input-bg: rgba(26, 0, 51, 0.8);
+  --input-bg-focus: rgba(26, 0, 51, 0.95);
   --input-text: var(--text-primary);
   --input-border: rgba(0, 255, 136, 0.5);
   --text-secondary: #ff0080;
@@ -608,6 +614,7 @@ button:focus-visible {
   --card-bg: rgba(255, 255, 255, 0.9);
   --card-text: var(--text-primary);
   --input-bg: rgba(255, 255, 255, 0.8);
+  --input-bg-focus: rgba(255, 255, 255, 0.95);
   --input-text: var(--text-primary);
   --input-border: rgba(131, 24, 67, 0.3);
   --text-secondary: #be185d;
@@ -631,6 +638,7 @@ button:focus-visible {
   --card-bg: rgba(255, 255, 255, 0.95);
   --card-text: var(--text-primary);
   --input-bg: rgba(255, 255, 255, 0.9);
+  --input-bg-focus: rgba(255, 255, 255, 0.95);
   --input-text: var(--text-primary);
   --input-border: rgba(123, 123, 125, 0.3);
   --text-secondary: #7B7B7D;
@@ -654,6 +662,7 @@ button:focus-visible {
   --card-bg: rgba(30, 41, 59, 0.85);
   --card-text: var(--text-primary);
   --input-bg: rgba(51, 65, 85, 0.7);
+  --input-bg-focus: rgba(51, 65, 85, 0.9);
   --input-text: var(--text-primary);
   --input-border: rgba(148, 163, 184, 0.3);
   --text-secondary: #cbd5e1;

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPF API Testing Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.9em;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .response {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .response-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .response-content {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab-btn {
+            background: transparent;
+            color: #666;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            width: auto;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 GPF API Testing Tool</h1>
+            <p>Test all GPF APIs - Save, Fetch, and Verify Data</p>
+        </div>
+        
+        <div class="content">
+            <!-- GPF User Details Section -->
+            <div class="section">
+                <h2>📋 GPF User Details</h2>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('usr-save')">Save</button>
+                    <button class="tab-btn" onclick="switchTab('usr-fetch')">Fetch All</button>
+                    <button class="tab-btn" onclick="switchTab('usr-search')">Search</button>
+                </div>
+                
+                <!-- Save Tab -->
+                <div id="usr-save" class="tab-content active">
+                    <div class="form-group">
+                        <label>Personnel Number</label>
+                        <input type="number" id="persNo" placeholder="12345" value="12345">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phoneNo" placeholder="9876543210" value="9876543210">
+                    </div>
+                    <div class="form-group">
+                        <label>Basic Pay</label>
+                        <input type="number" id="basicPay" placeholder="45000" value="45000">
+                    </div>
+                    <div class="form-group">
+                        <label>GPF Loan Type (T/F)</label>
+                        <select id="gpfType">
+                            <option value="T">Temporary (T)</option>
+                            <option value="F">Final (F)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Purpose</label>
+                        <input type="text" id="purpose" placeholder="Medical Treatment" value="Medical Treatment">
+                    </div>
+                    <div class="form-group">
+                        <label>Amount Applied</label>
+                        <input type="number" id="amountApplied" placeholder="50000" value="50000">
+                    </div>
+                    <button onclick="saveUserDetails()">💾 Save User Details</button>
+                    <div class="response" id="usr-save-response"></div>
+                </div>
+                
+                <!-- Fetch All Tab -->
+                <div id="usr-fetch" class="tab-content">
+                    <button onclick="fetchAllUserDetails()">📥 Fetch All User Details</button>
+                    <div class="response" id="usr-fetch-response"></div>
+                </div>
+                
+                <!-- Search Tab -->
+                <div id="usr-search" class="tab-content">
+                    <div class="form-group">
+                        <label>Personnel Number</label>
+                        <input type="number" id="searchPersNo" placeholder="12345" value="12345">
+                    </div>
+                    <button onclick="searchUserDetails()">🔍 Search</button>
+                    <div class="response" id="usr-search-response"></div>
+                </div>
+            </div>
+            
+            <!-- GPF Sanction Details Section -->
+            <div class="section">
+                <h2>💰 GPF Sanction Details</h2>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('sanc-save')">Save</button>
+                    <button class="tab-btn" onclick="switchTab('sanc-fetch')">Fetch All</button>
+                </div>
+                
+                <!-- Save Tab -->
+                <div id="sanc-save" class="tab-content active">
+                    <div class="form-group">
+                        <label>Personnel Number</label>
+                        <input type="text" id="sanctPersNo" placeholder="12345" value="12345">
+                    </div>
+                    <div class="form-group">
+                        <label>Loan Type (T/F)</label>
+                        <select id="sanctLoanType">
+                            <option value="T">Temporary (T)</option>
+                            <option value="F">Final (F)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Sanction Amount</label>
+                        <input type="number" id="sanctAmount" placeholder="45000" value="45000">
+                    </div>
+                    <div class="form-group">
+                        <label>Application Date (YYYY-MM-DD)</label>
+                        <input type="date" id="applDate" value="2024-01-15">
+                    </div>
+                    <button onclick="saveSanctionDetails()">💾 Save Sanction Details</button>
+                    <div class="response" id="sanc-save-response"></div>
+                </div>
+                
+                <!-- Fetch All Tab -->
+                <div id="sanc-fetch" class="tab-content">
+                    <button onclick="fetchAllSanctionDetails()">📥 Fetch All Sanction Details</button>
+                    <div class="response" id="sanc-fetch-response"></div>
+                </div>
+            </div>
+            
+            <!-- GPF Years Section -->
+            <div class="section">
+                <h2>📅 GPF Years</h2>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('year-save')">Save</button>
+                    <button class="tab-btn" onclick="switchTab('year-fetch')">Fetch All</button>
+                    <button class="tab-btn" onclick="switchTab('year-search')">Search</button>
+                </div>
+                
+                <!-- Save Tab -->
+                <div id="year-save" class="tab-content active">
+                    <div class="form-group">
+                        <label>Pass Number</label>
+                        <input type="text" id="passNumber" placeholder="12345" value="12345">
+                    </div>
+                    <div class="form-group">
+                        <label>GPF Year</label>
+                        <input type="number" id="gpfYear" placeholder="2024" value="2024">
+                    </div>
+                    <div class="form-group">
+                        <label>Closing Balance</label>
+                        <input type="number" id="closingBalance" placeholder="500000" value="500000">
+                    </div>
+                    <button onclick="saveGPFYear()">💾 Save GPF Year</button>
+                    <div class="response" id="year-save-response"></div>
+                </div>
+                
+                <!-- Fetch All Tab -->
+                <div id="year-fetch" class="tab-content">
+                    <button onclick="fetchAllGPFYears()">📥 Fetch All GPF Years</button>
+                    <div class="response" id="year-fetch-response"></div>
+                </div>
+                
+                <!-- Search Tab -->
+                <div id="year-search" class="tab-content">
+                    <div class="form-group">
+                        <label>Search Query</label>
+                        <input type="text" id="yearSearchQuery" placeholder="12345" value="12345">
+                    </div>
+                    <button onclick="searchGPFYears()">🔍 Search</button>
+                    <div class="response" id="year-search-response"></div>
+                </div>
+            </div>
+            
+            <!-- Status Monitor -->
+            <div class="section">
+                <h2>📊 API Status Monitor</h2>
+                <div id="statusMonitor" style="font-family: monospace; font-size: 0.9em; line-height: 1.6;">
+                    <p>✓ Backend URL: http://localhost:8081</p>
+                    <p>✓ Frontend URL: http://localhost:5173</p>
+                    <p>Click any button to test API endpoints</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8081/api';
+        
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        function displayResponse(elementId, status, data) {
+            const element = document.getElementById(elementId);
+            const statusClass = status >= 200 && status < 300 ? 'success' : 'error';
+            element.innerHTML = `
+                <div class="response-title">
+                    <span class="status ${statusClass}">Status: ${status}</span>
+                </div>
+                <div class="response-content">${JSON.stringify(data, null, 2)}</div>
+            `;
+        }
+        
+        // GPF User Details Functions
+        async function saveUserDetails() {
+            const payload = {
+                persNo: parseInt(document.getElementById('persNo').value),
+                phoneNo: document.getElementById('phoneNo').value,
+                presentBasicPay: parseFloat(document.getElementById('basicPay').value),
+                gpfLoanType: document.getElementById('gpfType').value,
+                purposeRequired: document.getElementById('purpose').value,
+                amountApplied: parseFloat(document.getElementById('amountApplied').value),
+                applDate: new Date().toISOString().split('T')[0]
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/gpf-usr-details`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                displayResponse('usr-save-response', response.status, data);
+            } catch (error) {
+                displayResponse('usr-save-response', 500, { error: error.message });
+            }
+        }
+        
+        async function fetchAllUserDetails() {
+            try {
+                const response = await fetch(`${API_BASE}/gpf-usr-details/all`);
+                const data = await response.json();
+                displayResponse('usr-fetch-response', response.status, data);
+            } catch (error) {
+                displayResponse('usr-fetch-response', 500, { error: error.message });
+            }
+        }
+        
+        async function searchUserDetails() {
+            const persNo = document.getElementById('searchPersNo').value;
+            try {
+                const response = await fetch(`${API_BASE}/gpf-usr-details/by-persno/${persNo}`);
+                const data = await response.json();
+                displayResponse('usr-search-response', response.status, data);
+            } catch (error) {
+                displayResponse('usr-search-response', 500, { error: error.message });
+            }
+        }
+        
+        // GPF Sanction Details Functions
+        async function saveSanctionDetails() {
+            const payload = {
+                persNo: document.getElementById('sanctPersNo').value,
+                gpfLoanType: document.getElementById('sanctLoanType').value,
+                sanctionAmount: parseFloat(document.getElementById('sanctAmount').value),
+                applicationDate: document.getElementById('applDate').value,
+                purpose: 'Test Purpose'
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/gpf-sanction-details`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                displayResponse('sanc-save-response', response.status, data);
+            } catch (error) {
+                displayResponse('sanc-save-response', 500, { error: error.message });
+            }
+        }
+        
+        async function fetchAllSanctionDetails() {
+            try {
+                const response = await fetch(`${API_BASE}/gpf-sanction-details`);
+                const data = await response.json();
+                displayResponse('sanc-fetch-response', response.status, data);
+            } catch (error) {
+                displayResponse('sanc-fetch-response', 500, { error: error.message });
+            }
+        }
+        
+        // GPF Years Functions
+        async function saveGPFYear() {
+            const payload = {
+                passNumber: document.getElementById('passNumber').value,
+                gpfYears: parseInt(document.getElementById('gpfYear').value),
+                closingBalance: parseFloat(document.getElementById('closingBalance').value)
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/gpf-years/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                displayResponse('year-save-response', response.status, data);
+            } catch (error) {
+                displayResponse('year-save-response', 500, { error: error.message });
+            }
+        }
+        
+        async function fetchAllGPFYears() {
+            try {
+                const response = await fetch(`${API_BASE}/gpf-years/all`);
+                const data = await response.json();
+                displayResponse('year-fetch-response', response.status, data);
+            } catch (error) {
+                displayResponse('year-fetch-response', 500, { error: error.message });
+            }
+        }
+        
+        async function searchGPFYears() {
+            const query = document.getElementById('yearSearchQuery').value;
+            try {
+                const response = await fetch(`${API_BASE}/gpf-years/search?query=${query}`);
+                const data = await response.json();
+                displayResponse('year-search-response', response.status, data);
+            } catch (error) {
+                displayResponse('year-search-response', 500, { error: error.message });
+            }
+        }
+    </script>
+</body>
+</html>

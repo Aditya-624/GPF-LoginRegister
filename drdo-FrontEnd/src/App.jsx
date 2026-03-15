@@ -14,6 +14,11 @@ import GPFSlipDetails from './components/GPFSlipDetails';
 import TemporaryAdvance from './components/TemporaryAdvance';
 import FinalWithdrawal from './components/FinalWithdrawal';
 import UserApplicationGPF from './components/UserApplicationGPF';
+import AddDVNumber from './components/AddDVNumber';
+import Reports from './components/Reports';
+import AddSubscription from './components/AddSubscription';
+import Subscription from './components/Subscription';
+import GPFAccountNumbers from './components/GPFAccountNumbers';
 import FloatingParticles from './components/FloatingParticles';
 import './App.css';
 
@@ -40,6 +45,16 @@ const getTransitionName = (from = '/', to = '/') => {
   if (from === '/temporary-advance' && to === '/gpf') return 'slide-right';
   if (from === '/gpf' && to === '/final-withdrawal') return 'slide-left';
   if (from === '/final-withdrawal' && to === '/gpf') return 'slide-right';
+  if (from === '/gpf' && to === '/gpf/add-dv-number') return 'slide-left';
+  if (from === '/gpf/add-dv-number' && to === '/gpf') return 'slide-right';
+  if (from === '/gpf' && to === '/gpf/reports') return 'slide-left';
+  if (from === '/gpf/reports' && to === '/gpf') return 'slide-right';
+  if (from === '/gpf' && to === '/gpf/add-subscription') return 'slide-left';
+  if (from === '/gpf/add-subscription' && to === '/gpf') return 'slide-right';
+  if (from === '/gpf' && to === '/gpf/subscription') return 'slide-left';
+  if (from === '/gpf/subscription' && to === '/gpf') return 'slide-right';
+  if (from === '/gpf' && to === '/gpf/account-numbers') return 'slide-left';
+  if (from === '/gpf/account-numbers' && to === '/gpf') return 'slide-right';
   // sensible default for forward nav
   return 'slide-left';
 };
@@ -182,6 +197,11 @@ function AppRoutes() {
             <Route path="/temporary-advance" element={<TemporaryAdvance />} />
             <Route path="/final-withdrawal" element={<FinalWithdrawal />} />
             <Route path="/gpf/user-application" element={<UserApplicationGPF />} />
+            <Route path="/gpf/add-dv-number" element={<AddDVNumber />} />
+            <Route path="/gpf/reports" element={<Reports />} />
+            <Route path="/gpf/add-subscription" element={<AddSubscription />} />
+            <Route path="/gpf/subscription" element={<Subscription />} />
+            <Route path="/gpf/account-numbers" element={<GPFAccountNumbers />} />
           </Routes>
         </div>
       )}
@@ -201,6 +221,11 @@ function AppRoutes() {
           <Route path="/temporary-advance" element={<TemporaryAdvance />} />
           <Route path="/final-withdrawal" element={<FinalWithdrawal />} />
           <Route path="/gpf/user-application" element={<UserApplicationGPF />} />
+          <Route path="/gpf/add-dv-number" element={<AddDVNumber />} />
+          <Route path="/gpf/reports" element={<Reports />} />
+          <Route path="/gpf/add-subscription" element={<AddSubscription />} />
+          <Route path="/gpf/subscription" element={<Subscription />} />
+          <Route path="/gpf/account-numbers" element={<GPFAccountNumbers />} />
         </Routes>
       </div>
     </div>
