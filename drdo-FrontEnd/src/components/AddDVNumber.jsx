@@ -6,15 +6,13 @@ import ThemeSelector from './ThemeSelector';
 export default function AddDVNumber() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [selectedRole, setSelectedRole] = useState(null);
   const [formData, setFormData] = useState({
     dvNumber: '',
-    description: '',
-    amount: '',
-    date: '',
-    remarks: ''
+    dvDate: '',
+    dvAmount: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [tableData, setTableData] = useState([]);
 
   const currentUser = (() => {
     try { return JSON.parse(localStorage.getItem('currentUser') || 'null'); } catch (e) { return null; }
@@ -24,6 +22,41 @@ export default function AddDVNumber() {
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Fetch data from GPF Sanction Details table
+  useEffect(() => {
+    const fetchSanctionDetails = async () => {
+      try {
+        const response = await fetch('/api/gpf-sanction-details');
+        if (response.ok) {
+          const data = await response.json();
+          // Transform API data to table format
+          const transformedData = data.map((item, index) => ({
+            id: item.id,
+            sno: index + 1,
+            selected: false,
+            persNo: item.persNo || '',
+            name: item.persNo || '', // Use persNo as name for now
+            type: item.gpfLoanType || '',
+            appDate: item.applicationDate || '',
+            billNo: item.billNo || '',
+            billDate: item.billDate || '',
+            noOfIntl: item.noOfInstallments || 0,
+            instlAmt: item.instlAmount ? item.instlAmount.toString() : '0',
+            billAmount: item.appliedAmount ? item.appliedAmount.toString() : '0',
+            cdaAmount: item.appliedAmount ? item.appliedAmount.toString() : '0',
+            remarks: item.remarks || '',
+            role: item.gpfLoanType === 'OFFICER' ? 'OFFICER' : 'STAFF',
+            dbId: item.id // Store original DB ID for updates
+          }));
+          setTableData(transformedData);
+        }
+      } catch (error) {
+        console.error('Error fetching sanction details:', error);
+      }
+    };
+    fetchSanctionDetails();
   }, []);
 
   const formatTime = (date) => {
@@ -40,6 +73,17 @@ export default function AddDVNumber() {
     navigate('/gpf');
   };
 
+  const handleRoleSelect = (role) => {
+    setSelectedRole(role);
+    // Reset all selections and edits when role changes
+    setTableData(tableData.map(row => ({
+      ...row,
+      selected: false,
+      cdaAmount: row.billAmount,
+      remarks: ''
+    })));
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -50,56 +94,106 @@ export default function AddDVNumber() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setMessage('');
+    
+    // Get selected rows
+    const selectedRows = tableData.filter(row => row.selected && row.role === selectedRole);
+    
+    if (selectedRows.length === 0) {
+      alert('Please select at least one row');
+      return;
+    }
+
+    if (!formData.dvNumber || !formData.dvDate) {
+      alert('Please fill in DV Number and DV Date');
+      return;
+    }
 
     try {
-      // Validate form
-      if (!formData.dvNumber.trim()) {
-        setMessage('DV Number is required');
-        setLoading(false);
-        return;
+      // Update each selected row with DV details
+      const updatePromises = selectedRows.map(row =>
+        fetch(`/api/gpf-sanction-details/${row.dbId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
+          },
+          body: JSON.stringify({
+            id: row.dbId,
+            persNo: row.persNo,
+            gpfLoanType: row.type,
+            applicationDate: row.appDate,
+            billNo: row.billNo,
+            billDate: row.billDate,
+            noOfInstallments: parseInt(row.noOfIntl) || 0,
+            instlAmount: parseFloat(row.instlAmt) || 0,
+            appliedAmount: parseFloat(row.billAmount) || 0,
+            dvNo: formData.dvNumber,
+            dvDate: formData.dvDate,
+            totDvAmt: parseFloat(row.cdaAmount) || 0,
+            remarks: row.remarks,
+            updatedAt: new Date().toISOString()
+          })
+        })
+      );
+
+      const responses = await Promise.all(updatePromises);
+      const failedUpdates = responses.filter(res => !res.ok);
+
+      if (failedUpdates.length === 0) {
+        alert(`Successfully updated ${selectedRows.length} record(s) with DV details!`);
+        // Reset form
+        setFormData({ dvNumber: '', dvDate: '', dvAmount: '' });
+        // Refresh data from database
+        const response = await fetch('/api/gpf-sanction-details');
+        if (response.ok) {
+          const data = await response.json();
+          const transformedData = data.map((item, index) => ({
+            id: item.id,
+            sno: index + 1,
+            selected: false,
+            persNo: item.persNo || '',
+            name: item.persNo || '',
+            type: item.gpfLoanType || '',
+            appDate: item.applicationDate || '',
+            billNo: item.billNo || '',
+            billDate: item.billDate || '',
+            noOfIntl: item.noOfInstallments || 0,
+            instlAmt: item.instlAmount ? item.instlAmount.toString() : '0',
+            billAmount: item.appliedAmount ? item.appliedAmount.toString() : '0',
+            cdaAmount: item.appliedAmount ? item.appliedAmount.toString() : '0',
+            remarks: item.remarks || '',
+            role: item.gpfLoanType === 'OFFICER' ? 'OFFICER' : 'STAFF',
+            dbId: item.id
+          }));
+          setTableData(transformedData);
+        }
+      } else {
+        alert(`Error updating ${failedUpdates.length} record(s). Please try again.`);
       }
-
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/gpf/add-dv-number', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-      //   },
-      //   body: JSON.stringify(formData)
-      // });
-
-      // Simulated success
-      setMessage('DV Number added successfully!');
-      setFormData({
-        dvNumber: '',
-        description: '',
-        amount: '',
-        date: '',
-        remarks: ''
-      });
-      
-      setTimeout(() => {
-        setMessage('');
-      }, 3000);
     } catch (error) {
-      setMessage('Error adding DV Number: ' + error.message);
-    } finally {
-      setLoading(false);
+      console.error('Error submitting DV details:', error);
+      alert('Error submitting DV details: ' + error.message);
     }
   };
 
-  const handleReset = () => {
-    setFormData({
-      dvNumber: '',
-      description: '',
-      amount: '',
-      date: '',
-      remarks: ''
-    });
-    setMessage('');
+  const handleSelectAll = () => {
+    setTableData(tableData.map(row => ({ ...row, selected: true })));
+  };
+
+  const handleUnselectAll = () => {
+    setTableData(tableData.map(row => ({ ...row, selected: false })));
+  };
+
+  const handleRowSelect = (id) => {
+    setTableData(tableData.map(row =>
+      row.id === id ? { ...row, selected: !row.selected } : row
+    ));
+  };
+
+  const handleCellChange = (id, field, value) => {
+    setTableData(tableData.map(row =>
+      row.id === id ? { ...row, [field]: value } : row
+    ));
   };
 
   return (
@@ -124,116 +218,172 @@ export default function AddDVNumber() {
       </nav>
 
       <main className="add-dv-main">
+        <div className="role-selector-compact-container">
+          <div className="role-options-compact">
+            <label className="role-option-compact">
+              <input
+                type="radio"
+                name="role"
+                value="OFFICER"
+                checked={selectedRole === 'OFFICER'}
+                onChange={(e) => handleRoleSelect(e.target.value)}
+                className="role-checkbox"
+              />
+              <span className="role-label-compact">Officer</span>
+            </label>
+
+            <label className="role-option-compact">
+              <input
+                type="radio"
+                name="role"
+                value="STAFF"
+                checked={selectedRole === 'STAFF'}
+                onChange={(e) => handleRoleSelect(e.target.value)}
+                className="role-checkbox"
+              />
+              <span className="role-label-compact">Staff</span>
+            </label>
+          </div>
+        </div>
+
         <div className="add-dv-header">
           <h1 className="add-dv-title">Add DV Number</h1>
-          <p className="add-dv-subtitle">Register and manage new DV numbers for GPF transactions</p>
+          <p className="add-dv-subtitle">Manage bill details and DV information</p>
         </div>
 
-        <div className="add-dv-container">
-          <form className="add-dv-form" onSubmit={handleSubmit}>
-            {message && (
-              <div className={`form-message ${message.includes('Error') ? 'error' : 'success'}`}>
-                {message}
-              </div>
-            )}
+        {selectedRole && (
+          <>
+            <div className="dv-form-container">
+              <form className="dv-form" onSubmit={handleSubmit}>
+                <div className="dv-form-row">
+                  <div className="dv-form-group">
+                    <label htmlFor="dvNumber" className="dv-form-label">DV Number</label>
+                    <input
+                      type="text"
+                      id="dvNumber"
+                      name="dvNumber"
+                      value={formData.dvNumber}
+                      onChange={handleInputChange}
+                      placeholder="Enter DV Number"
+                      className="dv-form-input"
+                    />
+                  </div>
 
-            <div className="form-group">
-              <label htmlFor="dvNumber" className="form-label">
-                DV Number <span className="required">*</span>
-              </label>
-              <input
-                type="text"
-                id="dvNumber"
-                name="dvNumber"
-                value={formData.dvNumber}
-                onChange={handleInputChange}
-                placeholder="Enter DV Number"
-                className="form-input"
-                required
-              />
+                  <div className="dv-form-group">
+                    <label htmlFor="dvDate" className="dv-form-label">DV Date</label>
+                    <input
+                      type="date"
+                      id="dvDate"
+                      name="dvDate"
+                      value={formData.dvDate}
+                      onChange={handleInputChange}
+                      className="dv-form-input"
+                    />
+                  </div>
+
+                  <div className="dv-form-group">
+                    <label htmlFor="dvAmount" className="dv-form-label">DV Amount</label>
+                    <input
+                      type="number"
+                      id="dvAmount"
+                      name="dvAmount"
+                      value={formData.dvAmount}
+                      onChange={handleInputChange}
+                      placeholder="Enter Amount"
+                      className="dv-form-input"
+                      step="0.01"
+                    />
+                  </div>
+
+                  <div className="dv-form-group dv-submit-group">
+                    <button type="submit" className="dv-submit-btn">Submit</button>
+                  </div>
+                </div>
+              </form>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="description" className="form-label">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Enter description (optional)"
-                className="form-textarea"
-                rows="3"
-              />
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="amount" className="form-label">
-                  Amount
-                </label>
-                <input
-                  type="number"
-                  id="amount"
-                  name="amount"
-                  value={formData.amount}
-                  onChange={handleInputChange}
-                  placeholder="Enter amount"
-                  className="form-input"
-                  step="0.01"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="date" className="form-label">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  className="form-input"
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="remarks" className="form-label">
-                Remarks
-              </label>
-              <textarea
-                id="remarks"
-                name="remarks"
-                value={formData.remarks}
-                onChange={handleInputChange}
-                placeholder="Enter any remarks (optional)"
-                className="form-textarea"
-                rows="3"
-              />
-            </div>
-
-            <div className="form-actions">
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                {loading ? 'Adding...' : 'Add DV Number'}
+            <div className="dv-buttons-row">
+              <button type="button" className="dv-select-btn" onClick={handleSelectAll}>
+                Select All
               </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={handleReset}
-                disabled={loading}
-              >
-                Reset
+              <button type="button" className="dv-unselect-btn" onClick={handleUnselectAll}>
+                Unselect All
               </button>
             </div>
-          </form>
-        </div>
+          </>
+        )}
+
+        {selectedRole && (
+          <div className="dv-table-container">
+            <h2 className="dv-table-title">Bill Details</h2>
+            <div className="dv-table-wrapper">
+              <table className="dv-table">
+                <thead>
+                  <tr>
+                    <th>S.NO</th>
+                    <th>Select</th>
+                    <th>PERS NO.</th>
+                    <th>NAME</th>
+                    <th>TYPE</th>
+                    <th>APPLICATION DATE</th>
+                    <th>BILL NO.</th>
+                    <th>BILL DATE</th>
+                    <th>NO OF INTL</th>
+                    <th>INSTL_AMT</th>
+                    <th>BILL AMOUNT</th>
+                    <th>CDA AMOUNT</th>
+                    <th>REMARKS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableData
+                    .filter(row => row.role === selectedRole)
+                    .map((row) => (
+                    <tr key={row.id} className={row.selected ? 'row-selected' : ''}>
+                      <td>{row.sno}</td>
+                      <td className="select-cell">
+                        <input
+                          type="checkbox"
+                          checked={row.selected}
+                          onChange={() => handleRowSelect(row.id)}
+                          className="row-checkbox"
+                        />
+                        {row.selected && <span className="checkmark">✅</span>}
+                      </td>
+                      <td>{row.persNo}</td>
+                      <td>{row.name}</td>
+                      <td>{row.type}</td>
+                      <td>{row.appDate}</td>
+                      <td>{row.billNo}</td>
+                      <td>{row.billDate}</td>
+                      <td>{row.noOfIntl}</td>
+                      <td>{row.instlAmt}</td>
+                      <td>{row.billAmount}</td>
+                      <td className="editable-cell">
+                        <input
+                          type="text"
+                          value={row.cdaAmount}
+                          onChange={(e) => handleCellChange(row.id, 'cdaAmount', e.target.value)}
+                          placeholder="Enter amount"
+                          className="cell-input"
+                        />
+                      </td>
+                      <td className="editable-cell">
+                        <input
+                          type="text"
+                          value={row.remarks}
+                          onChange={(e) => handleCellChange(row.id, 'remarks', e.target.value)}
+                          placeholder="Enter remarks"
+                          className="cell-input"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

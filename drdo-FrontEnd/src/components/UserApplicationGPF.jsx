@@ -352,17 +352,17 @@ export default function UserApplicationGPF() {
     });
   };
 
-  const handleBackToGPF = () => {
+  const handleBackToDashboard = () => {
     try { window.__ANIMATE_NAV = true; } catch (e) {}
-    navigate('/gpf');
+    navigate('/dashboard');
   };
 
   return (
     <div className="user-application-gpf-page">
       <nav className="top-nav">
         <div className="nav-left">
-          <button className="btn btn-nav btn-back" onClick={handleBackToGPF}>
-            <span>←</span> Back to GPF
+          <button className="btn btn-nav btn-back" onClick={handleBackToDashboard}>
+            <span>←</span> Back
           </button>
           <span className="nav-brand">User Application GPF</span>
           <span className="nav-time">{formatTime(currentTime)}</span>

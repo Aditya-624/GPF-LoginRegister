@@ -68,6 +68,17 @@ export default function Dashboard({ onSignOut }) {
             <h1 className="welcome-title">Welcome back{currentUser?.username ? `, ${currentUser.username}` : ''}! 👋</h1>
             <p className="welcome-subtitle">{formatDate(currentTime)}</p>
           </div>
+          
+          <div className="top-buttons-section">
+            <button className="top-action-btn btn-gpf-primary" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/gpf/user-application'); }}>
+              <span className="top-action-icon">👥</span>
+              <span>User Application GPF</span>
+            </button>
+            <button className="top-action-btn btn-gpf-primary" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/gpf'); }}>
+              <span className="top-action-icon">💰</span>
+              <span>General Provident Fund (GPF)</span>
+            </button>
+          </div>
         </div>
 
         <div className="dashboard-grid">
@@ -108,10 +119,6 @@ export default function Dashboard({ onSignOut }) {
           <div className="content-card">
             <h2 className="card-title">🚀 Quick Actions</h2>
             <div className="action-grid">
-              <button className="action-btn btn-gpf" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/gpf'); }}>
-                <span className="action-icon">💰</span>
-                <span>General Provident Fund (GPF)</span>
-              </button>
               <button className="action-btn" onClick={() => alert('New Project - Coming Soon!')}>
                 <span className="action-icon">➕</span>
                 <span>New Project</span>

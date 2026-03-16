@@ -110,17 +110,20 @@
 }
 
 /* Theme transition support */
+.add-dv-page,
 .add-dv-main,
 .add-dv-header,
-.add-dv-container,
-.add-dv-form,
-.form-group,
-.form-input,
-.form-textarea,
-.form-label,
-.form-message,
-.btn-primary,
-.btn-secondary {
+.role-selector-compact-container,
+.role-option-compact,
+.dv-form-container,
+.dv-table-container,
+.dv-table,
+.dv-select-btn,
+.dv-unselect-btn,
+.dv-submit-btn,
+.dv-form-input,
+.cell-input,
+.row-checkbox {
   transition: background-color var(--transition-smooth) ease,
               color var(--transition-smooth) ease,
               border-color var(--transition-smooth) ease,
@@ -130,71 +133,101 @@
 .add-dv-main {
   flex: 1;
   padding: 40px 24px;
-  max-width: 900px;
+  max-width: 1400px;
   margin: 0 auto;
   width: 100%;
 }
 
+.role-selector-compact-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--input-border);
+}
+
+.role-options-compact {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  width: auto;
+}
+
+.role-option-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-smooth) ease;
+}
+
+.role-option-compact:hover {
+  border-color: var(--accent-primary);
+  background: rgba(var(--accent-primary-rgb), 0.05);
+}
+
+.role-option-compact input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent-primary);
+}
+
+.role-label-compact {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--card-text);
+  cursor: pointer;
+  user-select: none;
+}
+
 .add-dv-header {
   text-align: center;
-  margin-bottom: 48px;
-  padding-bottom: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
   border-bottom: 2px solid var(--input-border);
 }
 
 .add-dv-title {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   color: var(--card-text);
   letter-spacing: -0.5px;
 }
 
 .add-dv-subtitle {
-  font-size: 16px;
+  font-size: 14px;
   color: var(--text-secondary);
   margin: 0;
   font-weight: 400;
 }
 
-.add-dv-container {
+/* Role Selector Styles */
+.role-selector-container {
+  display: none;
+}
+
+/* DV Form Styles */
+.dv-form-container {
+  margin-top: 24px;
   background: var(--card-bg);
   border: 1px solid var(--input-border);
-  border-radius: var(--border-radius-small);
-  padding: 32px;
+  border-radius: 12px;
+  padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: slideUp 0.3s ease;
 }
 
-.add-dv-form {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.form-message {
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  animation: slideDown 0.3s ease;
-}
-
-.form-message.success {
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
-  border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.form-message.error {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-@keyframes slideDown {
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -202,28 +235,74 @@
   }
 }
 
-.form-group {
+.dv-buttons-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  justify-content: flex-start;
+}
+
+.dv-select-btn,
+.dv-unselect-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-smooth) ease;
+  border: none;
+}
+
+.dv-select-btn {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.dv-select-btn:hover {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+}
+
+.dv-unselect-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.dv-unselect-btn:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+.dv-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dv-form-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.dv-form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.form-label {
+.dv-form-label {
   font-size: 14px;
   font-weight: 600;
   color: var(--card-text);
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
-.required {
-  color: #ef4444;
-  font-weight: 700;
-}
-
-.form-input,
-.form-textarea {
+.dv-form-input {
   padding: 12px 16px;
   border: 1px solid var(--input-border);
   border-radius: 8px;
@@ -234,38 +313,23 @@
   transition: all var(--transition-smooth) ease;
 }
 
-.form-input:focus,
-.form-textarea:focus {
+.dv-form-input:focus {
   outline: none;
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(var(--accent-primary-rgb), 0.1);
   background: var(--input-bg-focus);
 }
 
-.form-input::placeholder,
-.form-textarea::placeholder {
+.dv-form-input::placeholder {
   color: var(--text-secondary);
 }
 
-.form-textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.form-actions {
+.dv-submit-group {
   display: flex;
-  gap: 16px;
-  margin-top: 16px;
-  justify-content: center;
+  align-items: flex-end;
 }
 
-.btn-primary {
+.dv-submit-btn {
   background: linear-gradient(135deg, var(--accent-primary), var(--button-bg));
   color: var(--white);
   border: none;
@@ -276,85 +340,224 @@
   cursor: pointer;
   transition: all var(--transition-smooth) ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 100%;
 }
 
-.btn-primary:hover:not(:disabled) {
+.dv-submit-btn:hover {
   background: linear-gradient(135deg, var(--button-bg), var(--accent-primary));
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
-.btn-primary:active:not(:disabled) {
+.dv-submit-btn:active {
   transform: translateY(0);
 }
 
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+/* DV Table Styles */
+.dv-table-container {
+  margin-top: 32px;
+  background: var(--card-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: slideUp 0.3s ease;
+  width: 100%;
 }
 
-.btn-secondary {
-  background: var(--card-bg);
-  color: var(--accent-primary);
-  border: 2px solid var(--accent-primary);
-  padding: 10px 30px;
+.dv-table-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--card-text);
+  margin: 0 0 20px 0;
+}
+
+.dv-table-wrapper {
+  overflow-x: auto;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
+  border: 1px solid var(--input-border);
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.dv-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card-bg);
+}
+
+.dv-table thead {
+  background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.1), rgba(var(--accent-primary-rgb), 0.05));
+  border-bottom: 2px solid var(--input-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.dv-table th {
+  padding: 14px 12px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--card-text);
+  white-space: nowrap;
+  border-right: 1px solid var(--input-border);
+}
+
+.dv-table th:last-child {
+  border-right: none;
+}
+
+.dv-table tbody tr {
+  border-bottom: 1px solid var(--input-border);
+  transition: background-color var(--transition-smooth) ease;
+}
+
+.dv-table tbody tr:hover {
+  background: rgba(var(--accent-primary-rgb), 0.05);
+}
+
+.dv-table tbody tr.row-selected {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.dv-table td {
+  padding: 12px;
+  font-size: 13px;
+  color: var(--card-text);
+  border-right: 1px solid var(--input-border);
+}
+
+.dv-table td:last-child {
+  border-right: none;
+}
+
+.select-cell {
+  text-align: center;
+  position: relative;
+}
+
+.row-checkbox {
+  width: 18px;
+  height: 18px;
   cursor: pointer;
+  accent-color: var(--accent-primary);
+}
+
+.checkmark {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 16px;
+}
+
+.editable-cell {
+  padding: 6px;
+}
+
+.cell-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--input-text);
+  font-size: 13px;
+  font-family: inherit;
   transition: all var(--transition-smooth) ease;
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background: rgba(var(--accent-primary-rgb), 0.05);
-  transform: translateY(-2px);
+.cell-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(var(--accent-primary-rgb), 0.1);
 }
 
-.btn-secondary:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn-secondary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.cell-input::placeholder {
+  color: var(--text-secondary);
 }
 
 /* Mobile responsive */
 @media (max-width: 768px) {
   .add-dv-main {
-    padding: 24px 16px;
+    padding: 20px 16px;
+  }
+
+  .role-selector-compact-container {
+    margin-bottom: 16px;
+    padding: 8px 0;
+  }
+
+  .role-options-compact {
+    gap: 8px;
+  }
+
+  .role-option-compact {
+    padding: 6px 12px;
+  }
+
+  .role-label-compact {
+    font-size: 13px;
   }
 
   .add-dv-header {
-    margin-bottom: 32px;
-    padding-bottom: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
   }
 
   .add-dv-title {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .add-dv-subtitle {
-    font-size: 14px;
+    font-size: 12px;
   }
 
-  .add-dv-container {
-    padding: 24px;
+  .dv-form-container {
+    padding: 16px;
+    margin-top: 16px;
   }
 
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .form-actions {
+  .dv-buttons-row {
     flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .dv-select-btn,
+  .dv-unselect-btn {
+    width: 100%;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .dv-form-row {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
+  .dv-submit-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+
+  .dv-table-container {
+    padding: 12px;
+    margin-top: 16px;
+  }
+
+  .dv-table-wrapper {
+    max-height: 400px;
+  }
+
+  .dv-table th,
+  .dv-table td {
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+
+  .cell-input {
+    padding: 4px;
+    font-size: 11px;
   }
 }
 
@@ -364,19 +567,36 @@
     max-width: 100%;
   }
 
-  .add-dv-container {
-    padding: 28px;
+  .role-options {
+    max-width: 450px;
+  }
+
+  .dv-form-row {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 /* Large screens */
 @media (min-width: 1400px) {
-  .add-dv-container {
+  .role-options {
+    max-width: 500px;
+    gap: 24px;
+  }
+
+  .role-option {
+    padding: 20px 24px;
+  }
+
+  .role-label {
+    font-size: 18px;
+  }
+
+  .dv-form-container {
     padding: 40px;
   }
 
-  .form-row {
-    gap: 24px;
+  .dv-form-row {
+    gap: 20px;
   }
 }
 
@@ -402,4 +622,306 @@
   background: var(--card-bg);
   border: 1px solid var(--input-border);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+
+/* ===== THEME-SPECIFIC OVERRIDES ===== */
+
+/* Ocean Dark Theme */
+.theme-ocean-dark .add-dv-page {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .add-dv-title,
+.theme-ocean-dark .dv-table-title {
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .add-dv-subtitle,
+.theme-ocean-dark .role-label-compact {
+  color: #cbd5e1;
+}
+
+.theme-ocean-dark .role-option-compact {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .dv-form-container,
+.theme-ocean-dark .dv-table-container {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.theme-ocean-dark .dv-form-input,
+.theme-ocean-dark .cell-input {
+  background: rgba(51, 65, 85, 0.7);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .dv-table {
+  background: rgba(30, 41, 59, 0.85);
+}
+
+.theme-ocean-dark .dv-table th {
+  background: rgba(51, 65, 85, 0.7);
+  color: #f8fafc;
+}
+
+.theme-ocean-dark .dv-table td {
+  color: #f8fafc;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+/* Sunset Theme */
+.theme-sunset .add-dv-page {
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 30%, #fdba74 70%, #fb923c 100%);
+  color: #7c2d12;
+}
+
+.theme-sunset .add-dv-title,
+.theme-sunset .dv-table-title {
+  color: #7c2d12;
+}
+
+.theme-sunset .add-dv-subtitle,
+.theme-sunset .role-label-compact {
+  color: #a16207;
+}
+
+.theme-sunset .role-option-compact {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(124, 45, 18, 0.3);
+  color: #7c2d12;
+}
+
+.theme-sunset .dv-form-container,
+.theme-sunset .dv-table-container {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(124, 45, 18, 0.3);
+}
+
+.theme-sunset .dv-form-input,
+.theme-sunset .cell-input {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(124, 45, 18, 0.3);
+  color: #7c2d12;
+}
+
+/* Forest Theme */
+.theme-forest .add-dv-page {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%);
+  color: #ecfdf5;
+}
+
+.theme-forest .add-dv-title,
+.theme-forest .dv-table-title {
+  color: #ecfdf5;
+}
+
+.theme-forest .add-dv-subtitle,
+.theme-forest .role-label-compact {
+  color: #a7f3d0;
+}
+
+.theme-forest .role-option-compact {
+  background: rgba(6, 95, 70, 0.8);
+  border-color: rgba(167, 243, 208, 0.3);
+  color: #ecfdf5;
+}
+
+.theme-forest .dv-form-container,
+.theme-forest .dv-table-container {
+  background: rgba(6, 95, 70, 0.85);
+  border-color: rgba(167, 243, 208, 0.3);
+}
+
+.theme-forest .dv-form-input,
+.theme-forest .cell-input {
+  background: rgba(4, 120, 87, 0.7);
+  border-color: rgba(167, 243, 208, 0.3);
+  color: #ecfdf5;
+}
+
+.theme-forest .dv-table {
+  background: rgba(6, 95, 70, 0.85);
+}
+
+.theme-forest .dv-table th {
+  background: rgba(4, 120, 87, 0.7);
+  color: #ecfdf5;
+}
+
+.theme-forest .dv-table td {
+  color: #ecfdf5;
+  border-color: rgba(167, 243, 208, 0.3);
+}
+
+/* Purple Theme */
+.theme-purple .add-dv-page {
+  background: linear-gradient(135deg, #581c87 0%, #7c3aed 30%, #a855f7 70%, #c084fc 100%);
+  color: #faf5ff;
+}
+
+.theme-purple .add-dv-title,
+.theme-purple .dv-table-title {
+  color: #faf5ff;
+}
+
+.theme-purple .add-dv-subtitle,
+.theme-purple .role-label-compact {
+  color: #c4b5fd;
+}
+
+.theme-purple .role-option-compact {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(196, 181, 253, 0.4);
+  color: #faf5ff;
+}
+
+.theme-purple .dv-form-container,
+.theme-purple .dv-table-container {
+  background: rgba(139, 69, 19, 0.15);
+  border-color: rgba(196, 181, 253, 0.4);
+}
+
+.theme-purple .dv-form-input,
+.theme-purple .cell-input {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(196, 181, 253, 0.4);
+  color: #faf5ff;
+}
+
+/* Cyberpunk Theme */
+.theme-cyberpunk .add-dv-page {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 30%, #330066 70%, #4d0099 100%);
+  color: #00ff88;
+}
+
+.theme-cyberpunk .add-dv-title,
+.theme-cyberpunk .dv-table-title {
+  color: #00ff88;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.theme-cyberpunk .add-dv-subtitle,
+.theme-cyberpunk .role-label-compact {
+  color: #ff0080;
+}
+
+.theme-cyberpunk .role-option-compact {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(0, 255, 136, 0.5);
+  color: #00ff88;
+}
+
+.theme-cyberpunk .dv-form-container,
+.theme-cyberpunk .dv-table-container {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(0, 255, 136, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.theme-cyberpunk .dv-form-input,
+.theme-cyberpunk .cell-input {
+  background: rgba(26, 0, 51, 0.8);
+  border-color: rgba(0, 255, 136, 0.5);
+  color: #00ff88;
+}
+
+.theme-cyberpunk .dv-table {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.theme-cyberpunk .dv-table th {
+  background: rgba(26, 0, 51, 0.8);
+  color: #00ff88;
+}
+
+.theme-cyberpunk .dv-table td {
+  color: #00ff88;
+  border-color: rgba(0, 255, 136, 0.5);
+}
+
+/* Rose Gold Theme */
+.theme-rose-gold .add-dv-page {
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #fbcfe8 70%, #f9a8d4 100%);
+  color: #831843;
+}
+
+.theme-rose-gold .add-dv-title,
+.theme-rose-gold .dv-table-title {
+  color: #831843;
+}
+
+.theme-rose-gold .add-dv-subtitle,
+.theme-rose-gold .role-label-compact {
+  color: #be185d;
+}
+
+.theme-rose-gold .role-option-compact {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(131, 24, 67, 0.3);
+  color: #831843;
+}
+
+.theme-rose-gold .dv-form-container,
+.theme-rose-gold .dv-table-container {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(131, 24, 67, 0.3);
+}
+
+.theme-rose-gold .dv-form-input,
+.theme-rose-gold .cell-input {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(131, 24, 67, 0.3);
+  color: #831843;
+}
+
+/* Light Theme */
+.theme-light .add-dv-page,
+.theme-ocean-light .add-dv-page {
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 30%, #80DEEA 70%, #4DD0E1 100%);
+  color: #353537;
+}
+
+.theme-light .add-dv-title,
+.theme-ocean-light .add-dv-title,
+.theme-light .dv-table-title,
+.theme-ocean-light .dv-table-title {
+  color: #353537;
+}
+
+.theme-light .add-dv-subtitle,
+.theme-ocean-light .add-dv-subtitle,
+.theme-light .role-label-compact,
+.theme-ocean-light .role-label-compact {
+  color: #7B7B7D;
+}
+
+.theme-light .role-option-compact,
+.theme-ocean-light .role-option-compact {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(123, 123, 125, 0.3);
+  color: #353537;
+}
+
+.theme-light .dv-form-container,
+.theme-ocean-light .dv-form-container,
+.theme-light .dv-table-container,
+.theme-ocean-light .dv-table-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(123, 123, 125, 0.3);
+}
+
+.theme-light .dv-form-input,
+.theme-ocean-light .dv-form-input,
+.theme-light .cell-input,
+.theme-ocean-light .cell-input {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(123, 123, 125, 0.3);
+  color: #353537;
 }

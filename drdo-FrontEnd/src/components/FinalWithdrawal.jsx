@@ -7,11 +7,8 @@ export default function FinalWithdrawal() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedType, setSelectedType] = useState({
-    staff: false,
-    officer: false,
-    onlineApplication: false
-  });
+  const [selectedType, setSelectedType] = useState('staff'); // 'staff' or 'officer'
+  const [onlineApplication, setOnlineApplication] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [withdrawalDate, setWithdrawalDate] = useState('');
@@ -28,6 +25,7 @@ export default function FinalWithdrawal() {
   const [sanctionDate, setSanctionDate] = useState('');
   const [balanceInstallmentAmount, setBalanceInstallmentAmount] = useState('');
   const [sanctionAmount, setSanctionAmount] = useState('');
+  const [gpfUsrDetailsData, setGpfUsrDetailsData] = useState([]);
 
   const reasons = [
     'Retirement',
@@ -158,6 +156,28 @@ export default function FinalWithdrawal() {
     return () => clearInterval(timer);
   }, []);
 
+  // Fetch GPF User Details from database
+  useEffect(() => {
+    if (onlineApplication) {
+      fetchGpfUsrDetails();
+    }
+  }, [onlineApplication]);
+
+  const fetchGpfUsrDetails = async () => {
+    try {
+      const response = await fetch('http://localhost:8081/api/gpf-usr-details/all');
+      if (response.ok) {
+        const data = await response.json();
+        setGpfUsrDetailsData(data);
+        console.log('GPF User Details fetched:', data);
+      } else {
+        console.error('Failed to fetch GPF User Details');
+      }
+    } catch (error) {
+      console.error('Error fetching GPF User Details:', error);
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdown = document.querySelector('.search-dropdown-wrapper');
@@ -171,29 +191,63 @@ export default function FinalWithdrawal() {
   }, []);
 
   const handleTypeChange = (type) => {
-    setSelectedType(prev => ({
-      ...prev,
-      [type]: !prev[type]
-    }));
+    setSelectedType(type);
     setSelectedUser('');
+    // Clear all form data when type changes
+    setSearchQuery('');
+    setWithdrawalDate('');
+    setWithdrawalAmount('');
+    setClosingBalance('');
+    setWithdrawalReason('');
+    setBankName('');
+    setAccountNumber('');
+    setIfscCode('');
+    setEligibleAmount('');
+    setPreviousBalance('');
+    setOutstandingBalance('');
+    setNoOfInstallments('');
+    setSanctionDate('');
+    setBalanceInstallmentAmount('');
+    setSanctionAmount('');
+  };
+
+  const handleOnlineApplicationChange = () => {
+    setOnlineApplication(!onlineApplication);
   };
 
   const getFilteredUsers = () => {
-    let filtered = userDetails;
+    let usersToFilter = [];
 
-    const selectedTypes = Object.keys(selectedType).filter(key => selectedType[key]);
-    if (selectedTypes.length > 0) {
-      filtered = filtered.filter(user => selectedTypes.includes(user.type));
+    // If Online Application is checked, use GPF User Details data
+    if (onlineApplication && gpfUsrDetailsData.length > 0) {
+      usersToFilter = gpfUsrDetailsData.map(detail => ({
+        id: detail.id || detail.persNo,
+        name: detail.persNo,
+        gpfNumber: detail.persNo,
+        type: 'staff',
+        personnelNumber: detail.persNo,
+        dob: '15 Jan 1985',
+        designation: 'Employee',
+        retirementDate: '15 Jan 2045',
+        basicPay: `₹${detail.presentBasicPay || 0}`,
+        payInPayBand: `₹${detail.presentBasicPay || 0}`,
+        gradePay: '₹5,400',
+        phoneNumber: detail.phoneNo || '9876543210'
+      }));
+    } else {
+      // Otherwise use hardcoded user details filtered by selected type
+      usersToFilter = userDetails.filter(user => user.type === selectedType);
     }
 
+    // Filter by search query
     if (searchQuery.trim()) {
-      filtered = filtered.filter(user => 
+      usersToFilter = usersToFilter.filter(user => 
         user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.gpfNumber.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    return filtered;
+    return usersToFilter;
   };
 
   const filteredUsers = getFilteredUsers();
@@ -300,31 +354,37 @@ export default function FinalWithdrawal() {
             
             <div className="search-container">
               <div className="filter-options">
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={selectedType.staff}
-                    onChange={() => handleTypeChange('staff')}
-                  />
-                  <span className="checkbox-text">Staff</span>
-                </label>
+                <div className="type-selector-group">
+                  <span className="type-selector-label">Officer or Staff:</span>
+                  <label className="radio-label">
+                    <input
+                      type="radio"
+                      name="staffOfficer"
+                      value="staff"
+                      checked={selectedType === 'staff'}
+                      onChange={(e) => handleTypeChange(e.target.value)}
+                    />
+                    <span className="radio-text">Staff</span>
+                  </label>
+                  <label className="radio-label">
+                    <input
+                      type="radio"
+                      name="staffOfficer"
+                      value="officer"
+                      checked={selectedType === 'officer'}
+                      onChange={(e) => handleTypeChange(e.target.value)}
+                    />
+                    <span className="radio-text">Officer</span>
+                  </label>
+                </div>
 
                 <label className="checkbox-label">
                   <input
                     type="checkbox"
-                    checked={selectedType.officer}
-                    onChange={() => handleTypeChange('officer')}
+                    checked={onlineApplication}
+                    onChange={handleOnlineApplicationChange}
                   />
-                  <span className="checkbox-text">Officer</span>
-                </label>
-
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={selectedType.onlineApplication}
-                    onChange={() => handleTypeChange('onlineApplication')}
-                  />
-                  <span className="checkbox-text">Online</span>
+                  <span className="checkbox-text">Online Application</span>
                 </label>
               </div>
 

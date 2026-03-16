@@ -7,11 +7,8 @@ export default function TemporaryAdvance() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedType, setSelectedType] = useState({
-    staff: false,
-    officer: false,
-    onlineApplication: false
-  });
+  const [selectedType, setSelectedType] = useState('staff'); // 'staff' or 'officer'
+  const [onlineApplication, setOnlineApplication] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [applicationDate, setApplicationDate] = useState('');
@@ -170,8 +167,10 @@ export default function TemporaryAdvance() {
 
   // Fetch GPF User Details from database
   useEffect(() => {
-    fetchGpfUsrDetails();
-  }, []);
+    if (onlineApplication) {
+      fetchGpfUsrDetails();
+    }
+  }, [onlineApplication]);
 
   const fetchGpfUsrDetails = async () => {
     try {
@@ -202,48 +201,66 @@ export default function TemporaryAdvance() {
   }, []);
 
   const handleTypeChange = (type) => {
-    setSelectedType(prev => ({
-      ...prev,
-      [type]: !prev[type]
-    }));
+    setSelectedType(type);
     setSelectedUser(''); // Reset selection when filter changes
+    // Clear all form data when type changes
+    setSearchQuery('');
+    setApplicationDate('');
+    setApplicationAmount('');
+    setLoanTakenCurrentYear('');
+    setLoanDate('');
+    setSelectedPurpose('');
+    setBillNo('');
+    setBillDate('');
+    setRecFrom('');
+    setEligibleAmount('');
+    setPreviousBalance('');
+    setOutstandingBalance('');
+    setNoOfInstallments('');
+    setSanctionDate('');
+    setBalanceInstallmentAmount('');
+    setSanctionAmount('');
+    setChangeSanctionAmount('');
+  };
+
+  const handleOnlineApplicationChange = () => {
+    setOnlineApplication(!onlineApplication);
   };
 
   // Filter users based on selected types and search query
   const getFilteredUsers = () => {
-    // Use GPF User Details data if available, otherwise use hardcoded data
-    const usersToFilter = gpfUsrDetailsData.length > 0 ? gpfUsrDetailsData.map(detail => ({
-      id: detail.id || detail.persNo,
-      name: detail.persNo,
-      gpfNumber: detail.persNo,
-      type: 'staff',
-      personnelNumber: detail.persNo,
-      dob: '15 Jan 1985',
-      designation: 'Employee',
-      retirementDate: '15 Jan 2045',
-      basicPay: `₹${detail.presentBasicPay || 0}`,
-      payInPayBand: `₹${detail.presentBasicPay || 0}`,
-      gradePay: '₹5,400',
-      phoneNumber: detail.phoneNo || '9876543210'
-    })) : userDetails;
+    let usersToFilter = [];
 
-    let filtered = usersToFilter;
-
-    // Filter by type checkboxes
-    const selectedTypes = Object.keys(selectedType).filter(key => selectedType[key]);
-    if (selectedTypes.length > 0) {
-      filtered = filtered.filter(user => selectedTypes.includes(user.type));
+    // If Online Application is checked, use GPF User Details data
+    if (onlineApplication && gpfUsrDetailsData.length > 0) {
+      usersToFilter = gpfUsrDetailsData.map(detail => ({
+        id: detail.id || detail.persNo,
+        name: detail.persNo,
+        gpfNumber: detail.persNo,
+        type: 'staff',
+        personnelNumber: detail.persNo,
+        dob: '15 Jan 1985',
+        designation: 'Employee',
+        retirementDate: '15 Jan 2045',
+        basicPay: `₹${detail.presentBasicPay || 0}`,
+        payInPayBand: `₹${detail.presentBasicPay || 0}`,
+        gradePay: '₹5,400',
+        phoneNumber: detail.phoneNo || '9876543210'
+      }));
+    } else {
+      // Otherwise use hardcoded user details filtered by selected type
+      usersToFilter = userDetails.filter(user => user.type === selectedType);
     }
 
     // Filter by search query
     if (searchQuery.trim()) {
-      filtered = filtered.filter(user => 
+      usersToFilter = usersToFilter.filter(user => 
         user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.gpfNumber.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    return filtered;
+    return usersToFilter;
   };
 
   const filteredUsers = getFilteredUsers();
@@ -373,31 +390,37 @@ export default function TemporaryAdvance() {
             
             <div className="search-container">
               <div className="filter-options">
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={selectedType.staff}
-                    onChange={() => handleTypeChange('staff')}
-                  />
-                  <span className="checkbox-text">Staff</span>
-                </label>
+                <div className="type-selector-group">
+                  <span className="type-selector-label">Officer or Staff:</span>
+                  <label className="radio-label">
+                    <input
+                      type="radio"
+                      name="staffOfficer"
+                      value="staff"
+                      checked={selectedType === 'staff'}
+                      onChange={(e) => handleTypeChange(e.target.value)}
+                    />
+                    <span className="radio-text">Staff</span>
+                  </label>
+                  <label className="radio-label">
+                    <input
+                      type="radio"
+                      name="staffOfficer"
+                      value="officer"
+                      checked={selectedType === 'officer'}
+                      onChange={(e) => handleTypeChange(e.target.value)}
+                    />
+                    <span className="radio-text">Officer</span>
+                  </label>
+                </div>
 
                 <label className="checkbox-label">
                   <input
                     type="checkbox"
-                    checked={selectedType.officer}
-                    onChange={() => handleTypeChange('officer')}
+                    checked={onlineApplication}
+                    onChange={handleOnlineApplicationChange}
                   />
-                  <span className="checkbox-text">Officer</span>
-                </label>
-
-                <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={selectedType.onlineApplication}
-                    onChange={() => handleTypeChange('onlineApplication')}
-                  />
-                  <span className="checkbox-text">Online</span>
+                  <span className="checkbox-text">Online Application</span>
                 </label>
               </div>
 
