@@ -68,103 +68,20 @@ export default function Dashboard({ onSignOut }) {
             <h1 className="welcome-title">Welcome back{currentUser?.username ? `, ${currentUser.username}` : ''}! 👋</h1>
             <p className="welcome-subtitle">{formatDate(currentTime)}</p>
           </div>
-          
-          <div className="top-buttons-section">
-            <button className="top-action-btn btn-gpf-primary" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/gpf/user-application'); }}>
-              <span className="top-action-icon">👥</span>
-              <span>User Application GPF</span>
-            </button>
-            <button className="top-action-btn btn-gpf-primary" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/gpf'); }}>
-              <span className="top-action-icon">💰</span>
-              <span>General Provident Fund (GPF)</span>
-            </button>
-          </div>
         </div>
 
-        <div className="dashboard-grid">
-          <div className="stat-card">
-            <div className="stat-icon">📊</div>
-            <div className="stat-content">
-              <h3 className="stat-number">{stats.projects}</h3>
-              <p className="stat-label">Active Projects</p>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon">📋</div>
-            <div className="stat-content">
-              <h3 className="stat-number">{stats.tasks}</h3>
-              <p className="stat-label">Total Tasks</p>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon">✅</div>
-            <div className="stat-content">
-              <h3 className="stat-number">{stats.completed}</h3>
-              <p className="stat-label">Completed</p>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon">⏳</div>
-            <div className="stat-content">
-              <h3 className="stat-number">{stats.pending}</h3>
-              <p className="stat-label">Pending</p>
-            </div>
-          </div>
+        <div className="top-buttons-section">
+          <button className="top-action-btn btn-gpf-primary" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/gpf/user-application'); }}>
+            <span className="top-action-icon">👥</span>
+            <span>User Application GPF</span>
+          </button>
+          <button className="top-action-btn btn-gpf-primary" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/gpf'); }}>
+            <span className="top-action-icon">💰</span>
+            <span>General Provident Fund (GPF)</span>
+          </button>
         </div>
 
-        <div className="dashboard-content">
-          <div className="content-card">
-            <h2 className="card-title">🚀 Quick Actions</h2>
-            <div className="action-grid">
-              <button className="action-btn" onClick={() => alert('New Project - Coming Soon!')}>
-                <span className="action-icon">➕</span>
-                <span>New Project</span>
-              </button>
-              <button className="action-btn" onClick={() => alert('View Reports - Coming Soon!')}>
-                <span className="action-icon">📈</span>
-                <span>View Reports</span>
-              </button>
-              <button className="action-btn" onClick={() => alert('Team Chat - Coming Soon!')}>
-                <span className="action-icon">💬</span>
-                <span>Team Chat</span>
-              </button>
-              <button className="action-btn" onClick={() => alert('Settings - Coming Soon!')}>
-                <span className="action-icon">⚙️</span>
-                <span>Settings</span>
-              </button>
-            </div>
-          </div>
 
-          <div className="content-card">
-            <h2 className="card-title">📅 Recent Activity</h2>
-            <div className="activity-list">
-              <div className="activity-item">
-                <div className="activity-icon">🎯</div>
-                <div className="activity-content">
-                  <p className="activity-text">Completed project milestone</p>
-                  <span className="activity-time">2 hours ago</span>
-                </div>
-              </div>
-              <div className="activity-item">
-                <div className="activity-icon">👥</div>
-                <div className="activity-content">
-                  <p className="activity-text">Team meeting scheduled</p>
-                  <span className="activity-time">4 hours ago</span>
-                </div>
-              </div>
-              <div className="activity-item">
-                <div className="activity-icon">📝</div>
-                <div className="activity-content">
-                  <p className="activity-text">Updated project documentation</p>
-                  <span className="activity-time">1 day ago</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   );
