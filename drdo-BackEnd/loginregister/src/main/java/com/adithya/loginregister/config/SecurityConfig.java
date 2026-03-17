@@ -20,6 +20,7 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
+            // All endpoints are permitted — JWT validation is handled at the application layer
             .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

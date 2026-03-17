@@ -31,7 +31,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/gpf-usr-details")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"}, allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:*"}, allowedHeaders = "*", allowCredentials = "true")
 public class GPFUsrDetailsController {
 
     private final GPFUsrDetailsRepository gpfUsrDetailsRepository;

@@ -1,6 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { userService } from './services/userService';
+
+// Protects routes that require login
+function PrivateRoute({ children }) {
+  const session = userService.getUserSession();
+  const token = userService.getAuthToken();
+  if (!session || !token) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
 import Registration from './components/Registration';
 import Login from './components/Login';
 import LoginPage from './components/LoginPage';
@@ -185,23 +195,25 @@ function AppRoutes() {
       {prevLocation && (
         <div className="page-wrapper prev" ref={prevRef} aria-hidden="true">
           <Routes location={prevLocation}>
+            {/* Public routes */}
             <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
             <Route path="/register" element={<Registration />} />
-            <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} onCancel={handleCancelChangePassword} loggedInUser={loggedInUser} fromExpiry={location.state?.fromExpiry} />} />
             <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
-            <Route path="/dashboard" element={<Dashboard onSignOut={handleLogout} />} />
-            <Route path="/profile" element={<Profile onChangePassword={handleProfileChangePassword} onBack={handleBackToDashboard} />} />
-            <Route path="/gpf" element={<GPF />} />
-            <Route path="/gpf/add-slips" element={<AddGPFSlips />} />
-            <Route path="/gpf/slip-details" element={<GPFSlipDetails />} />
-            <Route path="/temporary-advance" element={<TemporaryAdvance />} />
-            <Route path="/final-withdrawal" element={<FinalWithdrawal />} />
-            <Route path="/gpf/user-application" element={<UserApplicationGPF />} />
-            <Route path="/gpf/add-dv-number" element={<AddDVNumber />} />
-            <Route path="/gpf/reports" element={<Reports />} />
-            <Route path="/gpf/add-subscription" element={<AddSubscription />} />
-            <Route path="/gpf/subscription" element={<Subscription />} />
-            <Route path="/gpf/account-numbers" element={<GPFAccountNumbers />} />
+            <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} onCancel={handleCancelChangePassword} loggedInUser={loggedInUser} fromExpiry={location.state?.fromExpiry} />} />
+            {/* Protected routes — require login */}
+            <Route path="/dashboard" element={<PrivateRoute><Dashboard onSignOut={handleLogout} /></PrivateRoute>} />
+            <Route path="/profile" element={<PrivateRoute><Profile onChangePassword={handleProfileChangePassword} onBack={handleBackToDashboard} /></PrivateRoute>} />
+            <Route path="/gpf" element={<PrivateRoute><GPF /></PrivateRoute>} />
+            <Route path="/gpf/add-slips" element={<PrivateRoute><AddGPFSlips /></PrivateRoute>} />
+            <Route path="/gpf/slip-details" element={<PrivateRoute><GPFSlipDetails /></PrivateRoute>} />
+            <Route path="/temporary-advance" element={<PrivateRoute><TemporaryAdvance /></PrivateRoute>} />
+            <Route path="/final-withdrawal" element={<PrivateRoute><FinalWithdrawal /></PrivateRoute>} />
+            <Route path="/gpf/user-application" element={<PrivateRoute><UserApplicationGPF /></PrivateRoute>} />
+            <Route path="/gpf/add-dv-number" element={<PrivateRoute><AddDVNumber /></PrivateRoute>} />
+            <Route path="/gpf/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
+            <Route path="/gpf/add-subscription" element={<PrivateRoute><AddSubscription /></PrivateRoute>} />
+            <Route path="/gpf/subscription" element={<PrivateRoute><Subscription /></PrivateRoute>} />
+            <Route path="/gpf/account-numbers" element={<PrivateRoute><GPFAccountNumbers /></PrivateRoute>} />
           </Routes>
         </div>
       )}
@@ -209,23 +221,25 @@ function AppRoutes() {
       {/* Current route (animates in) */}
       <div className="page-wrapper current" ref={currRef} aria-live="polite">
         <Routes location={location}>
+          {/* Public routes */}
           <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
           <Route path="/register" element={<Registration />} />
-          <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} onCancel={handleCancelChangePassword} loggedInUser={loggedInUser} fromExpiry={location.state?.fromExpiry} />} />
           <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
-          <Route path="/dashboard" element={<Dashboard onSignOut={handleLogout} />} />
-          <Route path="/profile" element={<Profile onChangePassword={handleProfileChangePassword} onBack={handleBackToDashboard} />} />
-          <Route path="/gpf" element={<GPF />} />
-          <Route path="/gpf/add-slips" element={<AddGPFSlips />} />
-          <Route path="/gpf/slip-details" element={<GPFSlipDetails />} />
-          <Route path="/temporary-advance" element={<TemporaryAdvance />} />
-          <Route path="/final-withdrawal" element={<FinalWithdrawal />} />
-          <Route path="/gpf/user-application" element={<UserApplicationGPF />} />
-          <Route path="/gpf/add-dv-number" element={<AddDVNumber />} />
-          <Route path="/gpf/reports" element={<Reports />} />
-          <Route path="/gpf/add-subscription" element={<AddSubscription />} />
-          <Route path="/gpf/subscription" element={<Subscription />} />
-          <Route path="/gpf/account-numbers" element={<GPFAccountNumbers />} />
+          <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} onCancel={handleCancelChangePassword} loggedInUser={loggedInUser} fromExpiry={location.state?.fromExpiry} />} />
+          {/* Protected routes — require login */}
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard onSignOut={handleLogout} /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><Profile onChangePassword={handleProfileChangePassword} onBack={handleBackToDashboard} /></PrivateRoute>} />
+          <Route path="/gpf" element={<PrivateRoute><GPF /></PrivateRoute>} />
+          <Route path="/gpf/add-slips" element={<PrivateRoute><AddGPFSlips /></PrivateRoute>} />
+          <Route path="/gpf/slip-details" element={<PrivateRoute><GPFSlipDetails /></PrivateRoute>} />
+          <Route path="/temporary-advance" element={<PrivateRoute><TemporaryAdvance /></PrivateRoute>} />
+          <Route path="/final-withdrawal" element={<PrivateRoute><FinalWithdrawal /></PrivateRoute>} />
+          <Route path="/gpf/user-application" element={<PrivateRoute><UserApplicationGPF /></PrivateRoute>} />
+          <Route path="/gpf/add-dv-number" element={<PrivateRoute><AddDVNumber /></PrivateRoute>} />
+          <Route path="/gpf/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
+          <Route path="/gpf/add-subscription" element={<PrivateRoute><AddSubscription /></PrivateRoute>} />
+          <Route path="/gpf/subscription" element={<PrivateRoute><Subscription /></PrivateRoute>} />
+          <Route path="/gpf/account-numbers" element={<PrivateRoute><GPFAccountNumbers /></PrivateRoute>} />
         </Routes>
       </div>
     </div>
