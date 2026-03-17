@@ -284,31 +284,29 @@ export default function UserApplicationGPF() {
       return;
     }
 
+    // Map purpose string to a numeric code (use index or purpose id if available)
+    const selectedPurpose = purposeOptions.find(p => p.purpose === formData.purposeRequired);
+    const purposeCode = selectedPurpose ? selectedPurpose.code : null;
+
+    if (!purposeCode) {
+      alert('Could not resolve purpose code. Please re-select the purpose.');
+      return;
+    }
+
     const payload = {
-      persNo: gpfDetails?.persNumber || userSession.userId,
-      phoneNo: formData.phoneNo,
-      presentBasicPay: parseFloat(formData.presentBasicPay) || 0,
-      previousAdvanceAmount: parseFloat(formData.previousAdvanceAmount) || 0,
-      monthDrawn: formData.monthDrawn,
-      purposeDrawn: formData.purposeDrawn,
-      outstandingAmount: parseFloat(formData.outstandingAmount) || 0,
-      gpfLoanType: formData.gpfLoanType,
-      purposeRequired: formData.purposeRequired,
-      amountApplied: parseFloat(formData.amountApplied),
-      enclosures: formData.enclosures,
-      finalWithdrawalDrawn: formData.finalWithdrawalDrawn,
-      previousFinalAmount: parseFloat(formData.previousFinalAmount) || 0,
-      previousFinalMonth: formData.previousFinalMonth,
-      closingBalance: gpfAccumulation.closingBalance,
-      gpfSubscription: gpfAccumulation.gpfSubscription,
-      gpfRefund: gpfAccumulation.gpfRefund,
-      recoveryFromArrears: gpfAccumulation.recoveryFromArrears,
-      approvedWithdrawals: gpfWithdrawals.approved,
-      applicationDate: new Date().toISOString().split('T')[0]
+      // Required fields mapped to entity field names
+      applAmt: parseFloat(formData.amountApplied),
+      applDate: new Date().toISOString().split('T')[0],
+      persno: parseFloat(gpfDetails?.persNumber || userSession.userId),
+      purpose: parseFloat(purposeCode),
+      // Optional fields
+      gpfType: formData.gpfLoanType === 'TEMPORARY' ? 'E' : formData.gpfLoanType === 'FINAL' ? 'F' : null,
+      enclosers: formData.enclosures ? 'Y' : 'N',
+      houseAddr: formData.purposeDrawn || null
     };
 
     try {
-      const response = await fetch('http://localhost:8081/api/gpf-usr-details', {
+      const response = await fetch('http://localhost:8081/api/gpf-usr-details/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
