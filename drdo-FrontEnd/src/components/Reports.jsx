@@ -3,106 +3,80 @@ import { useState, useEffect } from 'react';
 import './Reports.css';
 import ThemeSelector from './ThemeSelector';
 
+const API_BASE = 'http://localhost:8081';
+
 export default function Reports() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [selectedReport, setSelectedReport] = useState('');
-  const [dateRange, setDateRange] = useState({
-    startDate: '',
-    endDate: ''
-  });
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
 
-  const currentUser = (() => {
-    try { return JSON.parse(localStorage.getItem('currentUser') || 'null'); } catch (e) { return null; }
-  })();
-
-  // Update time every second
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour12: true, 
-      hour: '2-digit', 
-      minute: '2-digit',
-      second: '2-digit'
-    });
-  };
+  useEffect(() => {
+    fetchSummary();
+  }, []);
 
-  const handleBackToGPF = () => {
-    try { window.__ANIMATE_NAV = true; } catch (e) {}
-    navigate('/gpf');
-  };
-
-  const handleDateChange = (e) => {
-    const { name, value } = e.target;
-    setDateRange(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleGenerateReport = async (e) => {
-    e.preventDefault();
+  const fetchSummary = async () => {
     setLoading(true);
-    setMessage('');
-
+    setError('');
     try {
-      // Validate selection
-      if (!selectedReport) {
-        setMessage('Please select a report type');
-        setLoading(false);
-        return;
+      const token = localStorage.getItem('authToken');
+      const res = await fetch(`${API_BASE}/api/reports/summary`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Server returned HTTP ${res.status}`);
       }
-
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/gpf/reports/generate', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-      //   },
-      //   body: JSON.stringify({
-      //     reportType: selectedReport,
-      //     startDate: dateRange.startDate,
-      //     endDate: dateRange.endDate
-      //   })
-      // });
-
-      // Simulated success
-      setMessage(`${selectedReport} report generated successfully!`);
-      
-      setTimeout(() => {
-        setMessage('');
-      }, 3000);
-    } catch (error) {
-      setMessage('Error generating report: ' + error.message);
+      const json = await res.json();
+      setData(Array.isArray(json) ? json : []);
+    } catch (e) {
+      if (e.message === 'Failed to fetch') {
+        setError('Cannot connect to backend server. Make sure Spring Boot is running on port 8081.');
+      } else {
+        setError(e.message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleReset = () => {
-    setSelectedReport('');
-    setDateRange({
-      startDate: '',
-      endDate: ''
-    });
-    setMessage('');
+  const formatTime = (date) =>
+    date.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  const formatDate = (val) => {
+    if (!val) return '—';
+    return new Date(val).toLocaleDateString('en-IN');
   };
 
-  const reportTypes = [
-    { id: 'contribution', label: 'Contribution Report', description: 'View all GPF contributions' },
-    { id: 'withdrawal', label: 'Withdrawal Report', description: 'View all withdrawal transactions' },
-    { id: 'balance', label: 'Balance Report', description: 'Current GPF balance summary' },
-    { id: 'transaction', label: 'Transaction Report', description: 'Complete transaction history' },
-    { id: 'advance', label: 'Advance Report', description: 'Temporary advance details' },
-    { id: 'annual', label: 'Annual Report', description: 'Year-end GPF summary' }
-  ];
+  const formatCurrency = (val) => {
+    if (val == null) return '—';
+    return '₹' + Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+  };
+
+  const purposeLabel = (code) => {
+    const map = { 1: 'House Building', 2: 'Education', 3: 'Marriage', 4: 'Medical', 5: 'Vehicle', 6: 'Final Withdrawal' };
+    return code != null ? (map[Number(code)] || `Purpose ${code}`) : '—';
+  };
+
+  const filtered = data.filter(row => {
+    const q = search.toLowerCase();
+    return (
+      (row.persNumber || '').toLowerCase().includes(q) ||
+      (row.name || '').toLowerCase().includes(q)
+    );
+  });
+
+  const handleBackToGPF = () => {
+    try { window.__ANIMATE_NAV = true; } catch (e) {}
+    navigate('/gpf');
+  };
 
   return (
     <div className="reports-page">
@@ -127,119 +101,98 @@ export default function Reports() {
 
       <main className="reports-main">
         <div className="reports-header">
-          <h1 className="reports-title">GPF Reports</h1>
-          <p className="reports-subtitle">Generate and download comprehensive GPF reports</p>
+          <h1 className="reports-title">GPF User Summary Report</h1>
+          <p className="reports-subtitle">
+            {loading ? 'Loading...' : `${filtered.length} of ${data.length} records`}
+          </p>
         </div>
 
-        <div className="reports-container">
-          <form className="reports-form" onSubmit={handleGenerateReport}>
-            {message && (
-              <div className={`form-message ${message.includes('Error') ? 'error' : 'success'}`}>
-                {message}
-              </div>
-            )}
+        <div className="reports-toolbar">
+          <input
+            className="reports-search"
+            type="text"
+            placeholder="Search by Pers No. or Name..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          <button className="btn btn-refresh" onClick={fetchSummary} disabled={loading}>
+            {loading ? '⟳ Loading...' : '⟳ Refresh'}
+          </button>
+        </div>
 
-            <div className="form-section">
-              <h2 className="section-title">Select Report Type</h2>
-              <div className="report-types-grid">
-                {reportTypes.map(report => (
-                  <div
-                    key={report.id}
-                    className={`report-type-card ${selectedReport === report.id ? 'selected' : ''}`}
-                    onClick={() => setSelectedReport(report.id)}
-                  >
-                    <div className="report-type-radio">
-                      <input
-                        type="radio"
-                        id={report.id}
-                        name="reportType"
-                        value={report.id}
-                        checked={selectedReport === report.id}
-                        onChange={(e) => setSelectedReport(e.target.value)}
-                      />
-                      <label htmlFor={report.id}></label>
-                    </div>
-                    <div className="report-type-content">
-                      <h3 className="report-type-label">{report.label}</h3>
-                      <p className="report-type-description">{report.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+        {error && <div className="reports-error">⚠ {error}</div>}
 
-            <div className="form-section">
-              <h2 className="section-title">Date Range (Optional)</h2>
-              <div className="date-range-grid">
-                <div className="form-group">
-                  <label htmlFor="startDate" className="form-label">
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    id="startDate"
-                    name="startDate"
-                    value={dateRange.startDate}
-                    onChange={handleDateChange}
-                    className="form-input"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="endDate" className="form-label">
-                    End Date
-                  </label>
-                  <input
-                    type="date"
-                    id="endDate"
-                    name="endDate"
-                    value={dateRange.endDate}
-                    onChange={handleDateChange}
-                    className="form-input"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="form-actions">
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                {loading ? 'Generating...' : 'Generate Report'}
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={handleReset}
-                disabled={loading}
-              >
-                Reset
-              </button>
-              <button
-                type="button"
-                className="btn btn-tertiary"
-                onClick={() => alert('Download feature coming soon!')}
-                disabled={loading || !selectedReport}
-              >
-                Download
-              </button>
-            </div>
-          </form>
-
-          <div className="reports-info">
-            <div className="info-card">
-              <span className="info-icon">ℹ️</span>
-              <div className="info-content">
-                <h3 className="info-title">Report Information</h3>
-                <p className="info-text">
-                  Select a report type to generate detailed GPF reports. You can optionally specify a date range to filter the data. All reports are generated in PDF format and can be downloaded for your records.
-                </p>
-              </div>
-            </div>
+        {!loading && !error && (
+          <div className="reports-table-wrap">
+            <table className="reports-table">
+              <thead>
+                <tr>
+                  <th className="sticky-col col-0">#</th>
+                  <th className="sticky-col col-1">Pers No.</th>
+                  <th className="sticky-col col-2">GPF Acc. No.</th>
+                  <th className="sticky-col col-3">Name</th>
+                  <th>Date of Birth</th>
+                  <th>Designation</th>
+                  <th>Purpose Type</th>
+                  <th>GPF Type</th>
+                  <th>GPF Year</th>
+                  <th>Closing Balance</th>
+                  <th>Appl. Amount</th>
+                  <th>Appl. Date</th>
+                  <th>Report</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={13} className="no-data">No records found</td>
+                  </tr>
+                ) : (
+                  filtered.map((row, i) => (
+                    <tr key={row.persNumber + i}>
+                      <td className="sticky-col col-0">{i + 1}</td>
+                      <td className="sticky-col col-1 cell-mono">{row.persNumber || '—'}</td>
+                      <td className="sticky-col col-2 cell-mono">{row.gpfAccountNumber || '—'}</td>
+                      <td className="sticky-col col-3 cell-name">{row.name || '—'}</td>
+                      <td>{formatDate(row.dob)}</td>
+                      <td>{row.designation || '—'}</td>
+                      <td>{purposeLabel(row.purpose)}</td>
+                      <td className="cell-center">
+                        {row.gpfType ? (
+                          <span className={`badge badge-${row.gpfType === 'F' ? 'blue' : 'green'}`}>
+                            {row.gpfType === 'F' ? 'Final' : 'Partial'}
+                          </span>
+                        ) : '—'}
+                      </td>
+                      <td className="cell-center">{row.gpfYear || '—'}</td>
+                      <td className="cell-amount">{formatCurrency(row.closingBalance)}</td>
+                      <td className="cell-amount">{formatCurrency(row.applAmt)}</td>
+                      <td>{formatDate(row.applDate)}</td>
+                      <td className="cell-center">
+                        <button
+                          className="btn-view-report"
+                          onClick={() => {
+                            try { window.__ANIMATE_NAV = true; } catch (e) {}
+                            navigate(`/gpf/reports/user/${encodeURIComponent(row.persNumber)}`, { state: { user: row } });
+                          }}
+                        >
+                          📄 View Report
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        </div>
+        )}
+
+        {loading && (
+          <div className="reports-loading">
+            <div className="spinner" />
+            <span>Fetching report data...</span>
+          </div>
+        )}
       </main>
     </div>
   );

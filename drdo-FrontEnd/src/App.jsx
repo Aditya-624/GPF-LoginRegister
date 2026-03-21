@@ -26,6 +26,8 @@ import FinalWithdrawal from './components/FinalWithdrawal';
 import UserApplicationGPF from './components/UserApplicationGPF';
 import AddDVNumber from './components/AddDVNumber';
 import Reports from './components/Reports';
+import UserReport from './components/UserReport';
+import ReportDetail from './components/ReportDetail';
 import AddSubscription from './components/AddSubscription';
 import Subscription from './components/Subscription';
 import GPFAccountNumbers from './components/GPFAccountNumbers';
@@ -211,6 +213,8 @@ function AppRoutes() {
             <Route path="/gpf/user-application" element={<PrivateRoute><UserApplicationGPF /></PrivateRoute>} />
             <Route path="/gpf/add-dv-number" element={<PrivateRoute><AddDVNumber /></PrivateRoute>} />
             <Route path="/gpf/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
+            <Route path="/gpf/reports/user/:persNumber" element={<PrivateRoute><UserReport /></PrivateRoute>} />
+            <Route path="/gpf/reports/user/:persNumber/:reportType" element={<PrivateRoute><ReportDetail /></PrivateRoute>} />
             <Route path="/gpf/add-subscription" element={<PrivateRoute><AddSubscription /></PrivateRoute>} />
             <Route path="/gpf/subscription" element={<PrivateRoute><Subscription /></PrivateRoute>} />
             <Route path="/gpf/account-numbers" element={<PrivateRoute><GPFAccountNumbers /></PrivateRoute>} />
@@ -237,6 +241,8 @@ function AppRoutes() {
           <Route path="/gpf/user-application" element={<PrivateRoute><UserApplicationGPF /></PrivateRoute>} />
           <Route path="/gpf/add-dv-number" element={<PrivateRoute><AddDVNumber /></PrivateRoute>} />
           <Route path="/gpf/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
+          <Route path="/gpf/reports/user/:persNumber" element={<PrivateRoute><UserReport /></PrivateRoute>} />
+          <Route path="/gpf/reports/user/:persNumber/:reportType" element={<PrivateRoute><ReportDetail /></PrivateRoute>} />
           <Route path="/gpf/add-subscription" element={<PrivateRoute><AddSubscription /></PrivateRoute>} />
           <Route path="/gpf/subscription" element={<PrivateRoute><Subscription /></PrivateRoute>} />
           <Route path="/gpf/account-numbers" element={<PrivateRoute><GPFAccountNumbers /></PrivateRoute>} />
