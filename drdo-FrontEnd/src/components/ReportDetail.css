@@ -218,3 +218,651 @@
   .rd-doc-top { flex-direction: column; gap: 10px; }
   .rd-footer { flex-direction: column; gap: 32px; }
 }
+
+/* ═══════════════════════════════════════════════
+   GPF DEBIT SCHEDULE — A4 print-ready document
+   ═══════════════════════════════════════════════ */
+
+/* A4 card — centred on screen, exact A4 width */
+.sch-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto 32px auto;
+  padding: 20mm 18mm;
+  background: #fff;
+  color: #111;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  line-height: 1.5;
+}
+
+/* Unit code — right aligned */
+.sch-unit-code {
+  text-align: right;
+  font-size: 10pt;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+
+/* Title block — centred, underlined as a whole */
+.sch-title-block {
+  text-align: center;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #111;
+  padding-bottom: 8px;
+}
+
+.sch-title-line {
+  font-size: 13pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.6;
+}
+
+.sch-title-sub {
+  font-size: 11pt;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.sch-title-main {
+  font-size: 15pt;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 8px;
+}
+
+.sch-hr {
+  border: none;
+  border-top: 1.5px solid #333;
+  margin: 10px 0;
+}
+
+/* Reference block — single line, left aligned */
+.sch-ref-block {
+  font-size: 11pt;
+  font-weight: 700;
+  padding: 6px 0 10px 0;
+}
+
+/* Subscriber info grid */
+.sch-info-grid {
+  margin: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sch-field-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.sch-label {
+  font-weight: 700;
+  font-size: 11pt;
+  white-space: nowrap;
+  min-width: 220px;
+}
+
+.sch-value {
+  font-size: 11pt;
+  flex: 1;
+  border-bottom: 1px solid #555;
+  padding: 2px 4px;
+  min-width: 160px;
+}
+
+.sch-input {
+  border: none;
+  border-bottom: 1px solid #555;
+  outline: none;
+  font-family: inherit;
+  font-size: 11pt;
+  background: transparent;
+  color: #111;
+  flex: 1;
+  padding: 2px 4px;
+  min-width: 160px;
+}
+
+.sch-input:focus {
+  border-bottom-color: #000;
+  background: rgba(0,0,0,0.03);
+}
+
+.sch-print-val {
+  font-size: 11pt;
+  flex: 1;
+  border-bottom: 1px solid #555;
+  padding: 2px 4px;
+}
+
+.sch-amount-row {
+  align-items: center;
+  margin-top: 4px;
+}
+
+.sch-amount-words {
+  font-size: 11pt;
+  font-style: italic;
+  font-weight: 600;
+}
+
+/* Data table */
+.sch-table-wrap {
+  margin: 16px 0;
+  overflow-x: auto;
+}
+
+.sch-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11pt;
+}
+
+.sch-table th,
+.sch-table td {
+  border: 1.5px solid #333;
+  padding: 8px 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.sch-table thead tr {
+  background: #f0f0f0;
+}
+
+.sch-table th {
+  font-weight: 700;
+  font-size: 10.5pt;
+}
+
+.sch-table td {
+  height: 36px;
+}
+
+.sch-cell-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  text-align: center;
+  font-family: inherit;
+  font-size: 11pt;
+  background: transparent;
+  color: #111;
+}
+
+/* Signature section — dated left, sig right, no lines */
+.sch-sign-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin: 20px 0 0 0;
+}
+
+.sch-dated-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.sch-sig-block {
+  text-align: right;
+  min-width: 240px;
+}
+
+.sch-sig-role {
+  font-weight: 700;
+  font-size: 11pt;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+/* Footer area — pushed ~4-5cm from the table */
+.sch-footer-area {
+  margin-top: 50px;
+}
+
+.sch-footer-note {
+  margin-bottom: 8px;
+}
+
+.sch-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.sch-footer-field {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sch-footer-prefix {
+  font-size: 11pt;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sch-bill-input {
+  max-width: 120px;
+  min-width: 80px;
+}
+
+.sch-system-note {
+  text-align: center;
+  font-size: 9pt;
+  color: #888;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* print-only elements hidden on screen */
+.print-only { display: none; }
+
+/* ── Print media ── */
+@media print {
+  /* Hide everything except the A4 doc */
+  .sch-page > *:not(.sch-a4) { display: none !important; }
+
+  .sch-a4 {
+    margin: 0;
+    padding: 15mm 15mm;
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    min-height: auto;
+    page-break-after: avoid;
+  }
+
+  /* Show print-only spans, hide inputs */
+  .no-print  { display: none !important; }
+  .print-only { display: inline !important; }
+
+  /* Ensure table borders print */
+  .sch-table th,
+  .sch-table td {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sch-table thead tr {
+    background: #f0f0f0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   GPF APPLICATION FORM — A4 print-ready document
+   ═══════════════════════════════════════════════ */
+
+.appl-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto 32px auto;
+  padding: 20mm 22mm;
+  background: #fff;
+  color: #111;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  line-height: 1.6;
+}
+
+/* Title block */
+.appl-title-block {
+  text-align: center;
+  margin-bottom: 28px;
+  padding-bottom: 10px;
+  border-bottom: 2.5px solid #111;
+}
+
+.appl-title-main {
+  font-size: 14pt;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  line-height: 1.5;
+  text-decoration: underline;
+}
+
+.appl-title-office {
+  font-size: 12pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 6px;
+  letter-spacing: 0.3px;
+}
+
+/* Fields table */
+.appl-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.appl-row {
+  vertical-align: top;
+}
+
+.appl-row + .appl-row .appl-no,
+.appl-row + .appl-row .appl-label,
+.appl-row + .appl-row .appl-colon,
+.appl-row + .appl-row .appl-value {
+  padding-top: 18px;
+}
+
+.appl-no {
+  font-size: 12pt;
+  font-weight: 700;
+  width: 32px;
+  padding: 10px 6px 4px 0;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.appl-label {
+  font-size: 12pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  width: 55%;
+  padding: 10px 12px 4px 0;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.appl-colon {
+  font-size: 12pt;
+  font-weight: 700;
+  padding: 10px 10px 4px 0;
+  vertical-align: top;
+}
+
+.appl-value {
+  padding: 10px 0 4px 0;
+  vertical-align: top;
+  width: 45%;
+  min-width: 200px;
+}
+
+.appl-input {
+  width: 100%;
+  border: none;
+  border-bottom: none;
+  outline: none;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  background: transparent;
+  color: #111;
+  padding: 2px 4px;
+  box-sizing: border-box;
+  line-height: 1.6;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.appl-input:focus {
+  background: rgba(0,0,0,0.02);
+}
+
+.appl-print-val {
+  font-size: 12pt;
+  border-bottom: 1.5px solid #555;
+  display: block;
+  padding: 2px 4px;
+  min-height: 22px;
+}
+
+/* Signature — right aligned */
+.appl-sig-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 60px;
+}
+
+.appl-sig-block {
+  text-align: center;
+  min-width: 220px;
+}
+
+.appl-sig-line {
+  border-top: 1.5px solid #111;
+  margin-bottom: 6px;
+  margin-top: 50px;
+}
+
+.appl-sig-label {
+  font-size: 11pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.appl-system-note {
+  text-align: center;
+  font-size: 9pt;
+  color: #888;
+  margin-top: 24px;
+  font-family: Arial, sans-serif;
+}
+
+/* Print */
+@media print {
+  .appl-a4 {
+    margin: 0;
+    padding: 15mm 18mm;
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .no-print  { display: none !important; }
+  .print-only { display: block !important; }
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   TEMPORARY ADVANCE APPLICATION — A4
+   ═══════════════════════════════════════════════ */
+
+.ta-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto 32px auto;
+  padding: 18mm 22mm;
+  background: #fff;
+  color: #111;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  line-height: 1.6;
+}
+
+.ta-title-block {
+  text-align: center;
+  margin-bottom: 22px;
+  padding-bottom: 10px;
+  border-bottom: 2.5px solid #111;
+}
+
+.ta-title-line {
+  font-size: 13pt;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-decoration: underline;
+  letter-spacing: 0.5px;
+  line-height: 1.6;
+}
+
+.ta-title-sub {
+  font-size: 11pt;
+  font-weight: 700;
+  text-decoration: underline;
+  text-transform: none;
+}
+
+.ta-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ta-row { vertical-align: top; }
+
+.ta-row + .ta-row .ta-no,
+.ta-row + .ta-row .ta-label,
+.ta-row + .ta-row .ta-colon,
+.ta-row + .ta-row .ta-val {
+  padding-top: 14px;
+}
+
+.ta-no {
+  font-size: 12pt;
+  font-weight: 700;
+  width: 28px;
+  padding: 8px 6px 2px 0;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.ta-label {
+  font-size: 12pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  width: 52%;
+  padding: 8px 10px 2px 0;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.ta-indent {
+  padding-left: 20px !important;
+}
+
+.ta-colon {
+  font-size: 12pt;
+  font-weight: 700;
+  padding: 8px 10px 2px 0;
+  vertical-align: top;
+}
+
+.ta-val {
+  padding: 8px 0 2px 0;
+  vertical-align: top;
+}
+
+.ta-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #999;
+  outline: none;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  background: transparent;
+  color: #111;
+  padding: 1px 4px;
+  box-sizing: border-box;
+}
+
+.ta-input:focus { background: rgba(0,0,0,0.02); }
+
+.ta-date-input { width: auto; min-width: 160px; }
+
+.ta-textarea {
+  width: 100%;
+  border: 1px solid #999;
+  outline: none;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  background: transparent;
+  color: #111;
+  padding: 4px;
+  box-sizing: border-box;
+  resize: vertical;
+  margin-top: 6px;
+}
+
+.ta-declaration {
+  margin-top: 20px;
+  font-size: 12pt;
+  font-style: italic;
+  line-height: 1.7;
+  border-top: 1px solid #aaa;
+  padding-top: 12px;
+}
+
+.ta-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 40px;
+}
+
+.ta-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ta-footer-label {
+  font-size: 12pt;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ta-footer-right {
+  text-align: center;
+  min-width: 200px;
+}
+
+.ta-sig-line {
+  border-top: 1.5px solid #111;
+  margin-bottom: 6px;
+  margin-top: 48px;
+}
+
+.ta-sig-label {
+  font-size: 11pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+@media print {
+  .ta-a4 {
+    margin: 0;
+    padding: 15mm 18mm;
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    min-height: auto;
+  }
+  .ta-input, .ta-textarea { border-color: transparent; }
+}
