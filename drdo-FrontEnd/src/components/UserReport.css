@@ -2,9 +2,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--page-bg);
+  background: transparent;
   color: var(--page-text);
-  transition: background-color var(--transition-smooth), color var(--transition-smooth);
 }
 
 .user-report-main {
@@ -166,3 +165,82 @@
   }
   .ur-card:nth-child(n) { grid-column: 1; grid-row: auto; }
 }
+
+/* ── Per-theme overrides ── */
+
+/* Ocean Dark / Dark */
+.theme-ocean-dark .user-report-page,
+.theme-dark .user-report-page {
+  color: #e2e8f0;
+}
+.theme-ocean-dark .top-nav,
+.theme-dark .top-nav {
+  background: rgba(30, 41, 59, 0.92);
+  border-bottom-color: rgba(148, 163, 184, 0.25);
+}
+.theme-ocean-dark .ur-card,
+.theme-dark .ur-card {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+.theme-ocean-dark .ur-card:hover,
+.theme-dark .ur-card:hover {
+  background: rgba(51, 65, 85, 0.9);
+  border-color: #38bdf8;
+}
+.theme-ocean-dark .ur-card-title,
+.theme-dark .ur-card-title { color: #e2e8f0; }
+.theme-ocean-dark .ur-card-desc,
+.theme-dark .ur-card-desc { color: #94a3b8; }
+
+/* Forest */
+.theme-forest .top-nav {
+  background: rgba(6, 78, 59, 0.88);
+  border-bottom-color: rgba(167, 243, 208, 0.25);
+}
+.theme-forest .ur-card {
+  background: rgba(6, 78, 59, 0.7);
+  border-color: rgba(167, 243, 208, 0.2);
+}
+.theme-forest .ur-card:hover {
+  border-color: #10b981;
+  background: rgba(6, 95, 70, 0.85);
+}
+.theme-forest .ur-card-title { color: #d1fae5; }
+.theme-forest .ur-card-desc  { color: #6ee7b7; }
+.theme-forest .ur-title       { color: #d1fae5; }
+
+/* Purple */
+.theme-purple .top-nav {
+  background: rgba(88, 28, 135, 0.88);
+  border-bottom-color: rgba(196, 181, 253, 0.3);
+}
+.theme-purple .ur-card {
+  background: rgba(88, 28, 135, 0.5);
+  border-color: rgba(196, 181, 253, 0.25);
+}
+.theme-purple .ur-card:hover {
+  border-color: #a855f7;
+  background: rgba(109, 40, 217, 0.5);
+}
+.theme-purple .ur-card-title { color: #ede9fe; }
+.theme-purple .ur-card-desc  { color: #c4b5fd; }
+.theme-purple .ur-title       { color: #ede9fe; }
+
+/* Cyberpunk */
+.theme-cyberpunk .top-nav {
+  background: rgba(10, 10, 10, 0.95);
+  border-bottom-color: rgba(0, 255, 136, 0.3);
+}
+.theme-cyberpunk .ur-card {
+  background: rgba(26, 0, 51, 0.8);
+  border-color: rgba(0, 255, 136, 0.2);
+}
+.theme-cyberpunk .ur-card:hover {
+  border-color: #00ff88;
+  background: rgba(26, 0, 51, 0.95);
+}
+.theme-cyberpunk .ur-card-title { color: #00ff88; }
+.theme-cyberpunk .ur-card-desc  { color: #aaa; }
+.theme-cyberpunk .ur-title       { color: #00ff88; }
+.theme-cyberpunk .ur-card-arrow  { color: #ff0080; }

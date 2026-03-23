@@ -1,18 +1,20 @@
-.rd-page {
+﻿.rd-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: var(--page-bg);
+  background-attachment: fixed;
   color: var(--page-text);
 }
 
 .rd-main {
   flex: 1;
   padding: 32px 24px;
-  max-width: 960px;
+  max-width: 1000px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
+  background: transparent;
 }
 
 .rd-warn {
@@ -191,17 +193,149 @@
   margin-top: 16px;
 }
 
-/* Print button */
+/* Print button — always visible on all themes */
 .btn-print {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white !important;
-  border: none !important;
-  box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: #fff !important;
+  border: 2px solid #047857 !important;
+  box-shadow: 0 4px 12px rgba(16,185,129,0.5) !important;
+  font-weight: 700 !important;
 }
 
 .btn-print:hover {
   background: linear-gradient(135deg, #059669, #047857) !important;
+  color: #fff !important;
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16,185,129,0.6) !important;
+}
+
+/* Light themes — nav bg is white/light so add stronger contrast */
+.theme-ocean-light .btn-print,
+.theme-light .btn-print,
+.theme-rose-gold .btn-print,
+.theme-sunset .btn-print {
+  background: linear-gradient(135deg, #047857, #065f46) !important;
+  color: #fff !important;
+  border: 2px solid #064e3b !important;
+  box-shadow: 0 4px 14px rgba(4,120,87,0.5) !important;
+}
+
+/* ── Navbar ── */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  height: 60px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--input-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.nav-left, .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-brand {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--card-text);
+  letter-spacing: 0.3px;
+}
+
+.nav-time {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--input-border);
+  background: var(--card-bg);
+  color: var(--card-text);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.btn-back {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  color: #fff !important;
+  border: 2px solid #1d4ed8 !important;
+  box-shadow: 0 4px 12px rgba(59,130,246,0.45) !important;
+  font-weight: 700 !important;
+}
+
+.btn-back:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(59,130,246,0.55) !important;
+}
+
+/* Light themes — stronger contrast on white navbar */
+.theme-ocean-light .btn-back,
+.theme-light .btn-back,
+.theme-rose-gold .btn-back,
+.theme-sunset .btn-back {
+  background: linear-gradient(135deg, #1d4ed8, #1e3a8a) !important;
+  color: #fff !important;
+  border: 2px solid #1e3a8a !important;
+  box-shadow: 0 4px 14px rgba(29,78,216,0.5) !important;
+}
+
+.btn-profile { background: var(--card-bg); color: var(--card-text); }
+
+.profile-icon { font-size: 15px; }
+.profile-name { font-size: 13px; }
+
+.theme-selector-compact {
+  display: flex;
+  align-items: center;
+}
+
+/* ── Per-theme navbar overrides ── */
+.theme-ocean-dark .top-nav,
+.theme-dark .top-nav {
+  background: rgba(30, 41, 59, 0.92);
+  border-bottom-color: rgba(148, 163, 184, 0.25);
+}
+.theme-forest .top-nav {
+  background: rgba(6, 78, 59, 0.88);
+  border-bottom-color: rgba(167, 243, 208, 0.25);
+}
+.theme-purple .top-nav {
+  background: rgba(88, 28, 135, 0.88);
+  border-bottom-color: rgba(196, 181, 253, 0.3);
+}
+.theme-cyberpunk .top-nav {
+  background: rgba(10, 10, 10, 0.95);
+  border-bottom-color: rgba(0, 255, 136, 0.3);
+}
+.theme-sunset .top-nav,
+.theme-rose-gold .top-nav {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom-color: rgba(124, 45, 18, 0.2);
 }
 
 /* Print */
@@ -211,6 +345,24 @@
   .rd-main { padding: 0; max-width: 100%; }
   .rd-doc { border: none; box-shadow: none; padding: 20px; }
   .rd-schedule-wrap { max-height: none; overflow: visible; }
+  /* All A4 docs stay white on print regardless of theme */
+  .cfa-a4, .cfata-a4, .cb-a4, .cs-a4, .sch-a4, .appl-a4, .ta-a4 {
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ── A4 paper always stays white/black — theme only affects the surrounding area ── */
+.cfa-a4,
+.cfata-a4,
+.cb-a4,
+.cs-a4,
+.sch-a4,
+.appl-a4,
+.ta-a4 {
+  background: #fff !important;
+  color: #000 !important;
 }
 
 @media (max-width: 768px) {
@@ -219,11 +371,11 @@
   .rd-footer { flex-direction: column; gap: 32px; }
 }
 
-/* ═══════════════════════════════════════════════
-   GPF DEBIT SCHEDULE — A4 print-ready document
-   ═══════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   GPF DEBIT SCHEDULE â€” A4 print-ready document
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* A4 card — centred on screen, exact A4 width */
+/* A4 card â€” centred on screen, exact A4 width */
 .sch-a4 {
   width: 210mm;
   min-height: 297mm;
@@ -239,7 +391,7 @@
   line-height: 1.5;
 }
 
-/* Unit code — right aligned */
+/* Unit code â€” right aligned */
 .sch-unit-code {
   text-align: right;
   font-size: 10pt;
@@ -248,7 +400,7 @@
   letter-spacing: 0.3px;
 }
 
-/* Title block — centred, underlined as a whole */
+/* Title block â€” centred, underlined as a whole */
 .sch-title-block {
   text-align: center;
   margin-bottom: 10px;
@@ -284,7 +436,7 @@
   margin: 10px 0;
 }
 
-/* Reference block — single line, left aligned */
+/* Reference block â€” single line, left aligned */
 .sch-ref-block {
   font-size: 11pt;
   font-weight: 700;
@@ -400,7 +552,7 @@
   color: #111;
 }
 
-/* Signature section — dated left, sig right, no lines */
+/* Signature section â€” dated left, sig right, no lines */
 .sch-sign-section {
   display: flex;
   justify-content: space-between;
@@ -426,7 +578,7 @@
   white-space: nowrap;
 }
 
-/* Footer area — pushed ~4-5cm from the table */
+/* Footer area â€” pushed ~4-5cm from the table */
 .sch-footer-area {
   margin-top: 50px;
 }
@@ -473,7 +625,7 @@
 /* print-only elements hidden on screen */
 .print-only { display: none; }
 
-/* ── Print media ── */
+/* â”€â”€ Print media â”€â”€ */
 @media print {
   /* Hide everything except the A4 doc */
   .sch-page > *:not(.sch-a4) { display: none !important; }
@@ -511,9 +663,9 @@
   }
 }
 
-/* ═══════════════════════════════════════════════
-   GPF APPLICATION FORM — A4 print-ready document
-   ═══════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   GPF APPLICATION FORM â€” A4 print-ready document
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .appl-a4 {
   width: 210mm;
@@ -634,7 +786,7 @@
   min-height: 22px;
 }
 
-/* Signature — right aligned */
+/* Signature â€” right aligned */
 .appl-sig-section {
   display: flex;
   justify-content: flex-end;
@@ -687,9 +839,9 @@
   }
 }
 
-/* ═══════════════════════════════════════════════
-   TEMPORARY ADVANCE APPLICATION — A4
-   ═══════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   TEMPORARY ADVANCE APPLICATION â€” A4
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .ta-a4 {
   width: 210mm;
@@ -867,9 +1019,9 @@
   .ta-input, .ta-textarea { border-color: transparent; }
 }
 
-/* ═══════════════════════════════════════════════
-   GPF CALCULATION SHEET — matches physical doc
-   ═══════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   GPF CALCULATION SHEET â€” matches physical doc
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .cs-a4 {
   width: 210mm;
@@ -886,7 +1038,7 @@
   line-height: 1.5;
 }
 
-/* ── Top info row: ID NO | NAME | DESIG / GPF A/C NO ── */
+/* â”€â”€ Top info row: ID NO | NAME | DESIG / GPF A/C NO â”€â”€ */
 .cs-top-row {
   display: flex;
   align-items: flex-start;
@@ -905,14 +1057,14 @@
 
 .cs-top-right { text-align: right; line-height: 1.8; }
 
-/* ── Divider ── */
+/* â”€â”€ Divider â”€â”€ */
 .cs-divider {
   border: none;
   border-top: 1.5px solid #333;
   margin: 8px 0;
 }
 
-/* ── Opening Balance row ── */
+/* â”€â”€ Opening Balance row â”€â”€ */
 .cs-ob-row {
   display: flex;
   align-items: baseline;
@@ -946,7 +1098,7 @@
   text-align: right;
 }
 
-/* ── Section label ── */
+/* â”€â”€ Section label â”€â”€ */
 .cs-section-label {
   font-size: 11pt;
   font-weight: 900;
@@ -956,7 +1108,7 @@
   text-decoration: underline;
 }
 
-/* ── Column headers & rows — 3-col layout ── */
+/* â”€â”€ Column headers & rows â€” 3-col layout â”€â”€ */
 .cs-cols-hdr,
 .cs-cols-row {
   display: flex;
@@ -978,13 +1130,13 @@
   margin-bottom: 6px;
 }
 
-/* col 1: Month/Year — takes up left ~50% */
+/* col 1: Month/Year â€” takes up left ~50% */
 .cs-col-monthyr {
   flex: 0 0 50%;
   padding-right: 8px;
 }
 
-/* col 2: Subscription/Refund/Recovery — centre ~25% */
+/* col 2: Subscription/Refund/Recovery â€” centre ~25% */
 .cs-col-sub {
   flex: 0 0 25%;
   font-variant-numeric: tabular-nums;
@@ -992,7 +1144,7 @@
   padding-right: 16px;
 }
 
-/* col 3: Total — right ~25%, right-aligned */
+/* col 3: Total â€” right ~25%, right-aligned */
 .cs-col-total {
   flex: 0 0 25%;
   font-variant-numeric: tabular-nums;
@@ -1000,7 +1152,7 @@
   text-align: right;
 }
 
-/* ── TOTAL row — right-aligned, matching Total column ── */
+/* â”€â”€ TOTAL row â€” right-aligned, matching Total column â”€â”€ */
 .cs-total-row {
   display: flex;
   align-items: baseline;
@@ -1030,7 +1182,7 @@
   text-align: right;
 }
 
-/* ── WITHDRAWALS row ── */
+/* â”€â”€ WITHDRAWALS row â”€â”€ */
 .cs-withdrawal-row {
   display: flex;
   align-items: flex-start;
@@ -1090,7 +1242,7 @@
   text-align: right;
 }
 
-/* ── Bottom info block ── */
+/* â”€â”€ Bottom info block â”€â”€ */
 .cs-bottom-info {
   margin: 18px 0 12px 0;
   font-size: 11pt;
@@ -1117,7 +1269,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ── Signature area ── */
+/* â”€â”€ Signature area â”€â”€ */
 .cs-sig-area {
   display: flex;
   justify-content: flex-end;
@@ -1144,7 +1296,7 @@
   text-transform: uppercase;
 }
 
-/* ── Counter sign ── */
+/* â”€â”€ Counter sign â”€â”€ */
 .cs-countersign {
   text-align: center;
   margin-top: 28px;
@@ -1187,9 +1339,9 @@
 
 
 
-/* ═══════════════════════════════════════════════
-   CALCULATION SHEET — TEMPORARY ADVANCE extras
-   ═══════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   CALCULATION SHEET â€” TEMPORARY ADVANCE extras
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 /* Top bar: single row with all fields spread across */
 .csta-top-bar {
@@ -1203,7 +1355,7 @@
   gap: 8px;
 }
 
-/* Advance details divider — light grey */
+/* Advance details divider â€” light grey */
 .csta-adv-divider {
   border: none;
   border-top: 1.5px solid #bbb;
@@ -1252,4 +1404,1052 @@
 .csta-adv-val-bold {
   font-weight: 900;
   font-size: 12pt;
+}
+
+
+/* ═══════════════════════════════════════════════
+   CONTINGENT BILL — Page 1  (matches physical doc)
+   ═══════════════════════════════════════════════ */
+
+.cb-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto 32px auto;
+  padding: 14mm 18mm 16mm 18mm;
+  background: #fff;
+  color: #111;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+  border-radius: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 11pt;
+  line-height: 1.5;
+}
+
+/* ── UNIT CODE — flush right ── */
+.cb-unit-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+  font-size: 11pt;
+}
+.cb-unit-lbl { font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+.cb-unit-val { font-weight: 700; }
+
+/* ── Row 2: CONTINGENT BILL (centre) + BILL NO (right) ── */
+.cb-row2 {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.cb-title-cell {
+  flex: 1;
+  text-align: center;
+  font-size: 14pt;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.cb-billno-cell {
+  font-size: 10.5pt;
+  font-weight: 700;
+  white-space: nowrap;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+/* ── Row 3: TO block (left) + FW/DRDL HYD/Dated (right) ── */
+.cb-row3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+.cb-to-block { font-size: 11pt; line-height: 1.8; }
+
+
+
+.cb-fw-block { text-align: right; font-size: 11pt; line-height: 1.8; }
+
+
+
+/* ── Spacer ── */
+.cb-spacer { height: 10px; }
+
+/* ── Expenditure paragraph ── */
+.cb-exp-para {
+  font-size: 11pt;
+  line-height: 2;
+  margin-bottom: 8px;
+}
+.cb-exp-indent {
+  display: inline-block;
+  padding-left: 24px;
+}
+
+/* ── Shared input ── */
+.cb-input {
+  border: none;
+  border-bottom: 1px solid #777;
+  outline: none;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 11pt;
+  background: transparent;
+  color: #111;
+  padding: 0 3px;
+  box-sizing: border-box;
+  vertical-align: baseline;
+}
+.cb-input:focus { background: rgba(0,0,0,0.02); border-bottom-color: #000; }
+
+
+
+
+/* ── Expenditure section — div layout ── */
+.cb-exp-section {
+  width: 100%;
+  border: 1.5px solid #333;
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+
+.cb-exp-hdr {
+  display: flex;
+  background: #f0f0f0;
+  border-bottom: 1.5px solid #333;
+}
+
+.cb-exp-hdr-left {
+  flex: 0 0 74%;
+  padding: 6px 10px;
+  font-weight: 900;
+  font-size: 11pt;
+  text-transform: uppercase;
+  border-right: 1.5px solid #333;
+}
+
+.cb-exp-hdr-right {
+  flex: 1;
+  padding: 6px 10px;
+  font-weight: 900;
+  font-size: 11pt;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.cb-exp-body {
+  display: flex;
+}
+
+.cb-exp-body-left {
+  flex: 0 0 74%;
+  padding: 8px 10px;
+  vertical-align: top;
+  line-height: 1.9;
+  border-right: 1.5px solid #333;
+}
+
+.cb-exp-body-right {
+  flex: 1;
+  padding: 8px 10px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.cb-td-indent { padding-left: 18px; }
+.cb-amt-val   { font-size: 11pt; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ── Certification ── */
+.cb-cert {
+  text-align: left;
+  font-size: 11pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 10px 0 8px 0;
+  line-height: 1.6;
+}
+
+/* ── Enclosures ── */
+.cb-encl-block { font-size: 11pt; margin-bottom: 6px; line-height: 1.9; }
+.cb-encl-item  { padding-left: 10px; }
+
+
+/* ── Total strip ── */
+.cb-total-strip {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 16px;
+  margin: 6px 0 8px 0;
+  font-size: 11pt;
+  font-weight: 900;
+  border-top: 1.5px solid #333;
+  padding-top: 4px;
+}
+.cb-total-lbl { text-transform: uppercase; letter-spacing: 0.4px; }
+.cb-total-amt { font-variant-numeric: tabular-nums; min-width: 100px; text-align: right; }
+
+/* ── Countersigned row ── */
+.cb-countersign-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 6px 0 2px 0;
+  min-height: 28px;
+}
+.cb-countersign-left { flex: 1; }
+.cb-received-right   { font-size: 11pt; font-weight: 700; text-transform: uppercase; white-space: nowrap; padding-left: 20px; }
+.cb-countersign-label{ font-size: 11pt; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+
+/* ── Footer ── */
+.cb-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 8px;
+  gap: 20px;
+}
+.cb-footer-left  { min-width: 180px; }
+.cb-footer-right { min-width: 260px; margin-left: auto; }
+
+.cb-sig-gap  { height: 36px; }
+.cb-sig-role { font-size: 11pt; font-weight: 700; line-height: 1.7; }
+
+.cb-sig-title {
+  font-size: 11pt;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+}
+
+.cb-sig-field-row  { display: flex; align-items: baseline; gap: 4px; margin-bottom: 5px; flex-wrap: wrap; }
+
+
+
+
+
+/* ── Print ── */
+@media print {
+  .cb-a4 {
+    margin: 0;
+    padding: 10mm 14mm;
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    min-height: auto;
+    page-break-after: always;
+  }
+  .cb-input { border-bottom-color: transparent; }
+  .no-print { display: none !important; }
+  @page { size: A4 portrait; margin: 0; }
+}
+
+/* ═══════════════════════════════════════════════
+
+/* ═══════════════════════════════════════════════
+
+/* ═══════════════════════════════════════════════
+   CONTINGENT BILL — Page 2  (DA Department)
+   ═══════════════════════════════════════════════ */
+
+.cb-page2 {
+  margin-top: 24px;
+  /* override cb-a4 font to smaller so everything fits */
+  font-size: 9.5pt;
+}
+
+/* ── Header ── */
+.cb2-header {
+  text-align: center;
+  font-size: 11pt;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-decoration: underline;
+  letter-spacing: 0.6px;
+  margin-bottom: 16px;
+}
+
+.cb2-spacer    { height: 10px; }
+.cb2-spacer-sm { height: 5px; }
+
+/* ── Two-column area ── */
+.cb2-cols {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cb2-col-left {
+  flex: 0 0 46%;
+  font-size: 9.5pt;
+  line-height: 1.7;
+  overflow: hidden;
+}
+
+.cb2-col-right {
+  flex: 1;
+  font-size: 9.5pt;
+  line-height: 1.7;
+  overflow: hidden;
+}
+
+/* lines wrap naturally — no nowrap */
+.cb2-line {
+  font-size: 9.5pt;
+  line-height: 1.7;
+  word-break: break-word;
+}
+
+.cb2-line-split {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* inputs inside lines stay compact */
+.cb2-line .cb-input,
+.cb2-col-left .cb-input,
+.cb2-col-right .cb-input {
+  font-size: 9.5pt;
+  min-width: 40px;
+  width: auto;
+  max-width: 120px;
+}
+
+/* ── Signature row ── */
+.cb2-sig-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cb2-sig-cell {
+  flex: 1;
+  text-align: center;
+  padding: 0 4px;
+}
+
+.cb2-sig-space { height: 32px; }
+
+.cb2-sig-role {
+  font-size: 9pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-top: 1px solid #333;
+  padding-top: 3px;
+  white-space: nowrap;
+}
+
+/* ── Classification — div/flex only, no tables ── */
+.cb2-class-wrap {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cb2-class-title {
+  font-size: 9.5pt;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.cb2-class-row {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 2px;
+}
+
+.cb2-class-hdr {
+  font-weight: 900;
+  font-size: 9pt;
+  text-transform: uppercase;
+  border-bottom: 1px solid #333;
+  margin-bottom: 4px;
+}
+
+.cb2-cl {
+  flex: 1;
+  padding: 3px 6px;
+  font-size: 9pt;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+
+
+.cb2-uline {
+  border: none;
+  border-bottom: 1px solid #777;
+  min-width: 40px;
+  max-width: 100px;
+}
+
+/* ── Instruction ── */
+.cb2-instr-title {
+  text-align: center;
+  font-size: 10pt;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-decoration: underline;
+  letter-spacing: 0.3px;
+  margin-bottom: 5px;
+}
+
+.cb2-instr-text {
+  text-align: center;
+  font-size: 9.5pt;
+  line-height: 1.6;
+}
+
+/* ── Print ── */
+@media print {
+  .cb-page2 {
+    margin-top: 0;
+    page-break-before: always;
+  }
+  .cb2-uline,
+  .cb2-line .cb-input,
+  .cb2-col-left .cb-input,
+  .cb2-col-right .cb-input {
+    border-bottom-color: transparent;
+  }
+}
+
+
+
+
+
+/* CFA — cleared, ready for new structure */
+.cfa-empty {
+  min-height: 60vh;
+}
+
+/* ══════════════════════════════════════════
+   CFA — Form for Sanction of Withdrawal
+   ══════════════════════════════════════════ */
+.cfa-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 24px auto;
+  padding: 18mm 20mm 18mm 20mm;
+  background: #fff;
+  color: #000;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  line-height: 1.6;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  box-sizing: border-box;
+  position: relative;
+}
+
+.cfa-page2 {
+  margin-top: 0;
+}
+
+/* Unit block — top right */
+.cfa-unit-block {
+  text-align: right;
+  font-size: 11pt;
+  margin-bottom: 6px;
+}
+.cfa-lbl-sm {
+  font-weight: 700;
+}
+
+/* Top banner — 3 date fields, no border */
+.cfa-top-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 6px 0;
+  margin-bottom: 18px;
+  gap: 8px;
+}
+.cfa-banner-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  flex: 1;
+}
+.cfa-banner-lbl {
+  font-size: 10pt;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* Centred underlined title */
+.cfa-title {
+  text-align: center;
+  font-size: 13pt;
+  font-weight: 700;
+  text-decoration: underline;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+}
+
+.cfa-p2-subtitle {
+  text-align: center;
+  font-size: 10pt;
+  color: #444;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+/* Office header — sits on far right corner */
+.cfa-office-block {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 11pt;
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+.cfa-office-right {
+  width: 52%;
+  text-align: left;
+}
+.cfa-office-refno {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.cfa-dated-row {
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* Addressee */
+.cfa-to-block {
+  margin-left: 0;
+}
+.cfa-to-label {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.cfa-to-line {
+  margin-left: 20px;
+  line-height: 1.7;
+}
+
+/* Subject — left aligned, bold, wraps naturally */
+.cfa-sub-line {
+  font-weight: 700;
+  text-align: left;
+  font-size: 11.5pt;
+  line-height: 1.6;
+}
+.cfa-sub-prefix {
+  font-weight: 700;
+}
+
+/* Sir */
+.cfa-sir {
+  font-size: 12pt;
+  margin-bottom: 4px;
+}
+
+/* Addressee underline */
+.cfa-to-underline {
+  text-decoration: underline;
+}
+.cfa-to-indent {
+  margin-left: 22px;
+}
+
+/* Paragraphs */
+.cfa-para {
+  display: flex;
+  gap: 10px;
+  text-align: justify;
+  margin-bottom: 0;
+}
+.cfa-para-num {
+  font-weight: 700;
+  flex-shrink: 0;
+  min-width: 18px;
+}
+.cfa-para-body {
+  flex: 1;
+}
+.cfa-words {
+  font-style: italic;
+  font-weight: 600;
+}
+
+/* Spacers */
+.cfa-spacer-sm  { height: 10px; }
+.cfa-spacer-md  { height: 20px; }
+.cfa-spacer-lg  { height: 40px; }
+
+/* Signature block */
+.cfa-sig-block {
+  display: flex;
+  justify-content: flex-end;
+}
+.cfa-sig-right {
+  text-align: center;
+  min-width: 200px;
+}
+.cfa-sig-space {
+  height: 48px;
+  border-bottom: 1px solid #000;
+  margin-bottom: 4px;
+}
+.cfa-sig-role {
+  font-size: 11pt;
+  font-weight: 600;
+}
+
+/* banner value text */
+.cfa-banner-val {
+  font-size: 11pt;
+}
+
+/* Page 2 — details table */
+.cfa-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5pt;
+}
+.cfa-details-table tr {
+  border-bottom: 1px solid #ccc;
+}
+.cfa-dt-lbl {
+  font-weight: 700;
+  padding: 6px 12px 6px 0;
+  width: 42%;
+  vertical-align: top;
+}
+.cfa-dt-val {
+  padding: 6px 0;
+  vertical-align: top;
+}
+
+/* Certification block */
+.cfa-cert-block {
+  border: 1px solid #000;
+  padding: 10px 14px;
+}
+.cfa-cert-title {
+  font-weight: 700;
+  text-decoration: underline;
+  margin-bottom: 8px;
+  font-size: 11.5pt;
+}
+.cfa-cert-line {
+  margin-bottom: 6px;
+  text-align: justify;
+}
+
+/* 3-col signature row */
+.cfa-p2-sig-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+.cfa-p2-sig-cell {
+  flex: 1;
+  text-align: center;
+}
+
+/* Stamp area */
+.cfa-stamp-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+.cfa-stamp-box {
+  border: 1px dashed #888;
+  padding: 18px 30px;
+  font-size: 10pt;
+  color: #666;
+  text-align: center;
+}
+.cfa-stamp-date {
+  font-size: 11pt;
+  font-weight: 600;
+}
+
+/* System note */
+.cfa-system-note {
+  text-align: center;
+  font-size: 9pt;
+  color: #888;
+  margin-top: 20px;
+  font-family: sans-serif;
+}
+
+/* Print overrides */
+@media print {
+  .cfa-a4 {
+    box-shadow: none;
+    margin: 0;
+    padding: 15mm 18mm;
+  }
+  .cfa-inp {
+    border-bottom: 1px solid #000 !important;
+  }
+}
+
+/* ══════════════════════════════════════════
+   CFA Page 2 — Financial Statement
+   ══════════════════════════════════════════ */
+
+/* Wrapper keeps all columns aligned */
+.cfa-fs-wrap {
+  width: 100%;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+}
+
+.cfa-fs-divider {
+  border-top: 1px solid #000;
+  margin: 6px 0;
+}
+
+/* Opening Balance row */
+.cfa-fs-ob {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 0;
+}
+.cfa-fs-label {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cfa-fs-dots {
+  flex: 1;
+  letter-spacing: 2px;
+  color: #555;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.cfa-fs-amt {
+  font-weight: 700;
+  min-width: 110px;
+  text-align: right;
+}
+
+/* Section titles */
+.cfa-fs-section-title {
+  font-weight: 700;
+  font-size: 11.5pt;
+  text-decoration: underline;
+  margin: 8px 0 4px 0;
+}
+
+/* Column header + data rows — 4-col grid */
+.cfa-fs-col-hdr,
+.cfa-fs-col-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 120px 120px;
+  gap: 4px;
+  align-items: baseline;
+  padding: 2px 0;
+}
+.cfa-fs-col-hdr {
+  font-weight: 700;
+  font-size: 10.5pt;
+  border-bottom: 1px solid #888;
+  padding-bottom: 3px;
+}
+.cfa-fs-col-monthyr { }
+.cfa-fs-col-range   { }
+.cfa-fs-col-sub     { text-align: right; }
+.cfa-fs-col-total   { text-align: right; font-weight: 600; }
+
+/* Grand Total row */
+.cfa-fs-row { display: flex; align-items: baseline; }
+.cfa-fs-total-row {
+  justify-content: flex-end;
+  gap: 20px;
+  padding: 4px 0;
+}
+.cfa-fs-total-lbl {
+  font-weight: 700;
+  font-size: 12pt;
+}
+.cfa-fs-total-amt {
+  font-weight: 700;
+  min-width: 110px;
+  text-align: right;
+}
+
+/* Withdrawals + Balance row */
+.cfa-fs-wd-row {
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 6px 0;
+  gap: 10px;
+}
+.cfa-fs-wd-lbl {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cfa-fs-wd-mid {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+}
+.cfa-fs-wd-mid-lbl {
+  font-weight: 600;
+  font-size: 11pt;
+}
+.cfa-fs-wd-mid-amt {
+  min-width: 100px;
+  text-align: right;
+}
+.cfa-fs-balance-block {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  margin-left: auto;
+}
+.cfa-fs-balance-lbl {
+  font-weight: 700;
+  font-size: 12pt;
+}
+.cfa-fs-balance-amt {
+  font-weight: 700;
+  font-size: 12pt;
+  min-width: 110px;
+  text-align: right;
+  border-top: 1px solid #000;
+  border-bottom: 3px double #000;
+  padding: 2px 0;
+}
+
+/* Sign-off block — right aligned */
+.cfa-p2-signoff {
+  text-align: right;
+}
+.cfa-p2-yours {
+  font-size: 12pt;
+}
+.cfa-p2-desig {
+  font-size: 12pt;
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+/* Remove old page2 helpers that are now unused */
+.cfa-p2-sig-row,
+.cfa-p2-sig-cell,
+.cfa-stamp-area,
+.cfa-stamp-box,
+.cfa-stamp-date,
+.cfa-cert-block,
+.cfa-cert-title,
+.cfa-cert-line,
+.cfa-details-table,
+.cfa-dt-lbl,
+.cfa-dt-val,
+.cfa-p2-subtitle { display: none; }
+
+/* ══════════════════════════════════════════════════════
+   CFA — TEMPORARY ADVANCE  (gpfType === 'E')
+   Single-page A4 sanction letter
+   ══════════════════════════════════════════════════════ */
+
+.cfata-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 24px auto;
+  padding: 18mm 20mm;
+  background: #fff;
+  color: #000;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  line-height: 1.6;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  box-sizing: border-box;
+}
+
+/* Centered letterhead */
+.cfata-letterhead {
+  text-align: center;
+  margin-bottom: 6px;
+}
+.cfata-lh-line {
+  font-size: 12pt;
+  line-height: 1.7;
+}
+.cfata-lh-bold {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Right-aligned ref + date */
+.cfata-ref-block {
+  text-align: right;
+  font-size: 11.5pt;
+  line-height: 1.7;
+  margin-top: 10px;
+}
+
+/* Spacers */
+.cfata-spacer-sm { height: 10px; }
+.cfata-spacer-md { height: 20px; }
+.cfata-spacer-lg { height: 50px; }
+
+/* Numbered paragraphs */
+.cfata-para {
+  display: flex;
+  gap: 10px;
+  text-align: justify;
+  margin-bottom: 4px;
+  font-size: 12pt;
+  line-height: 1.7;
+}
+.cfata-para-num {
+  font-weight: 700;
+  flex-shrink: 0;
+  min-width: 20px;
+}
+.cfata-para-body {
+  flex: 1;
+}
+
+/* Financial statement */
+.cfata-fs {
+  width: 100%;
+  font-size: 11.5pt;
+  margin-top: 8px;
+}
+
+.cfata-fs-divider {
+  border-top: 1px solid #000;
+  margin: 4px 0;
+}
+
+/* Opening balance row */
+.cfata-fs-row {
+  display: flex;
+  align-items: baseline;
+}
+.cfata-fs-ob {
+  padding: 4px 0;
+  gap: 6px;
+}
+.cfata-fs-lbl {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cfata-fs-dots {
+  flex: 1;
+  letter-spacing: 2px;
+  color: #555;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 10pt;
+}
+.cfata-fs-amt {
+  font-weight: 700;
+  min-width: 120px;
+  text-align: right;
+}
+
+/* Section titles */
+.cfata-fs-sec-title {
+  font-weight: 700;
+  font-size: 11pt;
+  text-decoration: underline;
+  margin: 6px 0 3px 0;
+}
+
+/* 3-column header + data rows */
+.cfata-fs-col-hdr,
+.cfata-fs-col-row {
+  display: grid;
+  grid-template-columns: 1fr 140px 140px;
+  gap: 4px;
+  align-items: baseline;
+  padding: 2px 0;
+}
+.cfata-fs-col-hdr {
+  font-weight: 700;
+  font-size: 10.5pt;
+  border-bottom: 1px solid #888;
+  padding-bottom: 2px;
+}
+.cfata-col-my  { }
+.cfata-col-sub { text-align: right; }
+.cfata-col-tot { text-align: right; font-weight: 600; }
+
+/* TOTAL row */
+.cfata-fs-total {
+  justify-content: flex-end;
+  gap: 20px;
+  padding: 4px 0;
+}
+.cfata-fs-total-lbl {
+  font-weight: 700;
+  font-size: 12pt;
+}
+.cfata-fs-total-amt {
+  font-weight: 700;
+  min-width: 120px;
+  text-align: right;
+}
+
+/* TOTAL BALANCE row */
+.cfata-fs-balance {
+  justify-content: flex-end;
+  gap: 20px;
+  padding: 4px 0;
+}
+.cfata-fs-bal-lbl {
+  font-weight: 900;
+  font-size: 12pt;
+  text-transform: uppercase;
+}
+.cfata-fs-bal-amt {
+  font-weight: 900;
+  font-size: 12pt;
+  min-width: 120px;
+  text-align: right;
+  border-top: 1px solid #000;
+  border-bottom: 3px double #000;
+  padding: 2px 0;
+}
+
+/* Footer — CFA signature right-aligned */
+.cfata-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.cfata-sig-space {
+  height: 48px;
+}
+.cfata-sig-role {
+  font-weight: 700;
+  font-size: 12pt;
+}
+
+@media print {
+  .cfata-a4 {
+    box-shadow: none;
+    margin: 0;
+    padding: 15mm 18mm;
+  }
+  @page { size: A4 portrait; margin: 0; }
 }
