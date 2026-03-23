@@ -866,3 +866,390 @@
   }
   .ta-input, .ta-textarea { border-color: transparent; }
 }
+
+/* ═══════════════════════════════════════════════
+   GPF CALCULATION SHEET — matches physical doc
+   ═══════════════════════════════════════════════ */
+
+.cs-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto 32px auto;
+  padding: 14mm 18mm 18mm 18mm;
+  background: #fff;
+  color: #111;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.14);
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 11pt;
+  line-height: 1.5;
+}
+
+/* ── Top info row: ID NO | NAME | DESIG / GPF A/C NO ── */
+.cs-top-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin-bottom: 6px;
+  font-size: 11pt;
+  font-weight: 700;
+  width: 100%;
+}
+
+.cs-top-row > span:first-child  { flex: 0 0 140px; white-space: nowrap; }
+.cs-top-row > span:nth-child(2) { flex: 1; }
+.cs-top-row > span:last-child   { flex: 0 0 200px; text-align: right; }
+
+.cs-lbl { font-weight: 900; text-transform: uppercase; }
+
+.cs-top-right { text-align: right; line-height: 1.8; }
+
+/* ── Divider ── */
+.cs-divider {
+  border: none;
+  border-top: 1.5px solid #333;
+  margin: 8px 0;
+}
+
+/* ── Opening Balance row ── */
+.cs-ob-row {
+  display: flex;
+  align-items: baseline;
+  margin: 10px 0 6px 0;
+  font-size: 11pt;
+  font-weight: 700;
+  width: 100%;
+}
+
+.cs-ob-label  {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.cs-ob-dashes {
+  flex: 1;
+  color: #555;
+  letter-spacing: 3px;
+  padding: 0 8px;
+  font-weight: 400;
+  font-size: 10pt;
+  overflow: hidden;
+}
+.cs-ob-amt {
+  flex: 0 0 140px;
+  font-weight: 900;
+  font-size: 12pt;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ── Section label ── */
+.cs-section-label {
+  font-size: 11pt;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 12px 0 4px 0;
+  letter-spacing: 0.3px;
+  text-decoration: underline;
+}
+
+/* ── Column headers & rows — 3-col layout ── */
+.cs-cols-hdr,
+.cs-cols-row {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cs-cols-hdr {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #444;
+  margin-bottom: 2px;
+  border-bottom: 1px solid #aaa;
+  padding-bottom: 2px;
+}
+
+.cs-cols-row {
+  font-size: 11pt;
+  margin-bottom: 6px;
+}
+
+/* col 1: Month/Year — takes up left ~50% */
+.cs-col-monthyr {
+  flex: 0 0 50%;
+  padding-right: 8px;
+}
+
+/* col 2: Subscription/Refund/Recovery — centre ~25% */
+.cs-col-sub {
+  flex: 0 0 25%;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  padding-right: 16px;
+}
+
+/* col 3: Total — right ~25%, right-aligned */
+.cs-col-total {
+  flex: 0 0 25%;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* ── TOTAL row — right-aligned, matching Total column ── */
+.cs-total-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  margin: 10px 0 4px 0;
+  font-size: 11.5pt;
+  font-weight: 900;
+  text-transform: uppercase;
+  border-top: 1px solid #555;
+  padding-top: 4px;
+  width: 100%;
+}
+
+.cs-total-spacer {
+  flex: 0 0 50%;
+}
+
+.cs-total-lbl {
+  letter-spacing: 0.5px;
+  flex: 0 0 25%;
+  text-align: right;
+  padding-right: 16px;
+}
+.cs-total-amt {
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 25%;
+  text-align: right;
+}
+
+/* ── WITHDRAWALS row ── */
+.cs-withdrawal-row {
+  display: flex;
+  align-items: flex-start;
+  margin: 10px 0;
+  font-size: 11pt;
+  width: 100%;
+}
+
+.cs-withdrawal-name {
+  flex: 0 0 50%;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 11pt;
+}
+
+.cs-withdrawal-mid {
+  flex: 0 0 25%;
+  font-size: 10.5pt;
+  line-height: 1.8;
+  text-align: right;
+  padding-right: 16px;
+}
+
+.cs-cols-hdr-inline {
+  font-weight: 700;
+  font-size: 10pt;
+  color: #444;
+  display: block;
+  border-bottom: 1px solid #aaa;
+  margin-bottom: 2px;
+}
+
+.cs-withdrawal-right {
+  flex: 0 0 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.cs-total-balance-lbl {
+  font-size: 10pt;
+  font-weight: 700;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.cs-balance-amt {
+  font-size: 12pt;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  border-top: 1.5px solid #111;
+  border-bottom: 3px double #111;
+  padding: 2px 0;
+  width: 100%;
+  text-align: right;
+}
+
+/* ── Bottom info block ── */
+.cs-bottom-info {
+  margin: 18px 0 12px 0;
+  font-size: 11pt;
+}
+
+.cs-bottom-row {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.cs-bottom-lbl {
+  font-weight: 900;
+  text-transform: uppercase;
+  flex: 0 0 300px;
+  font-size: 10.5pt;
+  letter-spacing: 0.2px;
+}
+
+.cs-bottom-sep { padding: 0 10px; font-weight: 700; }
+
+.cs-bottom-val {
+  font-size: 11pt;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Signature area ── */
+.cs-sig-area {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 36px;
+}
+
+.cs-sig-right {
+  text-align: center;
+  font-size: 11pt;
+  font-weight: 700;
+  min-width: 240px;
+}
+
+.cs-sig-bracket {
+  font-size: 11pt;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.cs-sig-role {
+  font-weight: 900;
+  font-size: 11pt;
+  text-transform: uppercase;
+}
+
+/* ── Counter sign ── */
+.cs-countersign {
+  text-align: center;
+  margin-top: 28px;
+  font-size: 11pt;
+  font-weight: 700;
+  line-height: 1.8;
+}
+
+.cs-system-note {
+  text-align: center;
+  font-size: 9pt;
+  color: #888;
+  margin-top: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.cs-loading {
+  padding: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Print */
+@media print {
+  .cs-a4 {
+    margin: 0;
+    padding: 10mm 14mm;
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    min-height: auto;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
+
+
+
+/* ═══════════════════════════════════════════════
+   CALCULATION SHEET — TEMPORARY ADVANCE extras
+   ═══════════════════════════════════════════════ */
+
+/* Top bar: single row with all fields spread across */
+.csta-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 11pt;
+  font-weight: 700;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Advance details divider — light grey */
+.csta-adv-divider {
+  border: none;
+  border-top: 1.5px solid #bbb;
+  margin: 20px 0 14px 0;
+}
+
+/* Advance details block */
+.csta-adv-section {
+  font-size: 11pt;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.csta-adv-row {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.csta-adv-row-total {
+  border-top: 1px solid #555;
+  border-bottom: 1px solid #555;
+  padding: 4px 0;
+  margin: 4px 0 8px 0;
+}
+
+.csta-adv-lbl {
+  flex: 0 0 320px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10.5pt;
+  letter-spacing: 0.2px;
+}
+
+.csta-adv-sep {
+  padding: 0 10px;
+  font-weight: 700;
+}
+
+.csta-adv-val {
+  font-size: 11pt;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  flex: 1;
+}
+
+.csta-adv-val-bold {
+  font-weight: 900;
+  font-size: 12pt;
+}

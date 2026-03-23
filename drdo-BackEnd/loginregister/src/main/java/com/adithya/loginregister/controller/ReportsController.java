@@ -1,6 +1,7 @@
 package com.adithya.loginregister.controller;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -124,6 +126,119 @@ public class ReportsController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Error generating report: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * GET /api/reports/calculation-sheet/{persNumber}
+     * Returns full calculation sheet data: employee info, all year-wise closing balances,
+     * all subscription records, and application details.
+     */
+    @GetMapping("/calculation-sheet/{persNumber}")
+    public ResponseEntity<?> getCalculationSheet(@PathVariable String persNumber) {
+        try {
+            // Employee info
+            List<GPF> employees = gpfRepository.findAll();
+            GPF emp = employees.stream()
+                    .filter(e -> persNumber.equals(e.getPersNumber()))
+                    .findFirst().orElse(null);
+
+            if (emp == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "Employee not found: " + persNumber));
+            }
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("persNumber", emp.getPersNumber());
+            result.put("name", emp.getEmployeeName());
+            result.put("designation", emp.getDesignation());
+            result.put("dob", emp.getDob());
+            result.put("gpfAccountNumber", emp.getGpfAccountNumber());
+            result.put("basicPay", emp.getBasicPay());
+            result.put("dateOfRetirement", emp.getDateOfRetirement());
+
+            // All year records (sorted desc)
+            List<GPFYears> yearRecords = gpfYearsRepository.findByPassNumberOrderByGpfYearsDesc(persNumber);
+            List<Map<String, Object>> years = new ArrayList<>();
+            for (GPFYears yr : yearRecords) {
+                Map<String, Object> y = new HashMap<>();
+                y.put("year", yr.getGpfYears());
+                y.put("closingBalance", yr.getClosingBalance());
+                years.add(y);
+            }
+            result.put("yearRecords", years);
+
+            // Opening balance = oldest year's closing balance (or 0)
+            BigDecimal openingBalance = BigDecimal.ZERO;
+            if (!yearRecords.isEmpty()) {
+                openingBalance = yearRecords.get(yearRecords.size() - 1).getClosingBalance();
+            }
+            result.put("openingBalance", openingBalance);
+
+            // Latest closing balance
+            BigDecimal latestClosing = yearRecords.isEmpty() ? BigDecimal.ZERO : yearRecords.get(0).getClosingBalance();
+            result.put("closingBalance", latestClosing);
+            result.put("gpfYear", yearRecords.isEmpty() ? null : yearRecords.get(0).getGpfYears());
+
+            // All subscription records
+            List<GpfSubDetails> subList = gpfSubDetailsRepository.findByPersNumber(persNumber);
+            List<Map<String, Object>> subs = new ArrayList<>();
+            BigDecimal totalSub = BigDecimal.ZERO;
+            BigDecimal totalRet = BigDecimal.ZERO;
+            for (GpfSubDetails s : subList) {
+                Map<String, Object> sub = new HashMap<>();
+                sub.put("date", s.getAddSubDate());
+                sub.put("gpfSub", s.getGpfSub());
+                sub.put("gpfRet", s.getGpfRet());
+                subs.add(sub);
+                totalSub = totalSub.add(s.getGpfSub() != null ? s.getGpfSub() : BigDecimal.ZERO);
+                totalRet = totalRet.add(s.getGpfRet() != null ? s.getGpfRet() : BigDecimal.ZERO);
+            }
+            result.put("subscriptions", subs);
+            result.put("totalSubscription", totalSub);
+            result.put("totalRefund", totalRet);
+
+            // Application details
+            try {
+                BigDecimal persno = new BigDecimal(persNumber);
+                List<GPFUsrDetails> usrDetails = gpfUsrDetailsRepository.findByPersno(persno);
+                if (!usrDetails.isEmpty()) {
+                    GPFUsrDetails ud = usrDetails.get(0);
+                    result.put("purpose", ud.getPurpose());
+                    result.put("gpfType", ud.getGpfType());
+                    result.put("applDate", ud.getApplDate());
+                    result.put("applAmt", ud.getApplAmt());
+                } else {
+                    result.put("purpose", null);
+                    result.put("gpfType", null);
+                    result.put("applDate", null);
+                    result.put("applAmt", null);
+                }
+            } catch (NumberFormatException e) {
+                result.put("purpose", null);
+                result.put("gpfType", null);
+                result.put("applDate", null);
+                result.put("applAmt", null);
+            }
+
+            // Computed totals
+            BigDecimal applAmt = result.get("applAmt") != null ? (BigDecimal) result.get("applAmt") : BigDecimal.ZERO;
+            BigDecimal totalAvailable = latestClosing.add(totalSub).add(totalRet);
+            BigDecimal balanceAfter = totalAvailable.subtract(applAmt);
+            result.put("totalAvailable", totalAvailable);
+            result.put("balanceAfterWithdrawal", balanceAfter);
+
+            // GPF interest rate (standard 7.1%)
+            BigDecimal interestRate = new BigDecimal("7.1");
+            BigDecimal interest = latestClosing.multiply(interestRate)
+                    .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+            result.put("interestRate", interestRate);
+            result.put("interestAmount", interest);
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error generating calculation sheet: " + e.getMessage()));
         }
     }
 }

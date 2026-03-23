@@ -77,6 +77,13 @@ export default function ReportDetail() {
           <Application user={user} />
         ) : reportType === 'schedule' ? (
           <Schedule user={user} />
+        ) : reportType === 'calculation-sheet' ? (
+          <>
+            {!user && (
+              <div className="rd-warn">⚠ User data not available. Please go back and reopen this report.</div>
+            )}
+            {user && <CalculationSheet user={user} />}
+          </>
         ) : (
           <>
             {!user && (
@@ -110,7 +117,6 @@ export default function ReportDetail() {
 
                 {reportType === 'contingent-bill' && <ContingentBill user={user} />}
                 {reportType === 'cfa'             && <CFA user={user} />}
-                {reportType === 'calculation-sheet' && <CalculationSheet user={user} />}
 
                 <hr className="rd-hr" />
                 <div className="rd-footer">
@@ -187,35 +193,395 @@ function CFA({ user }) {
 
 /* ── 3. Calculation Sheet ───────────────────────────────── */
 function CalculationSheet({ user }) {
-  const sub = Number(user.gpfSub || 0);
-  const ret = Number(user.gpfRet || 0);
-  const closing = Number(user.closingBalance || 0);
-  const appl = Number(user.applAmt || 0);
+  const [apiData, setApiData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user?.persNumber) { setLoading(false); return; }
+    const token = localStorage.getItem('authToken');
+    fetch(`http://localhost:8081/api/reports/calculation-sheet/${encodeURIComponent(user.persNumber)}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    })
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(d => { setApiData(d); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [user?.persNumber]);
+
+  if (loading) return <div className="cs-loading">Loading…</div>;
+
+  // Route to TA variant for Temporary Advance
+  const gpfType = apiData?.gpfType || user?.gpfType;
+  if (gpfType === 'E') return <CalculationSheetTA user={user} apiData={apiData} />;
+
+  const d   = apiData || {};
+  const n   = (v) => Number(v || 0);
+  const c   = (v) => v != null ? Number(v).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '—';
+
+  const name        = d.name          || user?.name          || '—';
+  const gpfAccNo    = d.gpfAccountNumber || user?.gpfAccountNumber || '—';
+  const persNo      = d.persNumber    || user?.persNumber    || '—';
+  const designation = d.designation  || user?.designation   || '—';
+  const gpfYear     = d.gpfYear      || user?.gpfYear        || '—';
+  const applDate    = d.applDate     || user?.applDate;
+  const retDate     = d.dateOfRetirement || user?.dateOfRetirement;
+
+  const opening    = n(d.closingBalance    ?? user?.closingBalance);
+  const totalSub   = n(d.totalSubscription ?? user?.gpfSub);
+  const totalRet   = n(d.totalRefund       ?? user?.gpfRet);
+  const interest   = n(d.interestAmount);
+  const applAmt    = n(d.applAmt           ?? user?.applAmt);
+  const grandTotal = opening + totalSub + totalRet + interest;
+  const balAfter   = grandTotal - applAmt;
+
+  const subs    = d.subscriptions || [];
+  const subRows = subs.filter(s => n(s.gpfSub) > 0);
+  const retRows = subs.filter(s => n(s.gpfRet) > 0);
+
+  // date range label e.g. "FROM Mar-2023 TO Feb-2024"
+  const dateRange = (rows) => {
+    if (!rows.length) return '—';
+    const first = fmtMonthYear(rows[0].date);
+    const last  = fmtMonthYear(rows[rows.length - 1].date);
+    return first === last ? first : `FROM ${first} TO ${last}`;
+  };
+
+  // service remaining
+  const yearsLeft = retDate
+    ? Math.max(0, Math.floor((new Date(retDate) - new Date()) / (1000 * 60 * 60 * 24 * 365)))
+    : '—';
 
   return (
-    <section className="rd-section">
-      <h3 className="rd-section-title">Calculation Sheet</h3>
-      <table className="rd-table rd-calc">
-        <thead>
-          <tr><th>Particulars</th><th className="rd-amt">Amount (₹)</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Opening Balance (Closing of {user.gpfYear || '—'})</td><td className="rd-amt">{cur(closing)}</td></tr>
-          <tr><td>GPF Subscription</td><td className="rd-amt">{cur(sub)}</td></tr>
-          <tr><td>GPF Refund / Recovery</td><td className="rd-amt">{cur(ret)}</td></tr>
-          <tr className="rd-total-row">
-            <td>Total Available Balance</td>
-            <td className="rd-amt">{cur(closing + sub + ret)}</td>
-          </tr>
-          <tr><td>Amount Applied For</td><td className="rd-amt">{cur(appl)}</td></tr>
-          <tr className="rd-total-row">
-            <td>Balance After Withdrawal</td>
-            <td className="rd-amt">{cur(closing + sub + ret - appl)}</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+    <div className="cs-a4">
+
+      {/* ── TOP INFO ROW ── */}
+      <div className="cs-top-row">
+        <span><span className="cs-lbl">ID NO:</span> {persNo}</span>
+        <span><span className="cs-lbl">NAME:</span> {name}</span>
+        <span className="cs-top-right">
+          <span><span className="cs-lbl">DESIG:</span> {designation}</span><br />
+          <span><span className="cs-lbl">GPF A/C NO:</span> {gpfAccNo}</span>
+        </span>
+      </div>
+
+      <div className="cs-divider" />
+
+      {/* ── OPENING BALANCE ── */}
+      <div className="cs-ob-row">
+        <span className="cs-ob-label">OPENING BALANCE</span>
+        <span className="cs-ob-dashes">- - - - - - - - - - - - - - - - - - &gt;</span>
+        <span className="cs-ob-amt">{c(opening)}</span>
+      </div>
+
+      <div className="cs-divider" />
+
+      {/* ── SUBSCRIPTION CREDITS ── */}
+      <div className="cs-section-label">SUBSCRIPTION CREDITS</div>
+      <div className="cs-cols-hdr">
+        <span className="cs-col-monthyr">Month/Year</span>
+        <span className="cs-col-sub">Subscription</span>
+        <span className="cs-col-total">Total</span>
+      </div>
+      <div className="cs-cols-row">
+        <span className="cs-col-monthyr">{subRows.length ? dateRange(subRows) : '—'}</span>
+        <span className="cs-col-sub">{c(totalSub)}</span>
+        <span className="cs-col-total">{c(totalSub)}</span>
+      </div>
+
+      <div className="cs-divider" />
+
+      {/* ── ADVANCE REFUND CREDITS ── */}
+      <div className="cs-section-label">ADVANCE REFUND CREDITS</div>
+      <div className="cs-cols-hdr">
+        <span className="cs-col-monthyr">Month/Year</span>
+        <span className="cs-col-sub">Refund</span>
+        <span className="cs-col-total">Total</span>
+      </div>
+      <div className="cs-cols-row">
+        <span className="cs-col-monthyr">{retRows.length ? dateRange(retRows) : '—'}</span>
+        <span className="cs-col-sub">{c(totalRet)}</span>
+        <span className="cs-col-total">{c(totalRet)}</span>
+      </div>
+
+      <div className="cs-divider" />
+
+      {/* ── RECOVERY FROM 7CPC ARREARS ── */}
+      <div className="cs-section-label">RECOVERY FROM 7CPC ARREARS</div>
+      <div className="cs-cols-hdr">
+        <span className="cs-col-monthyr">Month/Year</span>
+        <span className="cs-col-sub">GPF Recovery</span>
+        <span className="cs-col-total">Total</span>
+      </div>
+      <div className="cs-cols-row">
+        <span className="cs-col-monthyr">—</span>
+        <span className="cs-col-sub">{c(interest)}</span>
+        <span className="cs-col-total">{c(interest)}</span>
+      </div>
+
+      {/* ── TOTAL ── */}
+      <div className="cs-total-row">
+        <span className="cs-total-spacer" />
+        <span className="cs-total-lbl">TOTAL</span>
+        <span className="cs-total-amt">{c(grandTotal)}</span>
+      </div>
+
+      <div className="cs-divider" />
+
+      {/* ── WITHDRAWALS ── */}
+      <div className="cs-withdrawal-row">
+        <span className="cs-withdrawal-name">WITHDRAWALS</span>
+        <span className="cs-withdrawal-mid">
+          <span className="cs-cols-hdr-inline">Total</span>
+          <span>{c(applAmt)}</span>
+        </span>
+        <span className="cs-withdrawal-right">
+          <span className="cs-total-balance-lbl">TOTAL BALANCE</span>
+          <span className="cs-balance-amt">{c(balAfter)}</span>
+        </span>
+      </div>
+
+      <div className="cs-divider" />
+
+      {/* ── BOTTOM INFO ── */}
+      <div className="cs-bottom-info">
+        <div className="cs-bottom-row">
+          <span className="cs-bottom-lbl">AMOUNT PROPOSED TO WITHDRAWN</span>
+          <span className="cs-bottom-sep">:</span>
+          <span className="cs-bottom-val">{c(applAmt)}</span>
+        </div>
+        <div className="cs-bottom-row">
+          <span className="cs-bottom-lbl">SERVICE AS ON SANCTION DATE</span>
+          <span className="cs-bottom-sep">:</span>
+          <span className="cs-bottom-val">{applDate ? fmt(applDate) : '—'}</span>
+        </div>
+        <div className="cs-bottom-row">
+          <span className="cs-bottom-lbl">LEFT OVER SERVICE</span>
+          <span className="cs-bottom-sep">:</span>
+          <span className="cs-bottom-val">{yearsLeft !== '—' ? `${yearsLeft} Years` : '—'}</span>
+        </div>
+      </div>
+
+      {/* ── SIGNATURES ── */}
+      <div className="cs-sig-area">
+        <div className="cs-sig-right">
+          <div className="cs-sig-bracket">( _________________________ )</div>
+          <div className="cs-sig-role">for Director DRDL</div>
+        </div>
+      </div>
+
+      <div className="cs-countersign">
+        <div>(ACCOUNTS OFFICER FOR Director DRDL)</div>
+      </div>
+
+      <p className="cs-system-note no-print">System-generated document — DRDO GPF Management System</p>
+    </div>
   );
+}
+
+/* ── 3b. Calculation Sheet — Temporary Advance (gpfType E) ── */
+function CalculationSheetTA({ user, apiData }) {
+  const d   = apiData || {};
+  const n   = (v) => Number(v || 0);
+  const c   = (v) => v != null ? Number(v).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '—';
+
+  const name        = d.name             || user?.name             || '—';
+  const gpfAccNo    = d.gpfAccountNumber || user?.gpfAccountNumber || '—';
+  const persNo      = d.persNumber       || user?.persNumber       || '—';
+  const designation = d.designation      || user?.designation      || '—';
+
+  const opening    = n(d.closingBalance    ?? user?.closingBalance);
+  const totalSub   = n(d.totalSubscription ?? user?.gpfSub);
+  const totalRet   = n(d.totalRefund       ?? user?.gpfRet);
+  const interest   = n(d.interestAmount);
+  const applAmt    = n(d.applAmt           ?? user?.applAmt);
+  const grandTotal = opening + totalSub + totalRet + interest;
+  const balance    = grandTotal - applAmt;
+
+  const subs    = d.subscriptions || [];
+  const subRows = subs.filter(s => n(s.gpfSub) > 0);
+  const retRows = subs.filter(s => n(s.gpfRet) > 0);
+
+  const dateRange = (rows) => {
+    if (!rows.length) return '—';
+    const first = fmtMonthYear(rows[0].date);
+    const last  = fmtMonthYear(rows[rows.length - 1].date);
+    return first === last ? first : `FROM ${first} TO ${last}`;
+  };
+
+  // Advance details — derived or from API
+  const outstandingAdv  = n(d.outstandingAdvance  ?? user?.outstandingAdvance);
+  const instalment      = n(d.instalment          ?? user?.instalment);
+  const noOfInstalments = d.noOfInstalments       ?? user?.noOfInstalments ?? '—';
+  const commencementDate = d.commencementDate     ?? user?.commencementDate;
+  const consolidatedAdv = outstandingAdv + applAmt;
+
+  return (
+    <div className="cs-a4">
+
+      {/* ── TOP INFO BAR ── */}
+      <div className="csta-top-bar">
+        <span><span className="cs-lbl">ID NO:</span> {persNo}</span>
+        <span><span className="cs-lbl">NAME:</span> {name}</span>
+        <span><span className="cs-lbl">DESIG:</span> {designation}</span>
+        <span><span className="cs-lbl">GPF A/C NO:</span> {gpfAccNo}</span>
+      </div>
+
+      <div className="cs-divider" />
+
+      {/* ── OPENING BALANCE ── */}
+      <div className="cs-ob-row">
+        <span className="cs-ob-label">OPENING BALANCE</span>
+        <span className="cs-ob-dashes">- - - - - - - - - - - - - - - - - - &gt;</span>
+        <span className="cs-ob-amt">{c(opening)}</span>
+      </div>
+
+      <div className="cs-divider" />
+
+      {/* ── SUBSCRIPTION CREDITS ── */}
+      <div className="cs-section-label">SUBSCRIPTION CREDITS</div>
+      <div className="cs-cols-hdr">
+        <span className="cs-col-monthyr">Month/Year</span>
+        <span className="cs-col-sub">Subscription</span>
+        <span className="cs-col-total">Total</span>
+      </div>
+      <div className="cs-cols-row">
+        <span className="cs-col-monthyr">{subRows.length ? dateRange(subRows) : '—'}</span>
+        <span className="cs-col-sub">{c(totalSub)}</span>
+        <span className="cs-col-total">{c(totalSub)}</span>
+      </div>
+
+      <div className="cs-divider" />
+
+      {/* ── ADVANCE REFUND CREDITS ── */}
+      <div className="cs-section-label">ADVANCE REFUND CREDITS</div>
+      <div className="cs-cols-hdr">
+        <span className="cs-col-monthyr">Month/Year</span>
+        <span className="cs-col-sub">Refund</span>
+        <span className="cs-col-total">Total</span>
+      </div>
+      <div className="cs-cols-row">
+        <span className="cs-col-monthyr">{retRows.length ? dateRange(retRows) : '—'}</span>
+        <span className="cs-col-sub">{c(totalRet)}</span>
+        <span className="cs-col-total">{c(totalRet)}</span>
+      </div>
+
+      <div className="cs-divider" />
+
+      {/* ── RECOVERY FROM 7CPC ARREARS ── */}
+      <div className="cs-section-label">RECOVERY FROM 7CPC ARREARS</div>
+      <div className="cs-cols-hdr">
+        <span className="cs-col-monthyr">Month/Year</span>
+        <span className="cs-col-sub">GPF Recovery</span>
+        <span className="cs-col-total">Total</span>
+      </div>
+      <div className="cs-cols-row">
+        <span className="cs-col-monthyr">—</span>
+        <span className="cs-col-sub">{c(interest)}</span>
+        <span className="cs-col-total">{c(interest)}</span>
+      </div>
+
+      {/* ── TOTAL ── */}
+      <div className="cs-total-row">
+        <span className="cs-total-spacer" />
+        <span className="cs-total-lbl">TOTAL</span>
+        <span className="cs-total-amt">{c(grandTotal)}</span>
+      </div>
+
+      {/* ── WITHDRAWALS + BALANCE ── */}
+      <div className="cs-withdrawal-row">
+        <span className="cs-withdrawal-name">WITHDRAWALS</span>
+        <span className="cs-withdrawal-mid">
+          <span className="cs-cols-hdr-inline">IN @ Rs. 0</span>
+          <span>{c(applAmt)}</span>
+        </span>
+        <span className="cs-withdrawal-right">
+          <span className="cs-total-balance-lbl">BALANCE</span>
+          <span className="cs-balance-amt">{c(balance)}</span>
+        </span>
+      </div>
+
+      {/* ── ADVANCE DETAILS SECTION ── */}
+      <div className="csta-adv-divider" />
+
+      <div className="csta-adv-section">
+        <div className="csta-adv-row">
+          <span className="csta-adv-lbl">OUTSTANDING BALANCE IN ADVANCE</span>
+          <span className="csta-adv-sep">:</span>
+          <span className="csta-adv-val">{c(outstandingAdv)}</span>
+        </div>
+        <div className="csta-adv-row">
+          <span className="csta-adv-lbl">ADD AMOUNT NOW PAYABLE</span>
+          <span className="csta-adv-sep">:</span>
+          <span className="csta-adv-val">{c(applAmt)}</span>
+        </div>
+        <div className="csta-adv-row csta-adv-row-total">
+          <span className="csta-adv-lbl">CURRENT CONSOLIDATED ADVANCE AMOUNT</span>
+          <span className="csta-adv-sep">:</span>
+          <span className="csta-adv-val csta-adv-val-bold">{c(consolidatedAdv)}</span>
+        </div>
+        <div className="csta-adv-row">
+          <span className="csta-adv-lbl">INSTALMENT AMOUNT</span>
+          <span className="csta-adv-sep">:</span>
+          <span className="csta-adv-val">{instalment ? c(instalment) : '—'}</span>
+        </div>
+        <div className="csta-adv-row">
+          <span className="csta-adv-lbl">NO. OF INSTALMENT</span>
+          <span className="csta-adv-sep">:</span>
+          <span className="csta-adv-val">{noOfInstalments}</span>
+        </div>
+        <div className="csta-adv-row">
+          <span className="csta-adv-lbl">COMMENCEMENT OF RECOVERY FROM</span>
+          <span className="csta-adv-sep">:</span>
+          <span className="csta-adv-val">{commencementDate ? fmtMonthYear(commencementDate) : '—'}</span>
+        </div>
+      </div>
+
+      {/* ── SIGNATURES ── */}
+      <div className="cs-sig-area">
+        <div className="cs-sig-right">
+          <div className="cs-sig-bracket">( _________________________ )</div>
+          <div className="cs-sig-role">for Director DRDL</div>
+        </div>
+      </div>
+
+      <div className="cs-countersign">
+        <div>(Counter Signed)</div>
+        <div>ACCOUNTS OFFICER</div>
+        <div>for Director DRDL</div>
+      </div>
+
+      <p className="cs-system-note no-print">System-generated document — DRDO GPF Management System</p>
+    </div>
+  );
+}
+
+/* helpers */
+function fmtMonthYear(val) {
+  if (!val) return '—';
+  const d = new Date(val);
+  return d.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+}
+
+function amtWords(num) {
+  if (!num || num === 0) return 'Zero';
+  const ones = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine',
+    'Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+  const tens = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  function below100(n) {
+    if (n < 20) return ones[n];
+    return tens[Math.floor(n/10)] + (n%10 ? ' ' + ones[n%10] : '');
+  }
+  function below1000(n) {
+    if (n < 100) return below100(n);
+    return ones[Math.floor(n/100)] + ' Hundred' + (n%100 ? ' ' + below100(n%100) : '');
+  }
+  const n = Math.floor(num);
+  if (n === 0) return 'Zero';
+  let result = '';
+  if (n >= 10000000) result += below1000(Math.floor(n/10000000)) + ' Crore ';
+  if (n >= 100000)   result += below1000(Math.floor((n%10000000)/100000)) + ' Lakh ';
+  if (n >= 1000)     result += below1000(Math.floor((n%100000)/1000)) + ' Thousand ';
+  result += below1000(n % 1000);
+  return result.trim() + ' Only';
 }
 
 /* ── 4. Application ─────────────────────────────────────── */
