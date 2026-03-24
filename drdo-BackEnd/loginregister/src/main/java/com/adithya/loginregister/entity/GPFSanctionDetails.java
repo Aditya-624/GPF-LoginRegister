@@ -2,7 +2,6 @@ package com.adithya.loginregister.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,17 +50,11 @@ public class GPFSanctionDetails {
     @Column(name = "no_of_installments")
     private Integer noOfInstallments;
     
-    @Column(name = "transaction_date")
-    private LocalDate transactionDate;
-    
     @Column(name = "applied_amount")
     private BigDecimal appliedAmount;
     
     @Column(name = "instl_amount")
     private BigDecimal instlAmount;
-    
-    @Column(name = "update_loan_tab")
-    private String updateLoanTab;
     
     @Column(name = "dv_date")
     private LocalDate dvDate;
@@ -78,20 +71,29 @@ public class GPFSanctionDetails {
     @Column(name = "prev_bal")
     private BigDecimal prevBal;
     
-    @Column(name = "rec_from")
-    private LocalDate recFrom;
-    
-    @Column(name = "recovery_paybill")
-    private String recoveryPaybill;
-    
     @Column(name = "house_addr")
     private String houseAddr;
     
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "outstanding_advance")
+    private BigDecimal outstandingAdvance;
+
+    @Column(name = "prev_sanction_date")
+    private LocalDate prevSanctionDate;
+
+    @Column(name = "prev_payment_date")
+    private LocalDate prevPaymentDate;
+
+    @Column(name = "last_bill_no")
+    private String lastBillNo;
+
+    @Column(name = "last_bill_date")
+    private LocalDate lastBillDate;
+
+    @Column(name = "last_ccb_year")
+    private String lastCcbYear;
+
+    @Column(name = "commencement_date")
+    private LocalDate commencementDate;
 
     // Constructors
     public GPFSanctionDetails() {}
@@ -189,14 +191,6 @@ public class GPFSanctionDetails {
         this.noOfInstallments = noOfInstallments;
     }
 
-    public LocalDate getTransactionDate() {
-        return transactionDate;
-    }
-
-    public void setTransactionDate(LocalDate transactionDate) {
-        this.transactionDate = transactionDate;
-    }
-
     public BigDecimal getAppliedAmount() {
         return appliedAmount;
     }
@@ -211,14 +205,6 @@ public class GPFSanctionDetails {
 
     public void setInstlAmount(BigDecimal instlAmount) {
         this.instlAmount = instlAmount;
-    }
-
-    public String getUpdateLoanTab() {
-        return updateLoanTab;
-    }
-
-    public void setUpdateLoanTab(String updateLoanTab) {
-        this.updateLoanTab = updateLoanTab;
     }
 
     public LocalDate getDvDate() {
@@ -261,22 +247,6 @@ public class GPFSanctionDetails {
         this.prevBal = prevBal;
     }
 
-    public LocalDate getRecFrom() {
-        return recFrom;
-    }
-
-    public void setRecFrom(LocalDate recFrom) {
-        this.recFrom = recFrom;
-    }
-
-    public String getRecoveryPaybill() {
-        return recoveryPaybill;
-    }
-
-    public void setRecoveryPaybill(String recoveryPaybill) {
-        this.recoveryPaybill = recoveryPaybill;
-    }
-
     public String getHouseAddr() {
         return houseAddr;
     }
@@ -285,19 +255,24 @@ public class GPFSanctionDetails {
         this.houseAddr = houseAddr;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+    public BigDecimal getOutstandingAdvance() { return outstandingAdvance; }
+    public void setOutstandingAdvance(BigDecimal outstandingAdvance) { this.outstandingAdvance = outstandingAdvance; }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    public LocalDate getPrevSanctionDate() { return prevSanctionDate; }
+    public void setPrevSanctionDate(LocalDate prevSanctionDate) { this.prevSanctionDate = prevSanctionDate; }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+    public LocalDate getPrevPaymentDate() { return prevPaymentDate; }
+    public void setPrevPaymentDate(LocalDate prevPaymentDate) { this.prevPaymentDate = prevPaymentDate; }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public String getLastBillNo() { return lastBillNo; }
+    public void setLastBillNo(String lastBillNo) { this.lastBillNo = lastBillNo; }
+
+    public LocalDate getLastBillDate() { return lastBillDate; }
+    public void setLastBillDate(LocalDate lastBillDate) { this.lastBillDate = lastBillDate; }
+
+    public String getLastCcbYear() { return lastCcbYear; }
+    public void setLastCcbYear(String lastCcbYear) { this.lastCcbYear = lastCcbYear; }
+
+    public LocalDate getCommencementDate() { return commencementDate; }
+    public void setCommencementDate(LocalDate commencementDate) { this.commencementDate = commencementDate; }
 }

@@ -679,7 +679,7 @@ function CFAPage2({ user, name, amtNum, amtWords }) {
           SHRI <strong>{name}</strong> was last sanctioned a part of final withdrawal by this
           office for an amount of {amtNum} vide Bill No: {user?.lastBillNo || '—'} Bill
           Dt: {user?.lastBillDate ? new Date(user.lastBillDate).toLocaleDateString('en-IN') : '—'} after
-          the C.C.B for the year {user?.lastCCBYear || '—'}.
+          the C.C.B for the year {user?.lastCcbYear || '—'}.
         </span>
       </div>
 
@@ -1352,7 +1352,7 @@ function ApplicationTemporaryAdvance({ user }) {
       <div className="ta-footer">
         <div className="ta-footer-left">
           <span className="ta-footer-label">DATED:</span>
-          <input className="ta-input ta-date-input" type="date" value={f.dated} onChange={e => s('dated', e.target.value)} />
+          <input className="ta-input ta-date-input" type="date" value={f.dated} onChange={e => s('dated', e.target.value)} onKeyDown={(e) => e.preventDefault()} />
         </div>
         <div className="ta-footer-right">
           <div className="ta-sig-line" />

@@ -12,7 +12,6 @@ function PrivateRoute({ children }) {
   return children;
 }
 import Registration from './components/Registration';
-import Login from './components/Login';
 import LoginPage from './components/LoginPage';
 import ChangePassword from './components/ChangePassword';
 import ForgotPassword from './components/ForgotPassword';

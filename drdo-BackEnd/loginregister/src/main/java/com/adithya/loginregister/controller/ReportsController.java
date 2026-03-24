@@ -24,6 +24,7 @@ import com.adithya.loginregister.repository.GPFRepository;
 import com.adithya.loginregister.repository.GPFUsrDetailsRepository;
 import com.adithya.loginregister.repository.GPFYearsRepository;
 import com.adithya.loginregister.repository.GpfSubDetailsRepository;
+import com.adithya.loginregister.repository.UserRepository;
 
 @RestController
 @RequestMapping("/api/reports")
@@ -34,16 +35,19 @@ public class ReportsController {
     private final GPFYearsRepository gpfYearsRepository;
     private final GPFUsrDetailsRepository gpfUsrDetailsRepository;
     private final GpfSubDetailsRepository gpfSubDetailsRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public ReportsController(GPFRepository gpfRepository,
                              GPFYearsRepository gpfYearsRepository,
                              GPFUsrDetailsRepository gpfUsrDetailsRepository,
-                             GpfSubDetailsRepository gpfSubDetailsRepository) {
+                             GpfSubDetailsRepository gpfSubDetailsRepository,
+                             UserRepository userRepository) {
         this.gpfRepository = gpfRepository;
         this.gpfYearsRepository = gpfYearsRepository;
         this.gpfUsrDetailsRepository = gpfUsrDetailsRepository;
         this.gpfSubDetailsRepository = gpfSubDetailsRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -73,6 +77,8 @@ public class ReportsController {
                 row.put("dob", emp.getDob());
                 row.put("gpfAccountNumber", emp.getGpfAccountNumber());
                 row.put("phoneNumber", emp.getPhoneNumber());
+                row.put("dateOfRetirement", emp.getDateOfRetirement());
+                row.put("serviceDate", emp.getServiceDate());
 
                 // Latest closing balance and year from GPF_YEARS
                 List<GPFYears> yearRecords = gpfYearsRepository.findByPassNumberOrderByGpfYearsDesc(persNumber);
@@ -86,26 +92,30 @@ public class ReportsController {
                 }
 
                 // Purpose type from GPF_USR_DETAILS (latest application)
-                try {
-                    BigDecimal persno = new BigDecimal(persNumber);
-                    List<GPFUsrDetails> usrDetails = gpfUsrDetailsRepository.findByPersno(persno);
+                // PERSNO in GPF_USR_DETAILS is the numeric users.id, not the string persNumber
+                BigDecimal numericId = resolveNumericId(persNumber);
+                if (numericId != null) {
+                    List<GPFUsrDetails> usrDetails = gpfUsrDetailsRepository.findByPersno(numericId);
                     if (!usrDetails.isEmpty()) {
                         GPFUsrDetails latest = usrDetails.get(0);
                         row.put("purpose", latest.getPurpose());
                         row.put("gpfType", latest.getGpfType());
                         row.put("applDate", latest.getApplDate());
                         row.put("applAmt", latest.getApplAmt());
+                        row.put("address", latest.getHouseAddr());
                     } else {
                         row.put("purpose", null);
                         row.put("gpfType", null);
                         row.put("applDate", null);
                         row.put("applAmt", null);
+                        row.put("address", null);
                     }
-                } catch (NumberFormatException e) {
+                } else {
                     row.put("purpose", null);
                     row.put("gpfType", null);
                     row.put("applDate", null);
                     row.put("applAmt", null);
+                    row.put("address", null);
                 }
 
                 // Subscription info from GPF_SUB_DETAILS (latest)
@@ -199,9 +209,9 @@ public class ReportsController {
             result.put("totalRefund", totalRet);
 
             // Application details
-            try {
-                BigDecimal persno = new BigDecimal(persNumber);
-                List<GPFUsrDetails> usrDetails = gpfUsrDetailsRepository.findByPersno(persno);
+            BigDecimal numericId = resolveNumericId(persNumber);
+            if (numericId != null) {
+                List<GPFUsrDetails> usrDetails = gpfUsrDetailsRepository.findByPersno(numericId);
                 if (!usrDetails.isEmpty()) {
                     GPFUsrDetails ud = usrDetails.get(0);
                     result.put("purpose", ud.getPurpose());
@@ -214,7 +224,7 @@ public class ReportsController {
                     result.put("applDate", null);
                     result.put("applAmt", null);
                 }
-            } catch (NumberFormatException e) {
+            } else {
                 result.put("purpose", null);
                 result.put("gpfType", null);
                 result.put("applDate", null);
@@ -240,5 +250,15 @@ public class ReportsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Error generating calculation sheet: " + e.getMessage()));
         }
+    }
+
+    /**
+     * Resolves the numeric users.id from a persNumber string like 'OFF001'.
+     * GPF_USR_DETAILS.PERSNO stores the numeric users.id, not the string persNumber.
+     */
+    private BigDecimal resolveNumericId(String persNumber) {
+        return userRepository.findByUserId(persNumber)
+                .map(u -> new BigDecimal(u.getId()))
+                .orElse(null);
     }
 }

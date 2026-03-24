@@ -16,9 +16,9 @@ import jakarta.persistence.Table;
 public class GpfSubDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gpf_sub_details_gen")
-    @SequenceGenerator(name = "gpf_sub_details_gen", sequenceName = "GPF_SUB_DETAILS_SEQ", allocationSize = 1)
-    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gpf_sub_seq")
+    @SequenceGenerator(name = "gpf_sub_seq", sequenceName = "GPF_SUB_DETAILS_SEQ", allocationSize = 1)
+    @Column(name = "ID", nullable = false, updatable = false)
     private Long id;
 
     @Column(name = "PERS_NUMBER", nullable = false, length = 50)

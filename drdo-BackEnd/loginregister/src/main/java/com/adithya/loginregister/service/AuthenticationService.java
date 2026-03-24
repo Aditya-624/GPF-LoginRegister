@@ -69,7 +69,9 @@ public class AuthenticationService {
         }
 
         String token = jwtUtil.generateToken(user.getUserId() != null ? user.getUserId() : user.getUsername());
-        return new JwtResponse(token, user.getUserId(), user.getUsername(), user.getWorkStatus(), user.getDob(), passwordExpired);
+        JwtResponse response = new JwtResponse(token, user.getUserId(), user.getUsername(), user.getWorkStatus(), user.getDob(), passwordExpired);
+        response.setNumericId(user.getId());
+        return response;
     }
 
     public void changePassword(com.adithya.loginregister.payload.ChangePasswordRequest req) {

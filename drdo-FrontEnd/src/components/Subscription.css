@@ -3,8 +3,9 @@
   display: flex;
   flex-direction: column;
   background: var(--page-bg);
+  background-attachment: fixed;
   color: var(--page-text);
-  transition: background-color var(--transition-smooth), color var(--transition-smooth);
+  transition: color var(--transition-smooth);
 }
 
 .top-nav {
@@ -448,24 +449,6 @@
   align-items: center;
 }
 
-.theme-selector-compact .theme-selector-trigger {
-  background: rgba(var(--card-bg), 0.8);
-  border: 1px solid var(--input-border);
-  color: var(--card-text);
-  transition: all var(--transition-smooth) ease;
-}
-
-.theme-selector-compact .theme-selector-trigger:hover {
-  background: var(--card-bg);
-  border-color: var(--accent-primary);
-}
-
-.theme-selector-compact .theme-selector-dropdown {
-  background: var(--card-bg);
-  border: 1px solid var(--input-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
 /* Mobile responsive */
 @media (max-width: 768px) {
   .subscription-main {
@@ -540,13 +523,6 @@
 }
 
 /* Search Section */
-.subscription-main {
-  flex: 1;
-  padding: 48px 24px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
 
 .sub-search-section {
   width: 100%;
@@ -691,4 +667,29 @@
 
 .sub-search-btn:active {
   transform: translateY(0);
+}
+
+/* ===== THEME-SPECIFIC BACKGROUNDS ===== */
+.theme-ocean-light .subscription-page,
+.theme-light .subscription-page {
+  background: linear-gradient(135deg, #E0F7FA 0%, #B2EBF2 30%, #80DEEA 70%, #4DD0E1 100%);
+}
+.theme-ocean-dark .subscription-page,
+.theme-dark .subscription-page {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #334155 70%, #475569 100%);
+}
+.theme-sunset .subscription-page {
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 30%, #fdba74 70%, #fb923c 100%);
+}
+.theme-forest .subscription-page {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 70%, #059669 100%);
+}
+.theme-purple .subscription-page {
+  background: linear-gradient(135deg, #581c87 0%, #7c3aed 30%, #a855f7 70%, #c084fc 100%);
+}
+.theme-cyberpunk .subscription-page {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 30%, #330066 70%, #4d0099 100%);
+}
+.theme-rose-gold .subscription-page {
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #fbcfe8 70%, #f9a8d4 100%);
 }

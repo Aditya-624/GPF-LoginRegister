@@ -14,10 +14,6 @@ export default function AddDVNumber() {
   });
   const [tableData, setTableData] = useState([]);
 
-  const currentUser = (() => {
-    try { return JSON.parse(localStorage.getItem('currentUser') || 'null'); } catch (e) { return null; }
-  })();
-
   // Update time every second
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -277,6 +273,7 @@ export default function AddDVNumber() {
                       name="dvDate"
                       value={formData.dvDate}
                       onChange={handleInputChange}
+                      onKeyDown={(e) => e.preventDefault()}
                       className="dv-form-input"
                     />
                   </div>

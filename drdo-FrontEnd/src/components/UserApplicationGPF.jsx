@@ -284,26 +284,45 @@ export default function UserApplicationGPF() {
       return;
     }
 
-    // Map purpose string to a numeric code (use index or purpose id if available)
-    const selectedPurpose = purposeOptions.find(p => p.purpose === formData.purposeRequired);
-    const purposeCode = selectedPurpose ? selectedPurpose.code : null;
+    // Resolve persno — use the user's numeric DB id (matches PERSNO in GPF_USR_DETAILS)
+    // Falls back to GPF account number if numericId not in session (old sessions)
+    const persno = userSession.numericId
+      ? parseFloat(userSession.numericId)
+      : gpfDetails?.gpfAccountNumber
+        ? parseFloat(gpfDetails.gpfAccountNumber)
+        : NaN;
 
-    if (!purposeCode) {
+    if (isNaN(persno)) {
+      alert('Could not resolve a valid Personnel Number. Please log out and log back in.');
+      return;
+    }
+
+    // Map purpose string to a numeric code
+    const selectedPurpose = purposeOptions.find(p => p.purpose === formData.purposeRequired);
+    const purposeCode = selectedPurpose ? parseFloat(selectedPurpose.code) : null;
+
+    if (!purposeCode || isNaN(purposeCode)) {
       alert('Could not resolve purpose code. Please re-select the purpose.');
       return;
     }
 
+    const applAmt = parseFloat(formData.amountApplied);
+    if (isNaN(applAmt) || applAmt <= 0) {
+      alert('Please enter a valid amount applied.');
+      return;
+    }
+
     const payload = {
-      // Required fields mapped to entity field names
-      applAmt: parseFloat(formData.amountApplied),
+      applAmt,
       applDate: new Date().toISOString().split('T')[0],
-      persno: parseFloat(gpfDetails?.persNumber || userSession.userId),
-      purpose: parseFloat(purposeCode),
-      // Optional fields
+      persno,
+      purpose: purposeCode,
       gpfType: formData.gpfLoanType === 'TEMPORARY' ? 'E' : formData.gpfLoanType === 'FINAL' ? 'F' : null,
       enclosers: formData.enclosures ? 'Y' : 'N',
-      houseAddr: formData.purposeDrawn || null
+      houseAddr: formData.purposeDrawn ? formData.purposeDrawn.substring(0, 200) : null
     };
+
+    console.log('Saving payload:', payload);
 
     try {
       const response = await fetch('http://localhost:8081/api/gpf-usr-details/create', {
@@ -319,12 +338,16 @@ export default function UserApplicationGPF() {
         const result = await response.json();
         console.log('Data saved successfully:', result);
         alert('User GPF Application saved successfully!');
-        // Optionally clear form after successful save
-        // handleClear();
       } else {
-        const errorData = await response.json();
-        console.error('Failed to save data:', errorData);
-        alert('Failed to save data: ' + (errorData.message || 'Unknown error'));
+        let errorMsg = 'Unknown error';
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || JSON.stringify(errorData);
+        } catch {
+          errorMsg = await response.text();
+        }
+        console.error('Failed to save data:', errorMsg);
+        alert('Failed to save data: ' + errorMsg);
       }
     } catch (error) {
       console.error('Error saving data:', error);

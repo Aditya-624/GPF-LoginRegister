@@ -17,7 +17,7 @@ import com.adithya.loginregister.repository.GpfSubDetailsRepository;
 
 @RestController
 @RequestMapping("/api/gpf-sub-details")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173"}, allowCredentials = "true")
 public class GpfSubDetailsController {
 
     private final GpfSubDetailsRepository repo;
@@ -28,16 +28,26 @@ public class GpfSubDetailsController {
 
     // GET all records for a pers number
     @GetMapping("/by-pers/{persNumber}")
-    public ResponseEntity<List<GpfSubDetails>> getByPersNumber(@PathVariable String persNumber) {
-        List<GpfSubDetails> list = repo.findByPersNumber(persNumber);
-        return ResponseEntity.ok(list);
+    public ResponseEntity<?> getByPersNumber(@PathVariable String persNumber) {
+        try {
+            List<GpfSubDetails> list = repo.findByPersNumber(persNumber);
+            return ResponseEntity.ok(list);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                .body(java.util.Map.of("error", e.getMessage(), "cause", e.getCause() != null ? e.getCause().getMessage() : "none"));
+        }
     }
 
     // POST save new record
     @PostMapping("/save")
-    public ResponseEntity<GpfSubDetails> save(@RequestBody GpfSubDetails record) {
-        GpfSubDetails saved = repo.save(record);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<?> save(@RequestBody GpfSubDetails record) {
+        try {
+            GpfSubDetails saved = repo.save(record);
+            return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                .body(java.util.Map.of("error", e.getMessage(), "cause", e.getCause() != null ? e.getCause().getMessage() : "none"));
+        }
     }
 
     // DELETE by id

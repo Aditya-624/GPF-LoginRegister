@@ -9,12 +9,7 @@ export default function GPFAccountNumbers() {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('name');
   const [message, setMessage] = useState('');
-
-  const currentUser = (() => {
-    try { return JSON.parse(localStorage.getItem('currentUser') || 'null'); } catch (e) { return null; }
-  })();
 
   // Update time every second
   useEffect(() => {
@@ -56,62 +51,68 @@ export default function GPFAccountNumbers() {
         {
           id: 1,
           accountNumber: 'GPF-2024-001',
+          persNumber: 'PERS-001',
           employeeName: 'Rajesh Kumar',
           designation: 'Senior Engineer',
           department: 'Engineering',
           balance: 450000,
           openingDate: '2020-01-15',
-          status: 'active'
+          dob: '1985-03-22'
         },
         {
           id: 2,
           accountNumber: 'GPF-2024-002',
+          persNumber: 'PERS-002',
           employeeName: 'Priya Singh',
           designation: 'Project Manager',
           department: 'Management',
           balance: 650000,
           openingDate: '2019-06-20',
-          status: 'active'
+          dob: '1980-11-05'
         },
         {
           id: 3,
           accountNumber: 'GPF-2024-003',
+          persNumber: 'PERS-003',
           employeeName: 'Amit Patel',
           designation: 'Developer',
           department: 'Engineering',
           balance: 320000,
           openingDate: '2021-03-10',
-          status: 'active'
+          dob: '1990-07-14'
         },
         {
           id: 4,
           accountNumber: 'GPF-2024-004',
+          persNumber: 'PERS-004',
           employeeName: 'Neha Sharma',
           designation: 'Analyst',
           department: 'Analytics',
           balance: 280000,
           openingDate: '2022-01-05',
-          status: 'active'
+          dob: '1992-04-30'
         },
         {
           id: 5,
           accountNumber: 'GPF-2024-005',
+          persNumber: 'PERS-005',
           employeeName: 'Vikram Desai',
           designation: 'Consultant',
           department: 'Consulting',
           balance: 520000,
           openingDate: '2018-11-12',
-          status: 'active'
+          dob: '1978-09-18'
         },
         {
           id: 6,
           accountNumber: 'GPF-2024-006',
+          persNumber: 'PERS-006',
           employeeName: 'Anjali Verma',
           designation: 'HR Manager',
           department: 'Human Resources',
           balance: 380000,
           openingDate: '2020-07-22',
-          status: 'active'
+          dob: '1983-12-01'
         }
       ];
 
@@ -123,21 +124,9 @@ export default function GPFAccountNumbers() {
     }
   };
 
-  const handleViewDetails = (accountNumber) => {
-    alert(`View details for account: ${accountNumber}`);
-  };
-
   const sortedAccounts = [...accounts].sort((a, b) => {
-    switch(sortBy) {
-      case 'name':
-        return a.employeeName.localeCompare(b.employeeName);
-      case 'balance':
-        return b.balance - a.balance;
-      case 'date':
-        return new Date(b.openingDate) - new Date(a.openingDate);
-      default:
-        return 0;
-    }
+    // Default sort: GPF account number ascending (small to large)
+    return a.accountNumber.localeCompare(b.accountNumber, undefined, { numeric: true });
   });
 
   const filteredAccounts = sortedAccounts.filter(account => {
@@ -195,18 +184,6 @@ export default function GPFAccountNumbers() {
               />
             </div>
 
-            <div className="sort-box">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="sort-select"
-              >
-                <option value="name">Sort by Name</option>
-                <option value="balance">Sort by Balance (High to Low)</option>
-                <option value="date">Sort by Opening Date (Newest)</option>
-              </select>
-            </div>
-
             <button
               className="btn btn-primary"
               onClick={fetchAccounts}
@@ -236,39 +213,30 @@ export default function GPFAccountNumbers() {
               <table className="accounts-table">
                 <thead>
                   <tr>
+                    <th>S.No</th>
                     <th>Account Number</th>
+                    <th>Pers No.</th>
                     <th>Employee Name</th>
                     <th>Designation</th>
-                    <th>Department</th>
                     <th>Balance</th>
+                    <th>DOB</th>
                     <th>Opening Date</th>
-                    <th>Status</th>
-                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredAccounts.map(account => (
+                  {filteredAccounts.map((account, index) => (
                     <tr key={account.id}>
+                      <td className="sno">{index + 1}</td>
                       <td className="account-number">{account.accountNumber}</td>
+                      <td className="pers-number">{account.persNumber}</td>
                       <td className="employee-name">{account.employeeName}</td>
                       <td className="designation">{account.designation}</td>
-                      <td className="department">{account.department}</td>
                       <td className="balance">₹{account.balance.toLocaleString()}</td>
+                      <td className="dob">
+                        {account.dob ? new Date(account.dob).toLocaleDateString() : '-'}
+                      </td>
                       <td className="opening-date">
                         {new Date(account.openingDate).toLocaleDateString()}
-                      </td>
-                      <td className="status">
-                        <span className={`status-badge ${account.status}`}>
-                          {account.status.charAt(0).toUpperCase() + account.status.slice(1)}
-                        </span>
-                      </td>
-                      <td className="action">
-                        <button
-                          className="btn-view"
-                          onClick={() => handleViewDetails(account.accountNumber)}
-                        >
-                          View
-                        </button>
                       </td>
                     </tr>
                   ))}

@@ -44,6 +44,9 @@ public class GPF {
     @Size(max = 20)
     private String phoneNumber;
 
+    @Column(name = "SERVICE_DATE")
+    private LocalDate serviceDate;
+
     // Constructors
     public GPF() {
     }
@@ -124,6 +127,14 @@ public class GPF {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public LocalDate getServiceDate() {
+        return serviceDate;
+    }
+
+    public void setServiceDate(LocalDate serviceDate) {
+        this.serviceDate = serviceDate;
     }
 
     @Override

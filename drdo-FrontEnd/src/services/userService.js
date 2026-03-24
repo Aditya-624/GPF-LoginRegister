@@ -21,42 +21,6 @@ const authFetch = (url, options = {}) => {
   return fetch(url, { ...options, headers });
 };
 
-let mockUsers = [
-  {
-    userId: 'user1',
-    username: 'John Doe',
-    password: 'Password@123',
-    dob: '1990-01-15',
-    securityQuestions: [
-      { question: 'What is your Nickname?', answer: 'johnny' },
-      { question: 'What is your First School Name?', answer: 'Lincoln' }
-    ],
-    passwordChangeDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000) // 15 days ago
-  },
-  {
-    userId: 'user2',
-    username: 'Jane Smith',
-    password: 'Secure@456',
-    dob: '1992-05-20',
-    securityQuestions: [
-      { question: 'What is your Place of Birth?', answer: 'New York' },
-      { question: "What is your Mother's Surname?", answer: 'Johnson' }
-    ],
-    passwordChangeDate: new Date()
-  },
-  {
-    userId: 'admin',
-    username: 'Administrator',
-    password: 'Admin@123',
-    dob: '1985-03-10',
-    securityQuestions: [
-      { question: 'What is your Nickname?', answer: 'admin' },
-      { question: 'What is your First School Name?', answer: 'St. Johns' }
-    ],
-    passwordChangeDate: new Date()
-  }
-];
-
 // Password validation utility
 export const validatePassword = (password) => {
   const errors = [];
@@ -184,6 +148,7 @@ export const userService = {
       // Store user session data
       const userSession = {
         userId: data.userId,
+        numericId: data.numericId,
         username: data.username,
         workStatus: data.workStatus,
         dob: data.dob,
@@ -235,10 +200,6 @@ export const userService = {
       console.error('Change password exception:', err); // Debug log
       return { success: false, error: err.message };
     }
-  },
-
-  userExists: (userId) => {
-    return mockUsers.some(u => u.userId === userId);
   },
 
   // Get security questions for user

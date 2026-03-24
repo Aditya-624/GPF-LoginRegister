@@ -1,16 +1,24 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './TemporaryAdvance.css';
 import ThemeSelector from './ThemeSelector';
 
 export default function TemporaryAdvance() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedType, setSelectedType] = useState('staff'); // 'staff' or 'officer'
+  const [selectedType, setSelectedType] = useState('staff');
   const [onlineApplication, setOnlineApplication] = useState(false);
-  const [selectedUser, setSelectedUser] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Search / combobox state (AddSubscription model)
+  const [persNoInput, setPersNoInput] = useState('');
+  const [typedQuery, setTypedQuery] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [allEmployees, setAllEmployees] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [selectedRecord, setSelectedRecord] = useState(null); // real GPF record
+  const inputRef = useRef(null);
+
+  // Form fields
   const [applicationDate, setApplicationDate] = useState('');
   const [applicationAmount, setApplicationAmount] = useState('');
   const [loanTakenCurrentYear, setLoanTakenCurrentYear] = useState('');
@@ -27,296 +35,172 @@ export default function TemporaryAdvance() {
   const [balanceInstallmentAmount, setBalanceInstallmentAmount] = useState('');
   const [sanctionAmount, setSanctionAmount] = useState('');
   const [changeSanctionAmount, setChangeSanctionAmount] = useState('');
-  const [gpfUsrDetailsData, setGpfUsrDetailsData] = useState([]);
 
-  // Sample purposes - replace with actual API call
   const purposes = [
-    'Medical Treatment',
-    'Education',
-    'House Construction',
-    'Marriage',
-    'Vehicle Purchase',
-    'Emergency',
-    'Other'
+    'Medical Treatment', 'Education', 'House Construction',
+    'Marriage', 'Vehicle Purchase', 'Emergency', 'Other'
   ];
-
-  // Sample user data - replace with actual API call
-  const userDetails = [
-    { 
-      id: 1, 
-      name: 'John Doe', 
-      gpfNumber: 'GPF001', 
-      type: 'staff',
-      personnelNumber: 'WS001',
-      dob: '15 Jan 1985',
-      designation: 'Technical Assistant',
-      retirementDate: '15 Jan 2045',
-      basicPay: '₹45,000',
-      payInPayBand: '₹35,000',
-      gradePay: '₹5,400',
-      phoneNumber: '9876543210'
-    },
-    { 
-      id: 2, 
-      name: 'Jane Smith', 
-      gpfNumber: 'GPF002', 
-      type: 'officer',
-      personnelNumber: 'WS002',
-      dob: '22 Mar 1980',
-      designation: 'Senior Scientist',
-      retirementDate: '22 Mar 2040',
-      basicPay: '₹85,000',
-      payInPayBand: '₹67,000',
-      gradePay: '₹8,700',
-      phoneNumber: '9876543211'
-    },
-    { 
-      id: 3, 
-      name: 'Robert Johnson', 
-      gpfNumber: 'GPF003', 
-      type: 'staff',
-      personnelNumber: 'WS003',
-      dob: '10 Jul 1990',
-      designation: 'Junior Technician',
-      retirementDate: '10 Jul 2050',
-      basicPay: '₹35,000',
-      payInPayBand: '₹25,000',
-      gradePay: '₹4,200',
-      phoneNumber: '9876543212'
-    },
-    { 
-      id: 4, 
-      name: 'Emily Davis', 
-      gpfNumber: 'GPF004', 
-      type: 'officer',
-      personnelNumber: 'WS004',
-      dob: '05 Dec 1982',
-      designation: 'Principal Scientist',
-      retirementDate: '05 Dec 2042',
-      basicPay: '₹95,000',
-      payInPayBand: '₹75,000',
-      gradePay: '₹10,000',
-      phoneNumber: '9876543213'
-    },
-    { 
-      id: 5, 
-      name: 'Michael Brown', 
-      gpfNumber: 'GPF005', 
-      type: 'onlineApplication',
-      personnelNumber: 'WS005',
-      dob: '18 Sep 1988',
-      designation: 'Research Associate',
-      retirementDate: '18 Sep 2048',
-      basicPay: '₹55,000',
-      payInPayBand: '₹42,000',
-      gradePay: '₹6,600',
-      phoneNumber: '9876543214'
-    },
-    { 
-      id: 6, 
-      name: 'Sarah Wilson', 
-      gpfNumber: 'GPF006', 
-      type: 'staff',
-      personnelNumber: 'WS006',
-      dob: '30 Apr 1992',
-      designation: 'Lab Assistant',
-      retirementDate: '30 Apr 2052',
-      basicPay: '₹32,000',
-      payInPayBand: '₹22,000',
-      gradePay: '₹3,600',
-      phoneNumber: '9876543215'
-    },
-    { 
-      id: 7, 
-      name: 'David Lee', 
-      gpfNumber: 'GPF007', 
-      type: 'officer',
-      personnelNumber: 'WS007',
-      dob: '12 Nov 1978',
-      designation: 'Director',
-      retirementDate: '12 Nov 2038',
-      basicPay: '₹125,000',
-      payInPayBand: '₹100,000',
-      gradePay: '₹12,000',
-      phoneNumber: '9876543216'
-    },
-    { 
-      id: 8, 
-      name: 'Lisa Anderson', 
-      gpfNumber: 'GPF008', 
-      type: 'onlineApplication',
-      personnelNumber: 'WS008',
-      dob: '25 Jun 1995',
-      designation: 'Project Fellow',
-      retirementDate: '25 Jun 2055',
-      basicPay: '₹40,000',
-      payInPayBand: '₹31,000',
-      gradePay: '₹5,000',
-      phoneNumber: '9876543217'
-    }
-  ];
-
-  const currentUser = (() => {
-    try { return JSON.parse(localStorage.getItem('currentUser') || 'null'); } catch (e) { return null; }
-  })();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch GPF User Details from database
+  // Fetch all employees on mount
   useEffect(() => {
-    if (onlineApplication) {
-      fetchGpfUsrDetails();
-    }
-  }, [onlineApplication]);
-
-  const fetchGpfUsrDetails = async () => {
-    try {
-      const response = await fetch('http://localhost:8081/api/gpf-usr-details/all');
-      if (response.ok) {
-        const data = await response.json();
-        setGpfUsrDetailsData(data);
-        console.log('GPF User Details fetched:', data);
-      } else {
-        console.error('Failed to fetch GPF User Details');
-      }
-    } catch (error) {
-      console.error('Error fetching GPF User Details:', error);
-    }
-  };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      const dropdown = document.querySelector('.search-dropdown-wrapper');
-      if (dropdown && !dropdown.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    fetch('http://localhost:8081/api/gpf/all')
+      .then(r => r.json())
+      .then(data => setAllEmployees(data))
+      .catch(e => console.error('Error loading employees:', e));
   }, []);
 
-  const handleTypeChange = (type) => {
-    setSelectedType(type);
-    setSelectedUser(''); // Reset selection when filter changes
-    // Clear all form data when type changes
-    setSearchQuery('');
-    setApplicationDate('');
-    setApplicationAmount('');
-    setLoanTakenCurrentYear('');
-    setLoanDate('');
-    setSelectedPurpose('');
-    setBillNo('');
-    setBillDate('');
-    setRecFrom('');
-    setEligibleAmount('');
-    setPreviousBalance('');
-    setOutstandingBalance('');
-    setNoOfInstallments('');
-    setSanctionDate('');
-    setBalanceInstallmentAmount('');
-    setSanctionAmount('');
-    setChangeSanctionAmount('');
+  const formatTime = (date) =>
+    date.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  const formatDate = (ds) => {
+    if (!ds) return '-';
+    return new Date(ds).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
-  const handleOnlineApplicationChange = () => {
-    setOnlineApplication(!onlineApplication);
-  };
-
-  // Filter users based on selected types and search query
-  const getFilteredUsers = () => {
-    let usersToFilter = [];
-
-    // If Online Application is checked, use GPF User Details data
-    if (onlineApplication && gpfUsrDetailsData.length > 0) {
-      usersToFilter = gpfUsrDetailsData.map(detail => ({
-        id: detail.id || detail.persNo,
-        name: detail.persNo,
-        gpfNumber: detail.persNo,
-        type: 'staff',
-        personnelNumber: detail.persNo,
-        dob: '15 Jan 1985',
-        designation: 'Employee',
-        retirementDate: '15 Jan 2045',
-        basicPay: `₹${detail.presentBasicPay || 0}`,
-        payInPayBand: `₹${detail.presentBasicPay || 0}`,
-        gradePay: '₹5,400',
-        phoneNumber: detail.phoneNo || '9876543210'
-      }));
-    } else {
-      // Otherwise use hardcoded user details filtered by selected type
-      usersToFilter = userDetails.filter(user => user.type === selectedType);
-    }
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      usersToFilter = usersToFilter.filter(user => 
-        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.gpfNumber.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    return usersToFilter;
-  };
-
-  const filteredUsers = getFilteredUsers();
-
-  const handleUserSelect = (userId) => {
-    setSelectedUser(userId);
-    setIsDropdownOpen(false);
-    const user = userDetails.find(u => u.id === userId);
-    if (user) {
-      setSearchQuery(`${user.name} - ${user.gpfNumber}`);
-    }
-  };
-
-  const selectedUserData = userDetails.find(u => u.id === selectedUser);
-
-  const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour12: true, 
-      hour: '2-digit', 
-      minute: '2-digit',
-      second: '2-digit'
+  // Filter employees by workStatus based on radio selection
+  const getBaseList = () => {
+    if (onlineApplication) return allEmployees;
+    return allEmployees.filter(emp => {
+      const ws = (emp.workStatus || '').toUpperCase();
+      if (selectedType === 'officer') return ws === 'OFFICER';
+      // staff = INDUSTRIAL or NON_INDUSTRIAL or anything else
+      return ws !== 'OFFICER';
     });
   };
 
-  const handleSignOut = () => {
-    try { 
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('currentUser');
-    } catch (e) { /* ignore */ }
-    navigate('/');
+  const handlePersNoChange = (e) => {
+    const val = e.target.value;
+    setPersNoInput(val);
+    setTypedQuery(val);
+    if (val.trim().length > 0) {
+      const q = val.toLowerCase();
+      const filtered = getBaseList().filter(emp =>
+        emp.persNumber?.toString().toLowerCase().includes(q) ||
+        emp.employeeName?.toLowerCase().includes(q) ||
+        emp.gpfAccountNumber?.toString().toLowerCase().includes(q)
+      );
+      setFilteredEmployees(filtered);
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+      setFilteredEmployees([]);
+    }
   };
 
-  const handleBackToGPF = () => {
-    try { window.__ANIMATE_NAV = true; } catch (e) {}
-    navigate('/gpf');
+  const handleDropdownToggle = () => {
+    if (!showDropdown) {
+      setFilteredEmployees(getBaseList());
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  };
+
+  const handleSearch = async () => {
+    const query = persNoInput.trim();
+    if (!query) return;
+    // First try local filter
+    const q = query.toLowerCase();
+    const local = getBaseList().filter(emp =>
+      emp.persNumber?.toString().toLowerCase().includes(q) ||
+      emp.employeeName?.toLowerCase().includes(q) ||
+      emp.gpfAccountNumber?.toString().toLowerCase().includes(q)
+    );
+    if (local.length === 1) {
+      handleSelectEmployee(local[0]);
+      return;
+    }
+    if (local.length > 1) {
+      setFilteredEmployees(local);
+      setShowDropdown(true);
+      return;
+    }
+    // Fallback to API search
+    try {
+      const res = await fetch(`http://localhost:8081/api/gpf/search?query=${encodeURIComponent(query)}`);
+      if (res.ok) {
+        const results = await res.json();
+        if (results?.length === 1) {
+          handleSelectEmployee(results[0]);
+        } else if (results?.length > 1) {
+          setFilteredEmployees(results);
+          setShowDropdown(true);
+        } else {
+          alert('No employee found for: ' + query);
+        }
+      } else {
+        alert('No employee found for: ' + query);
+      }
+    } catch (e) {
+      alert('Cannot connect to backend server.');
+    }
+  };
+
+  const handleSelectEmployee = (record) => {
+    setSelectedRecord(record);
+    setPersNoInput(`${record.gpfAccountNumber} - ${record.employeeName} (${record.persNumber})`);
+    setShowDropdown(false);
+  };
+
+  const highlight = (text, query) => {
+    if (!query || !text) return text;
+    const str = String(text);
+    const i = str.toLowerCase().indexOf(query.toLowerCase());
+    if (i === -1) return str;
+    return (
+      <>
+        {str.slice(0, i)}
+        <mark style={{ background: '#ffe066', padding: 0 }}>{str.slice(i, i + query.length)}</mark>
+        {str.slice(i + query.length)}
+      </>
+    );
+  };
+
+  const handleTypeChange = (type) => {
+    setSelectedType(type);
+    resetForm();
+  };
+
+  const handleOnlineApplicationChange = () => {
+    setOnlineApplication(prev => !prev);
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setSelectedRecord(null);
+    setPersNoInput('');
+    setTypedQuery('');
+    setShowDropdown(false);
+    setApplicationDate(''); setApplicationAmount(''); setLoanTakenCurrentYear('');
+    setLoanDate(''); setSelectedPurpose(''); setBillNo(''); setBillDate('');
+    setRecFrom(''); setEligibleAmount(''); setPreviousBalance('');
+    setOutstandingBalance(''); setNoOfInstallments(''); setSanctionDate('');
+    setBalanceInstallmentAmount(''); setSanctionAmount(''); setChangeSanctionAmount('');
   };
 
   const handleSubmitApplication = async () => {
+    if (!selectedRecord) { alert('Please select an employee'); return; }
     if (!selectedPurpose || !billNo || !billDate || !recFrom || !applicationDate || !applicationAmount) {
       alert('Please fill all required fields');
       return;
     }
-
     const payload = {
-      persNo: selectedUserData.personnelNumber,
-      gpfLoanType: 'T', // T for Temporary Advance
-      applicationDate: applicationDate,
+      persNo: selectedRecord.persNumber,
+      gpfLoanType: 'T',
+      applicationDate,
       purpose: selectedPurpose,
-      billNo: billNo,
-      billDate: billDate,
+      billNo,
+      billDate,
       recoveryFromDate: recFrom,
       appliedAmount: parseFloat(applicationAmount),
       loanTakenCurrentYear: loanTakenCurrentYear ? parseFloat(loanTakenCurrentYear) : null,
       loanDate: loanDate || null
     };
-
     try {
       const response = await fetch('http://localhost:8081/api/gpf-sanction-details', {
         method: 'POST',
@@ -326,37 +210,24 @@ export default function TemporaryAdvance() {
         },
         body: JSON.stringify(payload)
       });
-
       if (response.ok) {
         alert('Temporary Advance Application submitted successfully!');
-        // Reset form
-        setSelectedUser('');
-        setSearchQuery('');
-        setApplicationDate('');
-        setApplicationAmount('');
-        setLoanTakenCurrentYear('');
-        setLoanDate('');
-        setSelectedPurpose('');
-        setBillNo('');
-        setBillDate('');
-        setRecFrom('');
+        resetForm();
       } else {
-        alert('Failed to submit application. Please try again.');
+        let errMsg = 'Failed to submit application. Please try again.';
+        try {
+          const errData = await response.json();
+          errMsg = errData.error || errData.message || errMsg;
+        } catch {}
+        alert(errMsg);
       }
     } catch (error) {
-      console.error('Error submitting application:', error);
       alert('Error submitting application: ' + error.message);
     }
   };
 
   const handleChangeSanctionAmount = () => {
-    if (!changeSanctionAmount) {
-      alert('Please enter a sanction amount');
-      return;
-    }
-
-    // Handle the change sanction amount logic here
-    console.log('Changing sanction amount to:', changeSanctionAmount);
+    if (!changeSanctionAmount) { alert('Please enter a sanction amount'); return; }
     alert('Sanction amount updated to: ' + changeSanctionAmount);
     setChangeSanctionAmount('');
   };
@@ -365,17 +236,15 @@ export default function TemporaryAdvance() {
     <div className="temporary-advance-page">
       <nav className="top-nav">
         <div className="nav-left">
-          <button className="btn btn-nav btn-back" onClick={handleBackToGPF}>
+          <button className="btn btn-nav btn-back" onClick={() => { try { window.__ANIMATE_NAV = true; } catch (e) {} navigate('/gpf'); }}>
             <span>←</span> Back to GPF
           </button>
           <span className="nav-brand">Temporary Advance</span>
           <span className="nav-time">{formatTime(currentTime)}</span>
         </div>
         <div className="nav-right">
-          <div className="theme-selector-compact">
-            <ThemeSelector compact={true} />
-          </div>
-          <button className="btn btn-nav btn-profile" onClick={() => { try { window.__ANIMATE_NAV = true } catch (e) {}; navigate('/profile'); }}>
+          <div className="theme-selector-compact"><ThemeSelector compact={true} /></div>
+          <button className="btn btn-nav btn-profile" onClick={() => { try { window.__ANIMATE_NAV = true; } catch (e) {} navigate('/profile'); }}>
             <span className="profile-icon">👤</span>
             <span className="profile-name">User Profile</span>
           </button>
@@ -387,91 +256,82 @@ export default function TemporaryAdvance() {
           {/* Left Side - Search Section */}
           <div className="search-section">
             <h2 className="section-title">🔍 Search User</h2>
-            
+
             <div className="search-container">
               <div className="filter-options">
                 <div className="type-selector-group">
                   <span className="type-selector-label">Officer or Staff:</span>
                   <label className="radio-label">
-                    <input
-                      type="radio"
-                      name="staffOfficer"
-                      value="staff"
+                    <input type="radio" name="staffOfficer" value="staff"
                       checked={selectedType === 'staff'}
-                      onChange={(e) => handleTypeChange(e.target.value)}
-                    />
+                      onChange={(e) => handleTypeChange(e.target.value)} />
                     <span className="radio-text">Staff</span>
                   </label>
                   <label className="radio-label">
-                    <input
-                      type="radio"
-                      name="staffOfficer"
-                      value="officer"
+                    <input type="radio" name="staffOfficer" value="officer"
                       checked={selectedType === 'officer'}
-                      onChange={(e) => handleTypeChange(e.target.value)}
-                    />
+                      onChange={(e) => handleTypeChange(e.target.value)} />
                     <span className="radio-text">Officer</span>
                   </label>
                 </div>
-
                 <label className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={onlineApplication}
-                    onChange={handleOnlineApplicationChange}
-                  />
+                  <input type="checkbox" checked={onlineApplication} onChange={handleOnlineApplicationChange} />
                   <span className="checkbox-text">Online Application</span>
                 </label>
               </div>
 
-              <div className="search-dropdown-wrapper">
+              {/* Combobox — AddSubscription model */}
+              <div className="search-dropdown-wrapper" style={{ position: 'relative' }}>
                 <div className="search-input-wrapper">
                   <input
+                    ref={inputRef}
                     type="text"
                     className="search-input"
-                    placeholder="Search or select user..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setIsDropdownOpen(true);
-                    }}
-                    onFocus={() => setIsDropdownOpen(true)}
+                    placeholder="Enter Pers No, Name or Account No..."
+                    value={persNoInput}
+                    onChange={handlePersNoChange}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    onFocus={() => { if (!persNoInput.trim()) { setFilteredEmployees(getBaseList()); setShowDropdown(true); } }}
+                    onBlur={() => setTimeout(() => setShowDropdown(false), 160)}
+                    autoComplete="off"
                   />
-                  <span className="search-icon">🔍</span>
-                  <button 
+                  <button
+                    type="button"
                     className="dropdown-toggle"
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  >
-                    ▼
-                  </button>
+                    onMouseDown={(e) => { e.preventDefault(); handleDropdownToggle(); }}
+                    tabIndex={-1}
+                  >▾</button>
                 </div>
 
-                {isDropdownOpen && (
-                  <div className="dropdown-menu">
-                    {filteredUsers.length > 0 ? (
-                      filteredUsers.map(user => (
-                        <div
-                          key={user.id}
-                          className={`dropdown-item ${selectedUser === user.id ? 'selected' : ''}`}
-                          onClick={() => handleUserSelect(user.id)}
-                        >
-                          <div className="user-info">
-                            <span className="user-name">{user.name}</span>
-                            <span className="user-gpf">{user.gpfNumber}</span>
-                          </div>
-                          <span className={`user-type-badge ${user.type}`}>
-                            {user.type === 'staff' ? 'Staff' : 
-                             user.type === 'officer' ? 'Officer' : 
-                             'Online'}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="dropdown-item no-results">
-                        No users found
-                      </div>
+                {showDropdown && (
+                  <ul style={{
+                    position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 999,
+                    background: 'var(--card-bg, #fff)', border: '1px solid var(--border-color, #ccc)',
+                    borderRadius: '6px', maxHeight: '220px', overflowY: 'auto',
+                    listStyle: 'none', margin: 0, padding: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                  }}>
+                    {filteredEmployees.length > 0 ? filteredEmployees.map((emp) => (
+                      <li
+                        key={emp.gpfAccountNumber}
+                        onMouseDown={() => handleSelectEmployee(emp)}
+                        style={{
+                          padding: '8px 12px', cursor: 'pointer', display: 'flex',
+                          gap: '8px', alignItems: 'center', fontSize: '0.85rem',
+                          borderBottom: '1px solid var(--border-color, #eee)'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'var(--hover-bg, #f0f4ff)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        <span style={{ fontWeight: 600, minWidth: '80px' }}>{highlight(emp.gpfAccountNumber?.toString(), typedQuery)}</span>
+                        <span style={{ flex: 1 }}>{highlight(emp.employeeName, typedQuery)}</span>
+                        <span style={{ color: 'var(--text-muted, #888)', fontSize: '0.8rem' }}>({highlight(emp.persNumber?.toString(), typedQuery)})</span>
+                      </li>
+                    )) : (
+                      <li style={{ padding: '10px 12px', color: 'var(--text-muted, #888)', fontSize: '0.85rem' }}>
+                        No matching employees found
+                      </li>
                     )}
-                  </div>
+                  </ul>
                 )}
               </div>
             </div>
@@ -480,40 +340,34 @@ export default function TemporaryAdvance() {
           {/* Right Side - User Details Section */}
           <div className="user-details-section">
             <h2 className="section-title">👤 User Details</h2>
-            
-            {selectedUserData ? (
+
+            {selectedRecord ? (
               <div className="user-details-card">
                 <table className="details-table">
                   <tbody>
                     <tr>
                       <td className="table-label">PERS NO.</td>
-                      <td className="table-value">{selectedUserData.personnelNumber}</td>
+                      <td className="table-value">{selectedRecord.persNumber || '-'}</td>
                       <td className="table-label">GPF ACC. NO.</td>
-                      <td className="table-value">{selectedUserData.gpfNumber}</td>
+                      <td className="table-value">{selectedRecord.gpfAccountNumber || '-'}</td>
                     </tr>
                     <tr>
                       <td className="table-label">NAME</td>
-                      <td className="table-value">{selectedUserData.name}</td>
-                      <td className="table-label">PAY IN PAY BAND</td>
-                      <td className="table-value">{selectedUserData.payInPayBand}</td>
+                      <td className="table-value">{selectedRecord.employeeName || '-'}</td>
+                      <td className="table-label">BASIC PAY</td>
+                      <td className="table-value">{selectedRecord.basicPay ? `₹${Number(selectedRecord.basicPay).toLocaleString('en-IN')}` : '-'}</td>
                     </tr>
                     <tr>
                       <td className="table-label">DOB</td>
-                      <td className="table-value">{selectedUserData.dob}</td>
-                      <td className="table-label">GRADE PAY</td>
-                      <td className="table-value">{selectedUserData.gradePay}</td>
-                    </tr>
-                    <tr>
+                      <td className="table-value">{formatDate(selectedRecord.dob)}</td>
                       <td className="table-label">DESIGNATION</td>
-                      <td className="table-value">{selectedUserData.designation}</td>
-                      <td className="table-label">BASIC PAY</td>
-                      <td className="table-value">{selectedUserData.basicPay}</td>
+                      <td className="table-value">{selectedRecord.designation || '-'}</td>
                     </tr>
                     <tr>
                       <td className="table-label">RETIREMENT DATE</td>
-                      <td className="table-value">{selectedUserData.retirementDate}</td>
+                      <td className="table-value">{formatDate(selectedRecord.dateOfRetirement)}</td>
                       <td className="table-label">PHONE NUMBER</td>
-                      <td className="table-value">{selectedUserData.phoneNumber}</td>
+                      <td className="table-value">{selectedRecord.phoneNumber || '-'}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -527,305 +381,138 @@ export default function TemporaryAdvance() {
           </div>
         </div>
 
-        {/* Application Form Section - Full Width Below */}
-        {selectedUserData && (
+        {/* Application Form Section */}
+        {selectedRecord && (
           <div className="application-form-section">
             <h3 className="form-section-title">📝 Application Details</h3>
-            
             <div className="form-grid">
               <div className="form-field">
-                <label className="form-label">
-                  Application Date: <span className="required">*</span>
-                </label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={applicationDate}
-                  onChange={(e) => setApplicationDate(e.target.value)}
-                />
+                <label className="form-label">Application Date: <span className="required">*</span></label>
+                <input type="date" className="form-input" value={applicationDate} onChange={(e) => setApplicationDate(e.target.value)} onKeyDown={(e) => e.preventDefault()} />
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  Application Amount: <span className="required">*</span>
-                </label>
-                <input
-                  type="number"
-                  className="form-input"
-                  placeholder="Enter amount"
-                  value={applicationAmount}
-                  onChange={(e) => setApplicationAmount(e.target.value)}
-                />
+                <label className="form-label">Application Amount: <span className="required">*</span></label>
+                <input type="number" className="form-input" placeholder="Enter amount" value={applicationAmount} onChange={(e) => setApplicationAmount(e.target.value)} />
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  Loan Taken in Current Year:
-                </label>
-                <input
-                  type="number"
-                  className="form-input"
-                  placeholder="Enter amount"
-                  value={loanTakenCurrentYear}
-                  onChange={(e) => setLoanTakenCurrentYear(e.target.value)}
-                />
+                <label className="form-label">Loan Taken in Current Year:</label>
+                <input type="number" className="form-input" placeholder="Enter amount" value={loanTakenCurrentYear} onChange={(e) => setLoanTakenCurrentYear(e.target.value)} />
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  Date:
-                </label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={loanDate}
-                  onChange={(e) => setLoanDate(e.target.value)}
-                />
+                <label className="form-label">Date:</label>
+                <input type="date" className="form-input" value={loanDate} onChange={(e) => setLoanDate(e.target.value)} onKeyDown={(e) => e.preventDefault()} />
               </div>
             </div>
           </div>
         )}
 
-        {/* New Section Below Application Form */}
-        {selectedUserData && (
+        {/* Purpose & Bill Details */}
+        {selectedRecord && (
           <div className="additional-section">
             <h3 className="form-section-title">📋 Purpose & Bill Details</h3>
-            
             <div className="purpose-bill-grid">
               <div className="form-field full-width">
-                <label className="form-label">
-                  Purpose: <span className="required">*</span>
-                </label>
-                <select
-                  className="form-input form-select"
-                  value={selectedPurpose}
-                  onChange={(e) => setSelectedPurpose(e.target.value)}
-                >
+                <label className="form-label">Purpose: <span className="required">*</span></label>
+                <select className="form-input form-select" value={selectedPurpose} onChange={(e) => setSelectedPurpose(e.target.value)}>
                   <option value="">-- Select Purpose --</option>
-                  {purposes.map((purpose, index) => (
-                    <option key={index} value={purpose}>
-                      {purpose}
-                    </option>
-                  ))}
+                  {purposes.map((p, i) => <option key={i} value={p}>{p}</option>)}
                 </select>
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  Bill No.: <span className="required">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="Enter bill number"
-                  value={billNo}
-                  onChange={(e) => setBillNo(e.target.value)}
-                />
+                <label className="form-label">Bill No.: <span className="required">*</span></label>
+                <input type="text" className="form-input" placeholder="Enter bill number" value={billNo} onChange={(e) => setBillNo(e.target.value)} />
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  Bill Date: <span className="required">*</span>
-                </label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={billDate}
-                  onChange={(e) => setBillDate(e.target.value)}
-                />
+                <label className="form-label">Bill Date: <span className="required">*</span></label>
+                <input type="date" className="form-input" value={billDate} onChange={(e) => setBillDate(e.target.value)} onKeyDown={(e) => e.preventDefault()} />
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  Rec From: <span className="required">*</span>
-                </label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={recFrom}
-                  onChange={(e) => setRecFrom(e.target.value)}
-                />
+                <label className="form-label">Rec From: <span className="required">*</span></label>
+                <input type="date" className="form-input" value={recFrom} onChange={(e) => setRecFrom(e.target.value)} onKeyDown={(e) => e.preventDefault()} />
               </div>
             </div>
-
             <div className="submit-section">
-              <button 
-                className="submit-btn"
-                onClick={handleSubmitApplication}
-              >
-                Submit Application
-              </button>
+              <button className="submit-btn" onClick={handleSubmitApplication}>Submit Application</button>
             </div>
           </div>
         )}
 
-        {/* Sanction Details Section */}
-        {selectedUserData && (
+        {/* Sanction Details */}
+        {selectedRecord && (
           <div className="sanction-details-section">
             <h3 className="form-section-title">💰 Sanction Details</h3>
-            
             <div className="sanction-grid">
               <div className="form-field">
-                <label className="form-label">
-                  Eligible Amount:
-                </label>
-                <input
-                  type="number"
-                  className="form-input"
-                  placeholder="Enter eligible amount"
-                  value={eligibleAmount}
-                  onChange={(e) => setEligibleAmount(e.target.value)}
-                />
+                <label className="form-label">Eligible Amount:</label>
+                <input type="number" className="form-input" placeholder="Enter eligible amount" value={eligibleAmount} onChange={(e) => setEligibleAmount(e.target.value)} />
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  Previous Balance:
-                </label>
-                <input
-                  type="number"
-                  className="form-input"
-                  placeholder="Enter previous balance"
-                  value={previousBalance}
-                  onChange={(e) => setPreviousBalance(e.target.value)}
-                />
+                <label className="form-label">Previous Balance:</label>
+                <input type="number" className="form-input" placeholder="Enter previous balance" value={previousBalance} onChange={(e) => setPreviousBalance(e.target.value)} />
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  Outstanding Balance:
-                </label>
-                <input
-                  type="number"
-                  className="form-input"
-                  placeholder="Enter outstanding balance"
-                  value={outstandingBalance}
-                  onChange={(e) => setOutstandingBalance(e.target.value)}
-                />
+                <label className="form-label">Outstanding Balance:</label>
+                <input type="number" className="form-input" placeholder="Enter outstanding balance" value={outstandingBalance} onChange={(e) => setOutstandingBalance(e.target.value)} />
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  No. of Installments:
-                </label>
-                <input
-                  type="number"
-                  className="form-input"
-                  placeholder="Enter number of installments"
-                  value={noOfInstallments}
-                  onChange={(e) => setNoOfInstallments(e.target.value)}
-                />
+                <label className="form-label">No. of Installments:</label>
+                <input type="number" className="form-input" placeholder="Enter number of installments" value={noOfInstallments} onChange={(e) => setNoOfInstallments(e.target.value)} />
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  Sanction Date:
-                </label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={sanctionDate}
-                  onChange={(e) => setSanctionDate(e.target.value)}
-                />
+                <label className="form-label">Sanction Date:</label>
+                <input type="date" className="form-input" value={sanctionDate} onChange={(e) => setSanctionDate(e.target.value)} onKeyDown={(e) => e.preventDefault()} />
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  Balance Installment Amount:
-                </label>
-                <input
-                  type="number"
-                  className="form-input"
-                  placeholder="Enter balance installment amount"
-                  value={balanceInstallmentAmount}
-                  onChange={(e) => setBalanceInstallmentAmount(e.target.value)}
-                />
+                <label className="form-label">Balance Installment Amount:</label>
+                <input type="number" className="form-input" placeholder="Enter balance installment amount" value={balanceInstallmentAmount} onChange={(e) => setBalanceInstallmentAmount(e.target.value)} />
               </div>
-
               <div className="form-field">
-                <label className="form-label">
-                  Sanction Amount:
-                </label>
-                <input
-                  type="number"
-                  className="form-input"
-                  placeholder="Enter sanction amount"
-                  value={sanctionAmount}
-                  onChange={(e) => setSanctionAmount(e.target.value)}
-                />
+                <label className="form-label">Sanction Amount:</label>
+                <input type="number" className="form-input" placeholder="Enter sanction amount" value={sanctionAmount} onChange={(e) => setSanctionAmount(e.target.value)} />
               </div>
             </div>
-
             <div className="submit-section">
-              <button 
-                className="submit-btn"
-                onClick={handleSubmitApplication}
-              >
-                Submit Application
-              </button>
+              <button className="submit-btn" onClick={handleSubmitApplication}>Submit Application</button>
             </div>
           </div>
         )}
 
-        {/* Change Sanction Amount Section */}
-        {selectedUserData && (
+        {/* Change Sanction Amount */}
+        {selectedRecord && (
           <div className="change-sanction-section">
             <h3 className="form-section-title">✏️ Change Sanction Amount</h3>
-            
             <div className="change-sanction-container">
-              <input
-                type="number"
-                className="form-input change-sanction-input"
-                placeholder="Enter new sanction amount"
-                value={changeSanctionAmount}
-                onChange={(e) => setChangeSanctionAmount(e.target.value)}
-              />
-
-              <button 
-                className="go-btn"
-                onClick={handleChangeSanctionAmount}
-              >
-                GO
-              </button>
+              <input type="number" className="form-input change-sanction-input" placeholder="Enter new sanction amount"
+                value={changeSanctionAmount} onChange={(e) => setChangeSanctionAmount(e.target.value)} />
+              <button className="go-btn" onClick={handleChangeSanctionAmount}>GO</button>
             </div>
           </div>
         )}
 
-        {/* Tables Section - Side by Side */}
-        {selectedUserData && (
+        {/* Tables Section */}
+        {selectedRecord && (
           <div className="tables-section">
             <div className="tables-container">
-              {/* Table 1 - Slip Details */}
               <div className="table-wrapper">
                 <h3 className="table-title">📋 SLIP DETAILS</h3>
                 <table className="data-table">
                   <thead>
-                    <tr>
-                      <th>PERS NO.</th>
-                      <th>GPF YEARS</th>
-                      <th>CLOSING BALANCE</th>
-                    </tr>
+                    <tr><th>PERS NO.</th><th>GPF YEARS</th><th>CLOSING BALANCE</th></tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>{selectedUserData.personnelNumber || '-'}</td>
+                      <td>{selectedRecord.persNumber || '-'}</td>
                       <td>2024-25</td>
                       <td>₹{outstandingBalance || '-'}</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
-
-              {/* Table 2 - Recovery From Pay Bill */}
               <div className="table-wrapper">
                 <h3 className="table-title">💳 RECOVERY FROM PAY BILL</h3>
                 <table className="data-table">
                   <thead>
-                    <tr>
-                      <th>DT/MONTH/YEAR</th>
-                      <th>GPF SUBSCRIPTION</th>
-                      <th>REFU NO.</th>
-                    </tr>
+                    <tr><th>DT/MONTH/YEAR</th><th>GPF SUBSCRIPTION</th><th>REFU NO.</th></tr>
                   </thead>
                   <tbody>
                     <tr>

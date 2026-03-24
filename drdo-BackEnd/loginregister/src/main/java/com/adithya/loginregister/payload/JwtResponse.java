@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class JwtResponse {
     private String token;
     private String userId;
+    private Long numericId;
     private String username;
     private String workStatus;
     private LocalDate dob;
@@ -40,6 +41,9 @@ public class JwtResponse {
 
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
+
+    public Long getNumericId() { return numericId; }
+    public void setNumericId(Long numericId) { this.numericId = numericId; }
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }

@@ -18,6 +18,8 @@ export default function AddSubscription() {
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const inputRef = useRef(null);
   const [subForm, setSubForm] = useState({ date: '', gpfSubscription: '', gpfRefund: '' });
+  const [existingRecords, setExistingRecords] = useState([]);
+  const [selectedRecordId, setSelectedRecordId] = useState(null);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -72,6 +74,10 @@ export default function AddSubscription() {
     setUserDetails(record);
     setPersNoInput(`${record.gpfAccountNumber} - ${record.employeeName} (${record.persNumber})`);
     setShowDropdown(false);
+    setExistingRecords([]);
+    setSelectedRecordId(null);
+    setSubForm({ date: '', gpfSubscription: '', gpfRefund: '' });
+    fetchRecords(record.persNumber);
   };
 
   const handleSearch = async () => {
@@ -125,9 +131,57 @@ export default function AddSubscription() {
     setSubForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave   = () => showToast('Subscription saved successfully!', 'success');
-  const handleDelete = () => showToast('Subscription deleted.', 'warning');
-  const handleReset  = () => { setSubForm({ date: '', gpfSubscription: '', gpfRefund: '' }); showToast('Form reset.', 'info'); };
+  const fetchRecords = async (persNumber) => {
+    try {
+      const res = await axios.get(`http://localhost:8081/api/gpf-sub-details/by-pers/${persNumber}`);
+      setExistingRecords(res.data || []);
+    } catch {
+      setExistingRecords([]);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!userDetails) { showToast('Please select an employee first', 'warning'); return; }
+    if (!subForm.date || !subForm.gpfSubscription) {
+      showToast('Date and GPF Subscription are required', 'warning');
+      return;
+    }
+    try {
+      const payload = {
+        persNumber: userDetails.persNumber,
+        addSubDate: subForm.date,
+        gpfSub: parseFloat(subForm.gpfSubscription),
+        gpfRet: parseFloat(subForm.gpfRefund) || 0
+      };
+      await axios.post('http://localhost:8081/api/gpf-sub-details/save', payload);
+      showToast('Subscription saved successfully!', 'success');
+      setSubForm({ date: '', gpfSubscription: '', gpfRefund: '' });
+      setSelectedRecordId(null);
+      fetchRecords(userDetails.persNumber);
+    } catch (err) {
+      const msg = err.response?.data?.error || err.response?.data?.message || err.message;
+      showToast('Failed to save: ' + msg, 'error');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedRecordId) { showToast('Select a record to delete', 'warning'); return; }
+    try {
+      await axios.delete(`http://localhost:8081/api/gpf-sub-details/${selectedRecordId}`);
+      showToast('Subscription deleted.', 'warning');
+      setSelectedRecordId(null);
+      setSubForm({ date: '', gpfSubscription: '', gpfRefund: '' });
+      fetchRecords(userDetails.persNumber);
+    } catch (err) {
+      showToast('Failed to delete: ' + (err.response?.data?.message || err.message), 'error');
+    }
+  };
+
+  const handleReset = () => {
+    setSubForm({ date: '', gpfSubscription: '', gpfRefund: '' });
+    setSelectedRecordId(null);
+    showToast('Form reset.', 'info');
+  };
 
   return (
     <div className="add-subscription-page">
@@ -255,7 +309,7 @@ export default function AddSubscription() {
             <div className="sub-form-fields">
               <div className="sub-field">
                 <label className="sub-label">Add Date / Month</label>
-                <input type="date" name="date" className="sub-input" value={subForm.date} onChange={handleSubFormChange} />
+                <input type="date" name="date" className="sub-input" value={subForm.date} onChange={handleSubFormChange} onKeyDown={(e) => e.preventDefault()} />
               </div>
               <div className="sub-field">
                 <label className="sub-label">GPF Subscription</label>
@@ -271,6 +325,46 @@ export default function AddSubscription() {
               <button className="btn-sub btn-delete" onClick={handleDelete}>🗑️ Delete</button>
               <button className="btn-sub btn-reset" onClick={handleReset}>↺ Reset</button>
             </div>
+          </div>
+        )}
+
+        {/* Existing subscription records */}
+        {userDetails && existingRecords.length > 0 && (
+          <div className="sub-form-container" style={{ marginTop: '1.5rem' }}>
+            <h3 className="sub-form-title">Existing Subscription Records</h3>
+            <table className="user-details-table">
+              <thead>
+                <tr>
+                  <th style={{ padding: '8px 12px' }}>Date</th>
+                  <th style={{ padding: '8px 12px' }}>GPF Subscription</th>
+                  <th style={{ padding: '8px 12px' }}>GPF Refund</th>
+                  <th style={{ padding: '8px 12px' }}>Select to Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {existingRecords.map(rec => (
+                  <tr
+                    key={rec.id}
+                    style={{ cursor: 'pointer', background: selectedRecordId === rec.id ? 'var(--accent-color, #2563eb22)' : '' }}
+                    onClick={() => {
+                      setSelectedRecordId(rec.id);
+                      setSubForm({
+                        date: rec.addSubDate,
+                        gpfSubscription: rec.gpfSub,
+                        gpfRefund: rec.gpfRet
+                      });
+                    }}
+                  >
+                    <td style={{ padding: '8px 12px' }}>{rec.addSubDate}</td>
+                    <td style={{ padding: '8px 12px' }}>₹{Number(rec.gpfSub).toLocaleString('en-IN')}</td>
+                    <td style={{ padding: '8px 12px' }}>₹{Number(rec.gpfRet).toLocaleString('en-IN')}</td>
+                    <td style={{ padding: '8px 12px', textAlign: 'center' }}>
+                      {selectedRecordId === rec.id ? '✅' : '○'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </main>

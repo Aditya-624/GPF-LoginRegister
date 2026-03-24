@@ -21,7 +21,7 @@ import com.adithya.loginregister.repository.GPFSanctionDetailsRepository;
 
 @RestController
 @RequestMapping("/api/gpf-sanction-details")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173"}, allowCredentials = "true")
 public class GPFSanctionDetailsController {
 
     @Autowired
@@ -53,12 +53,14 @@ public class GPFSanctionDetailsController {
     }
 
     @PostMapping
-    public ResponseEntity<GPFSanctionDetails> createSanctionDetails(@RequestBody GPFSanctionDetails sanctionDetails) {
+    public ResponseEntity<?> createSanctionDetails(@RequestBody GPFSanctionDetails sanctionDetails) {
         try {
             GPFSanctionDetails saved = gpfSanctionDetailsRepository.save(sanctionDetails);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(java.util.Map.of("error", e.getMessage(), 
+                      "cause", e.getCause() != null ? e.getCause().getMessage() : "none"));
         }
     }
 
