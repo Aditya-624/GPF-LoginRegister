@@ -17,7 +17,7 @@ import com.adithya.loginregister.repository.GpfSubDetailsRepository;
 
 @RestController
 @RequestMapping("/api/gpf-sub-details")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173"}, allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:*"}, allowedHeaders = "*", allowCredentials = "true")
 public class GpfSubDetailsController {
 
     private final GpfSubDetailsRepository repo;
@@ -34,7 +34,7 @@ public class GpfSubDetailsController {
             return ResponseEntity.ok(list);
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                .body(java.util.Map.of("error", e.getMessage(), "cause", e.getCause() != null ? e.getCause().getMessage() : "none"));
+                .body(java.util.Map.of("error", e.getMessage()));
         }
     }
 
@@ -46,7 +46,7 @@ public class GpfSubDetailsController {
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
             return ResponseEntity.status(500)
-                .body(java.util.Map.of("error", e.getMessage(), "cause", e.getCause() != null ? e.getCause().getMessage() : "none"));
+                .body(java.util.Map.of("error", e.getMessage()));
         }
     }
 

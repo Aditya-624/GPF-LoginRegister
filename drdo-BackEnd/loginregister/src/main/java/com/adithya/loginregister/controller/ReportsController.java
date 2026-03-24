@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.adithya.loginregister.entity.GPF;
+import com.adithya.loginregister.entity.GPFSanctionDetails;
 import com.adithya.loginregister.entity.GPFUsrDetails;
 import com.adithya.loginregister.entity.GPFYears;
 import com.adithya.loginregister.entity.GpfSubDetails;
 import com.adithya.loginregister.repository.GPFRepository;
+import com.adithya.loginregister.repository.GPFSanctionDetailsRepository;
 import com.adithya.loginregister.repository.GPFUsrDetailsRepository;
 import com.adithya.loginregister.repository.GPFYearsRepository;
 import com.adithya.loginregister.repository.GpfSubDetailsRepository;
@@ -36,18 +38,21 @@ public class ReportsController {
     private final GPFUsrDetailsRepository gpfUsrDetailsRepository;
     private final GpfSubDetailsRepository gpfSubDetailsRepository;
     private final UserRepository userRepository;
+    private final GPFSanctionDetailsRepository gpfSanctionDetailsRepository;
 
     @Autowired
     public ReportsController(GPFRepository gpfRepository,
                              GPFYearsRepository gpfYearsRepository,
                              GPFUsrDetailsRepository gpfUsrDetailsRepository,
                              GpfSubDetailsRepository gpfSubDetailsRepository,
-                             UserRepository userRepository) {
+                             UserRepository userRepository,
+                             GPFSanctionDetailsRepository gpfSanctionDetailsRepository) {
         this.gpfRepository = gpfRepository;
         this.gpfYearsRepository = gpfYearsRepository;
         this.gpfUsrDetailsRepository = gpfUsrDetailsRepository;
         this.gpfSubDetailsRepository = gpfSubDetailsRepository;
         this.userRepository = userRepository;
+        this.gpfSanctionDetailsRepository = gpfSanctionDetailsRepository;
     }
 
     /**
@@ -118,16 +123,34 @@ public class ReportsController {
                     row.put("address", null);
                 }
 
-                // Subscription info from GPF_SUB_DETAILS (latest)
+                // Subscription info from GPF_SUB_DETAILS (sum all records)
                 List<GpfSubDetails> subDetails = gpfSubDetailsRepository.findByPersNumber(persNumber);
                 if (!subDetails.isEmpty()) {
-                    GpfSubDetails latestSub = subDetails.get(subDetails.size() - 1);
-                    row.put("gpfSub", latestSub.getGpfSub());
-                    row.put("gpfRet", latestSub.getGpfRet());
+                    BigDecimal totalSub = BigDecimal.ZERO;
+                    BigDecimal totalRet = BigDecimal.ZERO;
+                    for (GpfSubDetails s : subDetails) {
+                        totalSub = totalSub.add(s.getGpfSub() != null ? s.getGpfSub() : BigDecimal.ZERO);
+                        totalRet = totalRet.add(s.getGpfRet() != null ? s.getGpfRet() : BigDecimal.ZERO);
+                    }
+                    row.put("gpfSub", totalSub);
+                    row.put("gpfRet", totalRet);
                 } else {
                     row.put("gpfSub", null);
                     row.put("gpfRet", null);
                 }
+
+                // basicPay from GPF table
+                row.put("basicPay", emp.getBasicPay());
+
+                // GPF interest (7.1% on closing balance)
+                BigDecimal closing = row.get("closingBalance") != null ? (BigDecimal) row.get("closingBalance") : BigDecimal.ZERO;
+                BigDecimal interest = closing.multiply(new BigDecimal("7.1"))
+                        .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+                row.put("interestAmount", interest);
+                row.put("interestRate", new BigDecimal("7.1"));
+
+                // All sanction details fields from GPF_SANCTION_DETAILS
+                enrichWithSanctionDetails(row, persNumber);
 
                 results.add(row);
             }
@@ -245,6 +268,9 @@ public class ReportsController {
             result.put("interestRate", interestRate);
             result.put("interestAmount", interest);
 
+            // All sanction details fields from GPF_SANCTION_DETAILS
+            enrichWithSanctionDetails(result, persNumber);
+
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -260,5 +286,45 @@ public class ReportsController {
         return userRepository.findByUserId(persNumber)
                 .map(u -> new BigDecimal(u.getId()))
                 .orElse(null);
+    }
+
+    /**
+     * Enriches a result map with all GPFSanctionDetails fields for the given persNumber.
+     * Picks the latest record (highest id).
+     */
+    private void enrichWithSanctionDetails(Map<String, Object> row, String persNumber) {
+        List<GPFSanctionDetails> sanctions = gpfSanctionDetailsRepository.findByPersNo(persNumber);
+        if (!sanctions.isEmpty()) {
+            // pick latest by id
+            GPFSanctionDetails sd = sanctions.stream()
+                    .max(java.util.Comparator.comparingLong(s -> { Long sid = s.getId(); return sid != null ? sid : 0L; }))
+                    .orElse(sanctions.get(0));
+            row.put("billNo",             sd.getBillNo());
+            row.put("billDate",           sd.getBillDate());
+            row.put("sanctionDate",       sd.getSanctionDate());
+            row.put("sanctionAmount",     sd.getSanctionAmount());
+            row.put("dvNo",               sd.getDvNo());
+            row.put("dvDate",             sd.getDvDate());
+            row.put("houseAddr",          sd.getHouseAddr());
+            row.put("noOfInstallments",   sd.getNoOfInstallments());
+            row.put("instlAmount",        sd.getInstlAmount());
+            row.put("outstandingAdvance", sd.getOutstandingAdvance());
+            row.put("prevSanctionDate",   sd.getPrevSanctionDate());
+            row.put("prevPaymentDate",    sd.getPrevPaymentDate());
+            row.put("commencementDate",   sd.getCommencementDate());
+            row.put("lastBillNo",         sd.getLastBillNo());
+            row.put("lastBillDate",       sd.getLastBillDate());
+            row.put("lastCcbYear",        sd.getLastCcbYear());
+            row.put("appliedAmount",      sd.getAppliedAmount());
+            row.put("gpfLoanType",        sd.getGpfLoanType());
+            row.put("recoveryFromDate",   sd.getRecoveryFromDate());
+        } else {
+            for (String k : new String[]{"billNo","billDate","sanctionDate","sanctionAmount","dvNo","dvDate",
+                    "houseAddr","noOfInstallments","instlAmount","outstandingAdvance","prevSanctionDate",
+                    "prevPaymentDate","commencementDate","lastBillNo","lastBillDate","lastCcbYear",
+                    "appliedAmount","gpfLoanType","recoveryFromDate"}) {
+                row.put(k, null);
+            }
+        }
     }
 }

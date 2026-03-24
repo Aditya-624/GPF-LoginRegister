@@ -23,7 +23,7 @@ import com.adithya.loginregister.repository.GPFYearsRepository;
 
 @RestController
 @RequestMapping("/api/gpf-years")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"}, allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:*"}, allowedHeaders = "*", allowCredentials = "true")
 public class GPFYearsController {
 
     private final GPFYearsRepository gpfYearsRepository;
