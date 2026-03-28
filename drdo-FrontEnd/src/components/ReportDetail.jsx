@@ -958,72 +958,126 @@ function Application({ user }) {
 }
 
 /* =====================================================
-   APPLICATION - TEMPORARY ADVANCE
+   APPLICATION - TEMPORARY ADVANCE (Purpose E)
    ===================================================== */
 function ApplicationTemporaryAdvance({ user }) {
-  const name    = user?.name || '--';
-  const acNo    = user?.gpfAccountNumber || '--';
-  const desig   = user?.designation || '--';
-  const persNo  = user?.persNumber || '--';
-  const dob     = user?.dob ? fmt(user.dob) : '--';
-  const retDate = user?.dateOfRetirement ? fmt(user.dateOfRetirement) : '--';
-  const purpose = purposeLabel(user?.purpose);
-  const applAmt = user?.applAmt;
-  const amtNum  = applAmt ? Number(applAmt) : 0;
-  const amtWords = numToWords(amtNum) + ' Rupees Only';
+  const name     = user?.name || '--';
+  const acNo     = user?.gpfAccountNumber || '--';
+  const desig    = user?.designation || '--';
+  const persNo   = user?.persNumber || '--';
+  const dob      = user?.dob ? fmt(user.dob) : '--';
+  const joinDate = user?.dateOfJoining ? fmt(user.dateOfJoining) : '--';
+  const retDate  = user?.dateOfRetirement ? fmt(user.dateOfRetirement) : '--';
+  const purpose  = purposeLabel(user?.purpose);
+  const applAmt  = user?.applAmt;
+  const amtNum   = applAmt ? Number(applAmt) : 0;
   const closing  = user?.closingBalance ?? 0;
+  const basicPay = user?.basicPay ? cur(user.basicPay) : '--';
   const { sd }   = useSanctionDetails(user?.persNumber, user);
   const noInstl  = sd?.noOfInstallments || '--';
-  const instlAmt = sd?.instlAmount ? cur(sd.instlAmount) : '--';
-  const commDate = sd?.commencementDate ? fmt(sd.commencementDate) : '--';
+  const outstanding = sd?.outstandingAdvance ? cur(sd.outstandingAdvance) : '0';
+  const sanctionDate = sd?.sanctionDate ? fmt(sd.sanctionDate) : '--';
 
-  const field = (no, label, value) => (
-    <tr className="ta-row">
-      <td className="ta-no">{no}.</td>
-      <td className="ta-label">{label}</td>
-      <td className="ta-colon">:</td>
-      <td className="ta-val"><span className="appl-print-val">{value}</span></td>
+  const row = (no, labelNode, valueNode) => (
+    <tr className="appl-row">
+      <td className="appl-no">{no}</td>
+      <td className="appl-label">{labelNode}</td>
+      <td className="appl-colon">:</td>
+      <td className="appl-value">{valueNode}</td>
     </tr>
   );
 
   return (
-    <div className="ta-a4">
-      <div className="ta-title-block">
-        <div className="ta-title-line">APPLICATION FOR TEMPORARY ADVANCE FROM GPF</div>
-        <div className="ta-title-sub">Under Rule 12 of GPF (CS) Rules, 1960</div>
+    <div className="appl-a4">
+      {/* Title */}
+      <div className="appl-title-block">
+        <div className="appl-title-main">MINISTRY OF DEFENCE</div>
+        <div className="appl-title-main">DEFENCE RESEARCH &amp; DEVELOPMENT LABORATORY</div>
+        <div className="appl-title-main">PO: KANCHANBAGH, HYDERABAD-500058</div>
       </div>
-      <table className="ta-table">
+
+      <table className="appl-table">
         <tbody>
-          {field(1, 'Name of the Subscriber', name)}
-          {field(2, 'GPF Account Number', acNo)}
-          {field(3, 'Designation', desig)}
-          {field(4, 'Pers No / ID No', persNo)}
-          {field(5, 'Date of Birth', dob)}
-          {field(6, 'Date of Retirement', retDate)}
-          {field(7, 'Purpose of Advance', purpose)}
-          {field(8, 'Amount of Advance Required (Rs.)', cur(amtNum))}
-          {field(9, 'Amount in Words', amtWords)}
-          {field(10, 'Closing Balance as per Last Statement', cur(closing))}
-          {field(11, 'No. of Installments for Repayment', noInstl)}
-          {field(12, 'Installment Amount', instlAmt)}
-          {field(13, 'Commencement of Recovery', commDate)}
+          {row('1.', 'Name of the subscriber', name)}
+          {row('2.', 'Account Number', acNo)}
+          {row('3.', 'Designation/T.No', `${desig} / ${persNo}`)}
+          {row('4.', 'Basic Pay', basicPay)}
+          <tr className="appl-row">
+            <td className="appl-no">5.</td>
+            <td className="appl-label">Balance at credit of the subscriber on the date of<br />application as per working enclosed is</td>
+            <td className="appl-colon">:</td>
+            <td className="appl-value">{cur(closing)}</td>
+          </tr>
+          <tr className="appl-row">
+            <td className="appl-no">6.</td>
+            <td className="appl-label">
+              Amount of previous advance/advance-outstanding:-<br />
+              Amount of advance taken &nbsp;&nbsp;&nbsp; Balance outstanding<br />
+              <span style={{paddingLeft:'8px'}}>i) Rs. {cur(amtNum)}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span>ii) Rs. {outstanding}</span>
+            </td>
+            <td className="appl-colon"></td>
+            <td className="appl-value"></td>
+          </tr>
+          {row('7.', 'Amount of advance required', cur(amtNum))}
+          <tr className="appl-row">
+            <td className="appl-no">8.</td>
+            <td className="appl-label">
+              <div>a)&nbsp; Purpose for which the advance is required</div>
+              <div>b)&nbsp; Rules under which the request is covered</div>
+            </td>
+            <td className="appl-colon">:</td>
+            <td className="appl-value">
+              <div>{purpose}</div>
+              <div>12(1)(c) GPF(CS) Rules 1960</div>
+            </td>
+          </tr>
+          <tr className="appl-row">
+            <td className="appl-no">9.</td>
+            <td className="appl-label">
+              <div>a)&nbsp; Amount of consolidated advance</div>
+              <div>b)&nbsp; Number of monthly instalments in which consolidated<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;advance is proposed to be recovered</div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date Of Appointment</div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date Of Birth</div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date Of Superannuation</div>
+            </td>
+            <td className="appl-colon">:</td>
+            <td className="appl-value">
+              <div>{cur(amtNum)}</div>
+              <div>{noInstl}</div>
+              <div>{joinDate}</div>
+              <div>{dob}</div>
+              <div>{retDate}</div>
+            </td>
+          </tr>
+          <tr className="appl-row">
+            <td className="appl-no">10.</td>
+            <td className="appl-label">Full particulars of the pecuniary circumstances of the<br />subscriber justifying for applying for temporary advance</td>
+            <td className="appl-colon">:</td>
+            <td className="appl-value"></td>
+          </tr>
         </tbody>
       </table>
-      <div className="ta-declaration">
-        I hereby declare that the information furnished above is true and correct to the best of my knowledge
-        and belief. I undertake to repay the advance in the stipulated installments.
+
+      {/* Declaration */}
+      <div style={{fontSize:'11pt', lineHeight:'1.7', margin:'20px 0', textAlign:'justify'}}>
+        I certify that particulars given above are correct and complete to the best of knowledge and belief and
+        nothing has been concealed by me.
       </div>
-      <div className="ta-footer">
-        <div className="ta-footer-left">
-          <span className="ta-footer-label">Date:</span>
-          <span className="appl-print-val" style={{minWidth:'120px'}}>&nbsp;</span>
+
+      {/* Footer: Dated left, Signature right */}
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginTop:'30px'}}>
+        <div style={{fontSize:'11pt'}}>
+          Dated: <strong>{sanctionDate}</strong>
         </div>
-        <div className="ta-footer-right">
-          <div className="ta-sig-line" />
-          <div className="ta-sig-label">Signature of Subscriber</div>
+        <div style={{textAlign:'center'}}>
+          <div style={{height:'50px'}}></div>
+          <div style={{borderTop:'1px solid #000', width:'200px', marginBottom:'4px'}}></div>
+          <div style={{fontSize:'11pt'}}><strong>Signature of the applicant</strong></div>
+          <div style={{fontSize:'10pt'}}>{name}</div>
+          <div style={{fontSize:'10pt'}}>{desig}</div>
         </div>
       </div>
-      <div className="appl-system-note">Generated by GPF Management System</div>
     </div>
   );
 }
