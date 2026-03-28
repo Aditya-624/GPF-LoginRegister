@@ -368,7 +368,31 @@
 .sticky-col.col-0 { left: 0;     min-width: 40px;  max-width: 40px; }
 .sticky-col.col-1 { left: 40px;  min-width: 100px; max-width: 100px; }
 .sticky-col.col-2 { left: 140px; min-width: 120px; max-width: 120px; }
-.sticky-col.col-3 { left: 260px; min-width: 160px; box-shadow: 4px 0 8px rgba(0,0,0,0.08); }
+.sticky-col.col-3 { left: 260px; min-width: 160px; max-width: 160px; box-shadow: 4px 0 8px rgba(0,0,0,0.08); }
+
+/* Solid backgrounds to prevent bleed-through when scrolling */
+.reports-table .sticky-col {
+  background: var(--card-bg);
+}
+.reports-table thead .sticky-col {
+  background: var(--card-bg);
+}
+.reports-table tbody tr:hover .sticky-col {
+  background: color-mix(in srgb, var(--accent-primary) 6%, var(--card-bg));
+}
+
+/* Prevent text overflow mixing between cells */
+.reports-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+/* Clickable rows */
+.reports-table tbody tr {
+  cursor: pointer;
+}
 
 /* View Report button */
 .btn-view-report {

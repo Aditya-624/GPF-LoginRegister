@@ -149,7 +149,14 @@ export default function Reports() {
                   </tr>
                 ) : (
                   filtered.map((row, i) => (
-                    <tr key={row.persNumber + i}>
+                    <tr
+                      key={row.persNumber + i}
+                      style={{cursor:'pointer'}}
+                      onClick={() => {
+                        try { window.__ANIMATE_NAV = true; } catch (e) {}
+                        navigate(`/gpf/reports/user/${encodeURIComponent(row.persNumber)}`, { state: { user: row } });
+                      }}
+                    >
                       <td className="sticky-col col-0">{i + 1}</td>
                       <td className="sticky-col col-1 cell-mono">{row.persNumber || '—'}</td>
                       <td className="sticky-col col-2 cell-mono">{row.gpfAccountNumber || '—'}</td>
@@ -168,7 +175,7 @@ export default function Reports() {
                       <td className="cell-amount">{formatCurrency(row.closingBalance)}</td>
                       <td className="cell-amount">{formatCurrency(row.applAmt)}</td>
                       <td>{formatDate(row.applDate)}</td>
-                      <td className="cell-center">
+                      <td className="cell-center" onClick={e => e.stopPropagation()}>
                         <button
                           className="btn-view-report"
                           onClick={() => {
