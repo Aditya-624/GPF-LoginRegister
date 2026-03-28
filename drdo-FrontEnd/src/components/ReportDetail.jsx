@@ -552,71 +552,125 @@ function CFAPage2({ user, sd, name, acNo, amtNum, amtWords, sanctionDate }) {
 }
 
 /* =====================================================
-   CFA TEMPORARY ADVANCE
+   CFA TEMPORARY ADVANCE (Purpose E)
    ===================================================== */
 function CFATemporaryAdvance({ user }) {
   const { sd } = useSanctionDetails(user?.persNumber, user);
-  const name    = user?.name || '--';
-  const acNo    = user?.gpfAccountNumber || '--';
-  const desig   = user?.designation || '--';
-  const persNo  = user?.persNumber || '--';
-  const purpose = purposeLabel(user?.purpose);
-  const applAmt = user?.applAmt;
-  const amtNum  = applAmt ? Number(applAmt) : 0;
-  const amtWords = numToWords(amtNum) + ' Rupees Only';
-  const noInstl  = sd?.noOfInstallments || '--';
-  const instlAmt = sd?.instlAmount ? cur(sd.instlAmount) : '--';
-  const commDate = sd?.commencementDate ? fmt(sd.commencementDate) : '--';
+  const name       = user?.name || '--';
+  const acNo       = user?.gpfAccountNumber || '--';
+  const applAmt    = user?.applAmt;
+  const amtNum     = applAmt ? Number(applAmt) : 0;
+  const amtWords   = numToWords(amtNum) + ' Rupees Only';
+  const noInstl    = sd?.noOfInstallments || '--';
+  const instlAmt   = sd?.instlAmount ? cur(sd.instlAmount) : '--';
+  const commDate   = sd?.commencementDate ? fmt(sd.commencementDate) : '--';
   const sanctionDate = sd?.sanctionDate ? fmt(sd.sanctionDate) : '--';
-  const billNo   = sd?.billNo || '--';
+  const outstanding  = sd?.outstandingAdvance ? cur(sd.outstandingAdvance) : '0';
+  const purpose    = purposeLabel(user?.purpose);
 
-  const row = (label, value) => (
-    <tr className="cfa-row">
-      <td className="cfa-lbl">{label}</td>
-      <td className="cfa-sep">:</td>
-      <td className="cfa-val">{value}</td>
-    </tr>
-  );
+  const opening    = user?.openingBalance ?? user?.closingBalance ?? 0;
+  const subs       = user?.subscriptions || [];
+  const totalSub   = user?.totalSubscription ?? 0;
+  const totalRet   = user?.totalRefund ?? 0;
+  const closing    = user?.closingBalance ?? 0;
+  const totalAvail = Number(closing) + Number(totalSub) + Number(totalRet);
+  const balAfter   = totalAvail - Number(amtNum);
+
+  const subDates = subs.map(s => s.date).filter(Boolean).sort();
+  const subFrom  = subDates.length ? fmtMonthYear(subDates[0]) : '--';
+  const subTo    = subDates.length ? fmtMonthYear(subDates[subDates.length - 1]) : '--';
+
+  const colStyle = {display:'flex', fontSize:'10pt', padding:'3px 0'};
+  const hdrStyle = {display:'flex', fontSize:'10pt', fontWeight:'bold', borderBottom:'1px solid #000', paddingBottom:'2px', marginBottom:'2px'};
+  const col1 = {flex:2};
+  const col2 = {flex:1, textAlign:'right', paddingRight:'10px'};
+  const col3 = {flex:1, textAlign:'right'};
 
   return (
     <div className="cfa-a4">
-      <div className="cfa-unit-row">
-        <span>UNIT CODE</span>
-        <span>DRDL 360000032</span>
+      {/* Header - centered, bold, underlined */}
+      <div style={{textAlign:'center', marginBottom:'16px'}}>
+        <div style={{fontWeight:'bold', textDecoration:'underline', fontSize:'12pt'}}>MINISTRY OF DEFENCE</div>
+        <div style={{fontWeight:'bold', textDecoration:'underline', fontSize:'12pt'}}>DEFENCE RESEARCH &amp; DEVELOPMENT LABORATORY</div>
+        <div style={{fontWeight:'bold', textDecoration:'underline', fontSize:'12pt'}}>PO: KANCHANBAGH, HYDERABAD-500058</div>
       </div>
-      <div className="cfa-center-header">
-        <div className="cfa-ch-bold">MINISTRY OF DEFENCE</div>
-        <div className="cfa-ch-bold">DEFENCE RESEARCH &amp; DEVELOPMENT LABORATORY</div>
-        <div className="cfa-ch-sub">PO: KANCHANBAGH, HYDERABAD-500058</div>
-        <div className="cfa-ch-title">COMPETENT FINANCIAL AUTHORITY (CFA)</div>
-        <div className="cfa-ch-sub">SANCTION FOR TEMPORARY ADVANCE FROM GPF</div>
+
+      {/* NO. and Dated - right aligned */}
+      <div style={{textAlign:'right', fontSize:'10pt', lineHeight:'1.6', marginBottom:'14px'}}>
+        <div><strong>NO. DRDL/FIN/CGOS/GPF-TY/</strong></div>
+        <div>Dated: {sanctionDate}</div>
       </div>
-      <hr className="cfa-hr" />
-      <table className="cfa-table">
-        <tbody>
-          {row('Name of the Subscriber', name)}
-          {row('GPF Account No', acNo)}
-          {row('Designation', desig)}
-          {row('Pers No / ID No', persNo)}
-          {row('Purpose of Advance', purpose)}
-          {row('Amount Sanctioned', cur(amtNum))}
-          {row('Amount in Words', amtWords)}
-          {row('Sanction Date', sanctionDate)}
-          {row('Bill No', billNo)}
-          {row('No. of Installments for Refund', noInstl)}
-          {row('Installment Amount', instlAmt)}
-          {row('Commencement of Recovery', commDate)}
-        </tbody>
-      </table>
-      <div className="cfa-sig-section">
-        <div className="cfa-sig-block">
-          <div className="cfa-sig-space" />
-          <div className="cfa-sig-line" />
-          <div className="cfa-sig-label">ACCOUNTANT</div>
-          <div className="cfa-sig-label">FOR DIRECTOR: DRDL</div>
-        </div>
+
+      {/* Para 1 */}
+      <div style={{display:'flex', gap:'10px', fontSize:'11pt', lineHeight:'1.7', marginBottom:'12px', textAlign:'justify'}}>
+        <span style={{minWidth:'20px'}}>1.</span>
+        <span>
+          Sanction of the DIRECTOR, DRDL, Hyderabad is hereby conveyed under rules 12(1)(c) of
+          GPF(DS) Rules 1960 for the grants of Advance of Rs. <strong>{cur(amtNum)}</strong> (Rupees <strong>{amtWords}</strong>) to SHRI <strong>{name}</strong> from his GPF A/C No. <strong>{acNo}</strong> to enable him to defray expenses on account of <strong>{purpose}</strong>
+        </span>
       </div>
-      <div className="cfa-system-note">Generated by GPF Management System</div>
+
+      {/* Para 2 */}
+      <div style={{display:'flex', gap:'10px', fontSize:'11pt', lineHeight:'1.7', marginBottom:'12px', textAlign:'justify'}}>
+        <span style={{minWidth:'20px'}}>2.</span>
+        <span>
+          A sum of Rs. <strong>{outstanding}</strong> (Rupees) out of advance of Rs. <strong>{cur(amtNum)}</strong> sanctioned in <strong>{sanctionDate}</strong> and paid to him in <strong>{commDate}</strong> will be outstanding till commencement of the recovery
+          together with the advance now sanctioned aggregating to Rs. <strong>{cur(amtNum)}</strong> Rupees will be recovered in <strong>{noInstl}</strong> monthly instalments of Rs. <strong>{instlAmt}</strong> each
+          commencing from the salary for the month of <strong>{commDate}</strong> payable Nov.
+        </span>
+      </div>
+
+      {/* Para 3 */}
+      <div style={{display:'flex', gap:'10px', fontSize:'11pt', lineHeight:'1.7', marginBottom:'14px', textAlign:'justify'}}>
+        <span style={{minWidth:'20px'}}>3.</span>
+        <span>The balance at the credit of SHRI <strong>{name}</strong> on date is as detailed below:-</span>
+      </div>
+
+      {/* Opening Balance */}
+      <div style={{display:'flex', alignItems:'center', fontSize:'11pt', margin:'0 0 12px 0'}}>
+        <span>OPENING BALANCE</span>
+        <span style={{flex:1, letterSpacing:'2px', margin:'0 8px'}}>- - - - - - - - - - - - - - &gt;</span>
+        <span style={{fontWeight:'bold', minWidth:'110px', textAlign:'right'}}>{cur(opening)}</span>
+      </div>
+
+      {/* Subscription Credits */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'8px 0 4px 0'}}>SUBSCRIPTION CREDITS</div>
+      <div style={hdrStyle}><span style={col1}>Month/Year</span><span style={col2}>Subscription</span><span style={col3}>Total</span></div>
+      <div style={colStyle}><span style={col1}>FROM {subFrom} TO {subTo}</span><span style={col2}>{cur(totalSub)}</span><span style={col3}>{cur(totalSub)}</span></div>
+      <div style={{...colStyle, justifyContent:'flex-end', marginTop:'4px'}}>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{cur(totalSub)}</span>
+      </div>
+
+      {/* Advance Refund Credits */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'8px 0 4px 0'}}>ADVANCE REFUND CREDITS</div>
+      <div style={hdrStyle}><span style={col1}>Month/Year</span><span style={col2}>Refund</span><span style={col3}>Total</span></div>
+      <div style={colStyle}><span style={col1}>FROM {subFrom} TO {subTo}</span><span style={col2}>{Number(totalRet) > 0 ? cur(totalRet) : '0'}</span><span style={col3}>{Number(totalRet) > 0 ? cur(totalRet) : '0'}</span></div>
+      <div style={{...colStyle, justifyContent:'flex-end', marginTop:'4px'}}>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{Number(totalRet) > 0 ? cur(totalRet) : '0'}</span>
+      </div>
+
+      {/* Recovery from 7CPC */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'8px 0 4px 0'}}>RECOVERY FROM 7CPC ARREARS</div>
+      <div style={hdrStyle}><span style={col1}>Month/Year</span><span style={col2}>GPF Recovery</span><span style={col3}>Total</span></div>
+      <div style={{...colStyle, minHeight:'22px'}}></div>
+      <div style={{display:'flex', justifyContent:'flex-end', fontWeight:'bold', fontSize:'11pt', margin:'6px 0'}}>
+        <span style={{marginRight:'20px'}}>TOTAL</span>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{cur(totalAvail)}</span>
+      </div>
+
+      {/* Withdrawals */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'8px 0 4px 0'}}>WITHDRAWALS</div>
+      <div style={hdrStyle}><span style={col1}></span><span style={col2}></span><span style={col3}>Total</span></div>
+      <div style={colStyle}><span style={col1}>{purpose}</span><span style={col2}></span><span style={col3}>{cur(amtNum)}</span></div>
+      <div style={{display:'flex', justifyContent:'flex-end', fontWeight:'bold', fontSize:'11pt', margin:'6px 0'}}>
+        <span style={{marginRight:'20px'}}>TOTAL<br />BALANCE</span>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{cur(balAfter)}</span>
+      </div>
+
+      {/* CFA signature - centered at bottom */}
+      <div style={{marginTop:'auto', paddingTop:'30px', textAlign:'center'}}>
+        <div style={{fontSize:'11pt'}}><strong>C.F.A</strong></div>
+      </div>
     </div>
   );
 }
