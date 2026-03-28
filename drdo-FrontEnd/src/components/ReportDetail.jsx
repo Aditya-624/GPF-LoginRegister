@@ -810,7 +810,7 @@ function CalculationSheet({ user }) {
 }
 
 /* =====================================================
-   CALCULATION SHEET - TEMPORARY ADVANCE
+   CALCULATION SHEET - TEMPORARY ADVANCE (Purpose E)
    ===================================================== */
 function CalculationSheetTA({ user, apiData }) {
   const name    = user?.name || '--';
@@ -820,115 +820,116 @@ function CalculationSheetTA({ user, apiData }) {
   const subs    = user?.subscriptions || [];
   const totalSub = user?.totalSubscription ?? 0;
   const totalRet = user?.totalRefund ?? 0;
+  const opening  = user?.openingBalance ?? user?.closingBalance ?? 0;
   const closing  = user?.closingBalance ?? 0;
   const applAmt  = user?.applAmt ?? 0;
   const totalAvail = Number(closing) + Number(totalSub) + Number(totalRet);
   const balAfter   = totalAvail - Number(applAmt);
 
   const { sd } = useSanctionDetails(user?.persNumber, user);
-  const noInstl  = sd?.noOfInstallments || '--';
-  const instlAmt = sd?.instlAmount ? cur(sd.instlAmount) : '--';
-  const commDate = sd?.commencementDate ? fmt(sd.commencementDate) : '--';
-  const sanctionDate = sd?.sanctionDate ? fmt(sd.sanctionDate) : '--';
-  const outstanding  = sd?.outstandingAdvance ? cur(sd.outstandingAdvance) : '--';
-  const prevSanct    = sd?.prevSanctionDate ? fmt(sd.prevSanctionDate) : '--';
+  const noInstl     = sd?.noOfInstallments || '--';
+  const instlAmt    = sd?.instlAmount ? cur(sd.instlAmount) : '--';
+  const commDate    = sd?.commencementDate ? fmt(sd.commencementDate) : '--';
+  const outstanding = sd?.outstandingAdvance ? cur(sd.outstandingAdvance) : '0';
+  const consolidated = Number(sd?.outstandingAdvance ?? 0) + Number(applAmt);
+
+  const subDates = subs.map(s => s.date).filter(Boolean).sort();
+  const subFrom  = subDates.length ? fmtMonthYear(subDates[0]) : '--';
+  const subTo    = subDates.length ? fmtMonthYear(subDates[subDates.length - 1]) : '--';
+
+  const colStyle = {display:'flex', fontSize:'10pt', padding:'3px 0'};
+  const hdrStyle = {display:'flex', fontSize:'10pt', fontWeight:'bold', borderBottom:'1px solid #000', paddingBottom:'2px', marginBottom:'2px'};
+  const col1 = {flex:2};
+  const col2 = {flex:1, textAlign:'right', paddingRight:'10px'};
+  const col3 = {flex:1, textAlign:'right'};
 
   return (
     <div className="cs-a4">
-      <div className="csta-top-bar">
-        <span><span className="cs-lbl">ID NO:</span> {idNo}</span>
-        <span><span className="cs-lbl">NAME:</span> {name}</span>
-        <span><span className="cs-lbl">DESIG:</span> {desig}</span>
-        <span><span className="cs-lbl">GPF A/C NO:</span> {acNo}</span>
-      </div>
-      <hr className="cs-divider" />
 
-      <div className="cs-ob-row">
-        <span className="cs-ob-label">CLOSING BALANCE</span>
-        <span className="cs-ob-dashes">- - - - - - - - - - - - - - - - - - - -</span>
-        <span className="cs-ob-amt">{cur(closing)}</span>
-      </div>
-
-      <div className="cs-section-label">SUBSCRIPTIONS</div>
-      <div className="cs-cols-hdr">
-        <span className="cs-col-monthyr">Month / Year</span>
-        <span className="cs-col-sub">Subscription</span>
-        <span className="cs-col-total">Total</span>
-      </div>
-      {subs.map((s, i) => (
-        <div key={i} className="cs-cols-row">
-          <span className="cs-col-monthyr">{fmtMonthYear(s.date)}</span>
-          <span className="cs-col-sub">{cur(s.gpfSub)}</span>
-          <span className="cs-col-total">{cur(s.gpfSub)}</span>
-        </div>
-      ))}
-      <div className="cs-total-row">
-        <span className="cs-total-spacer" />
-        <span className="cs-total-lbl">TOTAL</span>
-        <span className="cs-total-amt">{cur(totalSub)}</span>
-      </div>
-
-      <div className="cs-withdrawal-row">
-        <span className="cs-withdrawal-name">TOTAL AVAILABLE</span>
-        <span className="cs-withdrawal-mid"></span>
-        <span className="cs-withdrawal-right">
-          <span className="cs-total-balance-lbl">TOTAL BALANCE</span>
-          <span className="cs-balance-amt">{cur(totalAvail)}</span>
+      {/* Header row: IDNO PERSNO NAME DESIG GPF A/C NO */}
+      <div style={{display:'flex', justifyContent:'space-between', fontSize:'11pt', marginBottom:'14px'}}>
+        <span><strong>IDNO</strong> {idNo} &nbsp; <strong>PERSNO:</strong> {idNo}</span>
+        <span><strong>NAME:</strong> {name}</span>
+        <span style={{textAlign:'right'}}>
+          <div><strong>DESIG:</strong> {desig}</div>
+          <div><strong>GPF A/C NO:</strong> {acNo}</div>
         </span>
       </div>
 
-      <hr className="csta-adv-divider" />
-      <div className="csta-adv-section">
-        <div className="csta-adv-row">
-          <span className="csta-adv-lbl">AMOUNT OF ADVANCE APPLIED</span>
-          <span className="csta-adv-sep">:</span>
-          <span className="csta-adv-val">{cur(applAmt)}</span>
+      {/* Opening Balance */}
+      <div style={{display:'flex', alignItems:'center', fontSize:'11pt', margin:'0 0 14px 0'}}>
+        <span>OPENING BALANCE</span>
+        <span style={{flex:1, letterSpacing:'2px', margin:'0 8px'}}>- - - - - - - - - - - - - - - - - - &gt;</span>
+        <span style={{fontWeight:'bold', minWidth:'110px', textAlign:'right'}}>{cur(opening)}</span>
+      </div>
+
+      {/* Subscription Credits */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'8px 0 4px 0'}}>SUBSCRIPTION CREDITS</div>
+      <div style={hdrStyle}><span style={col1}>Month/Year</span><span style={col2}>Subscription</span><span style={col3}>Total</span></div>
+      <div style={colStyle}><span style={col1}>FROM {subFrom} TO {subTo}</span><span style={col2}>{cur(totalSub)}</span><span style={col3}>{cur(totalSub)}</span></div>
+      <div style={{...colStyle, justifyContent:'flex-end', marginTop:'4px'}}>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{cur(totalSub)}</span>
+      </div>
+
+      {/* Advance Refund Credits */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'10px 0 4px 0'}}>ADVANCE REFUND CREDITS</div>
+      <div style={hdrStyle}><span style={col1}>Month/Year</span><span style={col2}>Refund</span><span style={col3}>Total</span></div>
+      <div style={colStyle}><span style={col1}>FROM {subFrom} TO {subTo}</span><span style={col2}>{Number(totalRet) > 0 ? cur(totalRet) : '0'}</span><span style={col3}>{Number(totalRet) > 0 ? cur(totalRet) : '0'}</span></div>
+      <div style={{...colStyle, justifyContent:'flex-end', marginTop:'4px'}}>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{Number(totalRet) > 0 ? cur(totalRet) : '0'}</span>
+      </div>
+
+      {/* Recovery from 7CPC */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'10px 0 4px 0'}}>RECOVERY FROM 7CPC ARREARS</div>
+      <div style={hdrStyle}><span style={col1}>Month/Year</span><span style={col2}>GPF Recovery</span><span style={col3}>Total</span></div>
+      <div style={{...colStyle, minHeight:'22px'}}></div>
+      <div style={{display:'flex', justifyContent:'flex-end', fontWeight:'bold', fontSize:'11pt', margin:'6px 0'}}>
+        <span style={{marginRight:'20px'}}>TOTAL</span>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{cur(totalAvail)}</span>
+      </div>
+
+      {/* Withdrawals */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'8px 0 4px 0'}}>WITHDRAWALS</div>
+      <div style={hdrStyle}><span style={col1}></span><span style={col2}></span><span style={col3}>Total</span></div>
+      <div style={colStyle}>
+        <span style={col1}>IN @ Rs. 0</span>
+        <span style={col2}></span>
+        <span style={col3}>{cur(applAmt)}</span>
+      </div>
+      <div style={{display:'flex', justifyContent:'flex-end', fontWeight:'bold', fontSize:'11pt', margin:'6px 0', borderTop:'1px solid #000', paddingTop:'4px'}}>
+        <span style={{marginRight:'20px'}}>BALANCE</span>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{cur(balAfter)}</span>
+      </div>
+
+      {/* Bottom section */}
+      <div style={{marginTop:'24px', fontSize:'11pt', lineHeight:'2'}}>
+        <div style={{display:'flex', gap:'8px', marginBottom:'4px'}}>
+          <span style={{fontWeight:'bold', minWidth:'280px'}}>OUTSTANDING BALANCE IN ADVANCE<br />ADD AMOUNT NOW PAYABLE</span>
+          <span>
+            <div>{outstanding}</div>
+            <div>{cur(applAmt)}</div>
+            <div style={{borderTop:'1px solid #000', marginTop:'2px'}}></div>
+          </span>
         </div>
-        <div className="csta-adv-row">
-          <span className="csta-adv-lbl">PREVIOUS OUTSTANDING ADVANCE</span>
-          <span className="csta-adv-sep">:</span>
-          <span className="csta-adv-val">{outstanding}</span>
+        <div style={{display:'flex', gap:'8px', marginBottom:'4px'}}>
+          <span style={{fontWeight:'bold', minWidth:'280px'}}>CURRENT CONSOLIDATED ADVANCE<br />AMOUNT</span>
+          <span>{cur(consolidated)}</span>
         </div>
-        <div className="csta-adv-row csta-adv-row-total">
-          <span className="csta-adv-lbl">BALANCE AFTER ADVANCE</span>
-          <span className="csta-adv-sep">:</span>
-          <span className="csta-adv-val csta-adv-val-bold">{cur(balAfter)}</span>
-        </div>
-        <div className="csta-adv-row">
-          <span className="csta-adv-lbl">NO. OF INSTALLMENTS</span>
-          <span className="csta-adv-sep">:</span>
-          <span className="csta-adv-val">{noInstl}</span>
-        </div>
-        <div className="csta-adv-row">
-          <span className="csta-adv-lbl">INSTALLMENT AMOUNT</span>
-          <span className="csta-adv-sep">:</span>
-          <span className="csta-adv-val">{instlAmt}</span>
-        </div>
-        <div className="csta-adv-row">
-          <span className="csta-adv-lbl">COMMENCEMENT OF RECOVERY</span>
-          <span className="csta-adv-sep">:</span>
-          <span className="csta-adv-val">{commDate}</span>
-        </div>
-        <div className="csta-adv-row">
-          <span className="csta-adv-lbl">SANCTION DATE</span>
-          <span className="csta-adv-sep">:</span>
-          <span className="csta-adv-val">{sanctionDate}</span>
-        </div>
-        <div className="csta-adv-row">
-          <span className="csta-adv-lbl">PREVIOUS SANCTION DATE</span>
-          <span className="csta-adv-sep">:</span>
-          <span className="csta-adv-val">{prevSanct}</span>
+        <div style={{display:'flex', gap:'8px', marginBottom:'4px'}}>
+          <span style={{fontWeight:'bold', minWidth:'280px'}}>
+            INSTALMENT AMOUNT<br />
+            NO. OF INSTALMENT<br />
+            COMMENCEMENT OF RECOVERY<br />
+            FROM
+          </span>
+          <span>
+            <div>{instlAmt}</div>
+            <div>{noInstl}</div>
+            <div>{commDate}</div>
+          </span>
         </div>
       </div>
 
-      <div className="cs-sig-area">
-        <div className="cs-sig-right">
-          <div className="cs-sig-bracket">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
-          <div className="cs-sig-role">Sr. Accounts Officer</div>
-          <div className="cs-sig-role">for DIRECTOR: DRDL</div>
-        </div>
-      </div>
-      <div className="cs-system-note">Generated by GPF Management System</div>
     </div>
   );
 }
