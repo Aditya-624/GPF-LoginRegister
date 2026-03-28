@@ -345,98 +345,208 @@ function ContingentBillPage2({ user, sd }) {
 }
 
 /* =====================================================
-   CFA (Final Withdrawal)
+   CFA (Final Withdrawal) - Page 1
    ===================================================== */
 function CFA({ user }) {
   const { sd } = useSanctionDetails(user?.persNumber, user);
-  const name    = user?.name || '--';
-  const acNo    = user?.gpfAccountNumber || '--';
-  const desig   = user?.designation || '--';
-  const persNo  = user?.persNumber || '--';
-  const purpose = purposeLabel(user?.purpose);
-  const applAmt = user?.applAmt;
-  const amtNum  = applAmt ? Number(applAmt) : 0;
-  const amtWords = numToWords(amtNum) + ' Rupees Only';
+  const name       = user?.name || '--';
+  const acNo       = user?.gpfAccountNumber || '--';
+  const applAmt    = user?.applAmt;
+  const amtNum     = applAmt ? Number(applAmt) : 0;
+  const amtWords   = numToWords(amtNum) + ' Rupees Only';
+  const dob        = user?.dob ? fmt(user.dob) : '--';
+  const joinDate   = user?.dateOfJoining ? fmt(user.dateOfJoining) : '--';
+  const retDate    = user?.dateOfRetirement ? fmt(user.dateOfRetirement) : '--';
+  const sanctionDate = sd?.sanctionDate ? fmt(sd.sanctionDate) : '--';
+  const address    = sd?.houseAddr || user?.address || '--';
 
   return (
-    <CFAPage2
-      user={user}
-      sd={sd}
-      name={name}
-      acNo={acNo}
-      desig={desig}
-      persNo={persNo}
-      purpose={purpose}
-      amtNum={amtNum}
-      amtWords={amtWords}
-    />
+    <>
+      {/* PAGE 1 */}
+      <div className="cfa-a4">
+
+        {/* UNIT CODE - top right */}
+        <div style={{textAlign:'right', fontSize:'10pt', lineHeight:'1.5', marginBottom:'16px'}}>
+          <div><strong>UNITCODE:360000032</strong></div>
+          <div><strong>UNIT:DRDL</strong></div>
+        </div>
+
+        {/* 3-column date row */}
+        <table style={{width:'100%', borderCollapse:'collapse', marginBottom:'20px', fontSize:'10pt'}}>
+          <tbody><tr>
+            <td style={{width:'33%', verticalAlign:'top'}}>
+              <div style={{fontWeight:'bold'}}>DATE OF APPOINTMENT</div>
+              <div>{joinDate}</div>
+            </td>
+            <td style={{width:'33%', verticalAlign:'top'}}>
+              <div style={{fontWeight:'bold'}}>DATE OF BIRTH</div>
+              <div>{dob}</div>
+            </td>
+            <td style={{width:'34%', verticalAlign:'top'}}>
+              <div style={{fontWeight:'bold'}}>DATE OF SUPERANNUATION</div>
+              <div>{retDate}</div>
+            </td>
+          </tr></tbody>
+        </table>
+
+        {/* Title - centered, underlined */}
+        <div style={{textAlign:'center', fontWeight:'bold', textDecoration:'underline', fontSize:'11pt', marginBottom:'20px'}}>
+          FORM FOR SANCTION OF WITHDRAWAL FROM PROVIDENT FUND
+        </div>
+
+        {/* Address block - right half only, left half blank */}
+        <table style={{width:'100%', borderCollapse:'collapse', marginBottom:'16px', fontSize:'10pt'}}>
+          <tbody><tr>
+            <td style={{width:'50%'}}></td>
+            <td style={{width:'50%', verticalAlign:'top', lineHeight:'1.7'}}>
+              <div><strong>DRDL/FIN/CGOS/GPF-FW/100</strong></div>
+              <div>Government of India,</div>
+              <div>Ministry of Defence,</div>
+              <div>R&amp;D Organisation,</div>
+              <div>DEFENCE RESEARCH &amp; DEVELOPMENT LABORATORY,</div>
+              <div>PO: KANCHANBAGH</div>
+              <div>HYDERABAD: 500058</div>
+              <div>DATED: {sanctionDate}</div>
+            </td>
+          </tr></tbody>
+        </table>
+
+        {/* To block */}
+        <div style={{fontSize:'11pt', lineHeight:'1.8', marginBottom:'16px'}}>
+          <div>To</div>
+          <div style={{display:'flex', gap:'8px', marginLeft:'10px'}}>
+            <span>1.</span>
+            <span>THE PCDA(R&amp;D),<br /><u>HYDERABAD-500058.</u></span>
+          </div>
+          <div style={{display:'flex', gap:'8px', marginLeft:'10px'}}>
+            <span>2.</span>
+            <span>The Controller of Defence Accounts (R&amp;D).<br /><u>NEW DELHI-110001</u></span>
+          </div>
+        </div>
+
+        {/* Subject */}
+        <div style={{fontSize:'11pt', margin:'16px 0', lineHeight:'1.7'}}>
+          <strong>SUB:&nbsp;&nbsp; WITHDRAWL FROM THE GPF(CS) IN RESPECT OF</strong><br />
+          <strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SHRI {name}&nbsp;&nbsp; A/C NO. {acNo}</strong>
+        </div>
+
+        <div style={{fontSize:'11pt', marginBottom:'12px'}}>Sir,</div>
+
+        {/* Para 1 */}
+        <div className="cfa-para">
+          <span className="cfa-para-no">1.</span>
+          <span className="cfa-para-text">
+            I am directed to convey sanction of the Director DRDL, HYD, under Rule No. 15(1)(B)(e) of GPF
+            (cs) Rules, 1960 to the withdrawal by SHRI <strong>{name}</strong> a sum of Rs. <strong>{cur(amtNum)}</strong> (Rupees <strong>{amtWords}</strong>) from his/her GPF fund A/C No. <strong>{acNo}</strong> to enable him/her to meet the expenditure
+            in connection with Upkeeping of ancestral house at native place<br />
+            Address: {address}
+          </span>
+        </div>
+
+        {/* Para 2 */}
+        <div className="cfa-para">
+          <span className="cfa-para-no">2.</span>
+          <span className="cfa-para-text">
+            It is certified that SHRI <strong>{name}</strong> is within 10 years of his/her retirement or superannuation or
+            has completed ten/fifteen/twentyfive years of government service on <strong>{joinDate}</strong>
+          </span>
+        </div>
+
+        {/* Para 3 */}
+        <div className="cfa-para">
+          <span className="cfa-para-no">3.</span>
+          <span className="cfa-para-text">
+            It is also certified that the total amount drawn from all government sources by SHRI <strong>{name}</strong> for
+            <strong> {purposeLabel(user?.purpose)}</strong> purposes does not exceed Rs. <strong>{cur(amtNum)}</strong> or his/her Fifty months pay which ever is less.
+          </span>
+        </div>
+      </div>
+
+      {/* PAGE 2 */}
+      <CFAPage2 user={user} sd={sd} name={name} acNo={acNo} amtNum={amtNum} amtWords={amtWords} sanctionDate={sanctionDate} />
+    </>
   );
 }
 
-function CFAPage2({ user, sd, name, acNo, desig, persNo, purpose, amtNum, amtWords }) {
-  const sanctionDate = sd?.sanctionDate ? fmt(sd.sanctionDate) : '--';
-  const billNo       = sd?.billNo || '--';
-  const dvNo         = sd?.dvNo   || '--';
-  const dvDate       = sd?.dvDate ? fmt(sd.dvDate) : '--';
-  const noInstl      = sd?.noOfInstallments || '--';
-  const instlAmt     = sd?.instlAmount ? cur(sd.instlAmount) : '--';
-  const commDate     = sd?.commencementDate ? fmt(sd.commencementDate) : '--';
-  const prevSanct    = sd?.prevSanctionDate ? fmt(sd.prevSanctionDate) : '--';
-  const prevPay      = sd?.prevPaymentDate  ? fmt(sd.prevPaymentDate)  : '--';
-  const outstanding  = sd?.outstandingAdvance ? cur(sd.outstandingAdvance) : '--';
+function CFAPage2({ user, sd, name, acNo, amtNum, amtWords, sanctionDate }) {
+  const billNo    = sd?.billNo || '--';
+  const dvDate    = sd?.dvDate ? fmt(sd.dvDate) : '--';
+  const opening   = user?.openingBalance ?? user?.closingBalance ?? 0;
+  const subs      = user?.subscriptions || [];
+  const totalSub  = user?.totalSubscription ?? 0;
+  const totalRet  = user?.totalRefund ?? 0;
+  const closing   = user?.closingBalance ?? 0;
+  const applAmt   = user?.applAmt ?? 0;
+  const totalAvail = Number(closing) + Number(totalSub) + Number(totalRet);
+  const balAfter   = totalAvail - Number(applAmt);
 
-  const row = (label, value) => (
-    <tr className="cfa-row">
-      <td className="cfa-lbl">{label}</td>
-      <td className="cfa-sep">:</td>
-      <td className="cfa-val">{value}</td>
-    </tr>
-  );
+  const subDates = subs.map(s => s.date).filter(Boolean).sort();
+  const subFrom  = subDates.length ? fmtMonthYear(subDates[0]) : '--';
+  const subTo    = subDates.length ? fmtMonthYear(subDates[subDates.length - 1]) : '--';
+
+  const colStyle = {display:'flex', fontSize:'10pt', padding:'3px 0'};
+  const hdrStyle = {display:'flex', fontSize:'10pt', fontWeight:'bold', borderBottom:'1px solid #000', paddingBottom:'2px', marginBottom:'2px'};
+  const col1 = {flex:2};
+  const col2 = {flex:1, textAlign:'right', paddingRight:'10px'};
+  const col3 = {flex:1, textAlign:'right'};
 
   return (
     <div className="cfa-a4">
-      <div className="cfa-unit-row">
-        <span>UNIT CODE</span>
-        <span>DRDL 360000032</span>
+
+      {/* Opening Balance */}
+      <div style={{display:'flex', alignItems:'center', fontSize:'11pt', margin:'0 0 16px 0'}}>
+        <span>OPENING BALANCE</span>
+        <span style={{flex:1, letterSpacing:'2px', margin:'0 8px'}}>- - - - - - - - - - - - - - - - &gt;</span>
+        <span style={{fontWeight:'bold', minWidth:'110px', textAlign:'right'}}>{cur(opening)}</span>
       </div>
-      <div className="cfa-center-header">
-        <div className="cfa-ch-bold">MINISTRY OF DEFENCE</div>
-        <div className="cfa-ch-bold">DEFENCE RESEARCH &amp; DEVELOPMENT LABORATORY</div>
-        <div className="cfa-ch-sub">PO: KANCHANBAGH, HYDERABAD-500058</div>
-        <div className="cfa-ch-title">COMPETENT FINANCIAL AUTHORITY (CFA)</div>
-        <div className="cfa-ch-sub">SANCTION FOR FINAL WITHDRAWAL FROM GPF</div>
+
+      {/* Subscription Credits */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'10px 0 4px 0'}}>SUBSCRIPTION CREDITS</div>
+      <div style={hdrStyle}><span style={col1}>Month/Year</span><span style={col2}>Subscription</span><span style={col3}>Total</span></div>
+      <div style={colStyle}><span style={col1}>FROM {subFrom} TO {subTo}</span><span style={col2}>{cur(totalSub)}</span><span style={col3}>{cur(totalSub)}</span></div>
+      <div style={{...colStyle, justifyContent:'flex-end', fontWeight:'bold', marginTop:'4px'}}>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{cur(totalSub)}</span>
       </div>
-      <hr className="cfa-hr" />
-      <table className="cfa-table">
-        <tbody>
-          {row('Name of the Subscriber', name)}
-          {row('GPF Account No', acNo)}
-          {row('Designation', desig)}
-          {row('Pers No / ID No', persNo)}
-          {row('Purpose of Withdrawal', purpose)}
-          {row('Amount Sanctioned', cur(amtNum))}
-          {row('Amount in Words', amtWords)}
-          {row('Sanction Date', sanctionDate)}
-          {row('Bill No', billNo)}
-          {row('DV No', dvNo)}
-          {row('DV Date', dvDate)}
-          {row('No. of Installments', noInstl)}
-          {row('Installment Amount', instlAmt)}
-          {row('Commencement Date', commDate)}
-          {row('Previous Sanction Date', prevSanct)}
-          {row('Previous Payment Date', prevPay)}
-          {row('Outstanding Advance', outstanding)}
-        </tbody>
-      </table>
-      <div className="cfa-sig-section">
-        <div className="cfa-sig-block">
-          <div className="cfa-sig-space" />
-          <div className="cfa-sig-line" />
-          <div className="cfa-sig-label">ACCOUNTANT</div>
-          <div className="cfa-sig-label">FOR DIRECTOR: DRDL</div>
-        </div>
+
+      {/* Advance Refund Credits */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'10px 0 4px 0'}}>ADVANCE REFUND CREDITS</div>
+      <div style={hdrStyle}><span style={col1}>Month/Year</span><span style={col2}>Refund</span><span style={col3}>Total</span></div>
+      <div style={colStyle}><span style={col1}>FROM {subFrom} TO {subTo}</span><span style={col2}>{Number(totalRet) > 0 ? cur(totalRet) : '0'}</span><span style={col3}>{Number(totalRet) > 0 ? cur(totalRet) : '0'}</span></div>
+      <div style={{...colStyle, justifyContent:'flex-end', marginTop:'4px'}}>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{Number(totalRet) > 0 ? cur(totalRet) : '0'}</span>
       </div>
-      <div className="cfa-system-note">Generated by GPF Management System</div>
+
+      {/* Recovery from 7CPC Arrears */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'10px 0 4px 0'}}>RECOVERY FROM 7CPC ARREARS</div>
+      <div style={hdrStyle}><span style={col1}>Month/Year</span><span style={col2}>GPF Recovery</span><span style={col3}>Total</span></div>
+      <div style={{...colStyle, minHeight:'22px'}}></div>
+      <div style={{display:'flex', justifyContent:'flex-end', fontWeight:'bold', fontSize:'11pt', margin:'6px 0'}}>
+        <span style={{marginRight:'20px'}}>TOTAL</span>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{cur(totalAvail)}</span>
+      </div>
+
+      {/* Withdrawals */}
+      <div style={{fontWeight:'bold', fontSize:'11pt', margin:'10px 0 4px 0'}}>WITHDRAWALS</div>
+      <div style={hdrStyle}><span style={col1}></span><span style={col2}></span><span style={col3}>Total</span></div>
+      <div style={colStyle}><span style={col1}>{purposeLabel(user?.purpose)}</span><span style={col2}></span><span style={col3}>{cur(applAmt)}</span></div>
+      <div style={{display:'flex', justifyContent:'flex-end', fontWeight:'bold', fontSize:'11pt', margin:'6px 0'}}>
+        <span style={{marginRight:'20px'}}>BALANCE</span>
+        <span style={{minWidth:'110px', textAlign:'right'}}>{cur(balAfter)}</span>
+      </div>
+
+      {/* Previous sanction paragraph */}
+      <div style={{fontSize:'11pt', lineHeight:'1.7', margin:'20px 0', textAlign:'justify'}}>
+        SHRI <strong>{name}</strong> was last sanctioned a part of final withdrawal by this office for an amount of Rs. <strong>{cur(amtNum)}</strong> vide Bill No. <strong>{billNo}</strong> Bill Dt. <strong>{dvDate}</strong> after the C.C.0-9 for the year <strong>{sanctionDate}</strong>
+      </div>
+
+      {/* Signature */}
+      <div style={{marginTop:'auto', paddingTop:'30px', textAlign:'right'}}>
+        <div style={{marginBottom:'30px'}}>Yours Faithfully</div>
+        <div><strong>CFA</strong></div>
+        <div><strong>Senior Accounts Officer</strong></div>
+        <div><strong>For Director, DRDL</strong></div>
+      </div>
+
     </div>
   );
 }
