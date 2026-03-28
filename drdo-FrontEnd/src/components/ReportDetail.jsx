@@ -525,134 +525,122 @@ function CalculationSheet({ user }) {
   const totalRet = user?.totalRefund ?? 0;
   const applAmt  = user?.applAmt ?? 0;
   const closing  = user?.closingBalance ?? 0;
-  const interest = user?.interestAmount ?? 0;
   const totalAvail = Number(closing) + Number(totalSub) + Number(totalRet);
   const balAfter   = totalAvail - Number(applAmt);
 
   const { sd } = useSanctionDetails(user?.persNumber, user);
   const sanctionDate = sd?.sanctionDate ? fmt(sd.sanctionDate) : '--';
-  const billNo       = sd?.billNo || '--';
-  const dvNo         = sd?.dvNo   || '--';
+
+  // Compute date range from subscriptions
+  const subDates = subs.map(s => s.date).filter(Boolean).sort();
+  const subFrom  = subDates.length ? fmtMonthYear(subDates[0]) : '--';
+  const subTo    = subDates.length ? fmtMonthYear(subDates[subDates.length - 1]) : '--';
 
   return (
     <div className="cs-a4">
+      {/* Header row: ID NO, NAME, DESIG / GPF A/C NO */}
       <div className="cs-top-row">
-        <span><span className="cs-lbl">ID NO:</span> {idNo}</span>
-        <span><span className="cs-lbl">NAME:</span> {name}</span>
+        <span><strong>ID NO:</strong> {idNo}</span>
+        <span><strong>NAME:</strong> {name}</span>
         <span className="cs-top-right">
-          <div><span className="cs-lbl">DESIG:</span> {desig}</div>
-          <div><span className="cs-lbl">GPF A/C NO:</span> {acNo}</div>
+          <div><strong>DESIG:</strong> {desig}</div>
+          <div><strong>GPF A/C NO:</strong> {acNo}</div>
         </span>
       </div>
-      <hr className="cs-divider" />
 
+      {/* Opening Balance */}
       <div className="cs-ob-row">
         <span className="cs-ob-label">OPENING BALANCE</span>
-        <span className="cs-ob-dashes">- - - - - - - - - - - - - - - - - - - -</span>
+        <span className="cs-ob-dashes">- - - - - - - - - - - - - - - - - - &gt;</span>
         <span className="cs-ob-amt">{cur(opening)}</span>
       </div>
 
-      <div className="cs-section-label">SUBSCRIPTIONS</div>
+      {/* Subscription Credits */}
+      <div className="cs-section-label">SUBSCRIPTION CREDITS</div>
       <div className="cs-cols-hdr">
-        <span className="cs-col-monthyr">Month / Year</span>
+        <span className="cs-col-monthyr">Month/Year</span>
         <span className="cs-col-sub">Subscription</span>
         <span className="cs-col-total">Total</span>
       </div>
-      {subs.length === 0 && (
-        <div className="cs-cols-row">
-          <span className="cs-col-monthyr">--</span>
-          <span className="cs-col-sub">--</span>
-          <span className="cs-col-total">--</span>
-        </div>
-      )}
-      {subs.map((s, i) => (
-        <div key={i} className="cs-cols-row">
-          <span className="cs-col-monthyr">{fmtMonthYear(s.date)}</span>
-          <span className="cs-col-sub">{cur(s.gpfSub)}</span>
-          <span className="cs-col-total">{cur(s.gpfSub)}</span>
-        </div>
-      ))}
-      <div className="cs-total-row">
-        <span className="cs-total-spacer" />
-        <span className="cs-total-lbl">TOTAL</span>
-        <span className="cs-total-amt">{cur(totalSub)}</span>
+      <div className="cs-cols-row">
+        <span className="cs-col-monthyr">FROM {subFrom} TO {subTo}</span>
+        <span className="cs-col-sub">{cur(totalSub)}</span>
+        <span className="cs-col-total">{cur(totalSub)}</span>
       </div>
 
-      {Number(totalRet) > 0 && (
-        <>
-          <div className="cs-section-label">REFUNDS / RECOVERY</div>
-          {subs.filter(s => s.gpfRet && Number(s.gpfRet) > 0).map((s, i) => (
-            <div key={i} className="cs-cols-row">
-              <span className="cs-col-monthyr">{fmtMonthYear(s.date)}</span>
-              <span className="cs-col-sub">{cur(s.gpfRet)}</span>
-              <span className="cs-col-total">{cur(s.gpfRet)}</span>
-            </div>
-          ))}
-          <div className="cs-total-row">
-            <span className="cs-total-spacer" />
-            <span className="cs-total-lbl">TOTAL</span>
-            <span className="cs-total-amt">{cur(totalRet)}</span>
-          </div>
-        </>
-      )}
-
-      <div className="cs-withdrawal-row">
-        <span className="cs-withdrawal-name">WITHDRAWALS</span>
-        <span className="cs-withdrawal-mid">
-          <span className="cs-cols-hdr-inline">Purpose</span>
-          {purposeLabel(user?.purpose)}
-        </span>
-        <span className="cs-withdrawal-right">
-          <span className="cs-total-balance-lbl">TOTAL BALANCE</span>
-          <span className="cs-balance-amt">{cur(totalAvail)}</span>
-        </span>
+      {/* Advance Refund Credits */}
+      <div className="cs-section-label">ADVANCE REFUND CREDITS</div>
+      <div className="cs-cols-hdr">
+        <span className="cs-col-monthyr">Month/Year</span>
+        <span className="cs-col-sub">Refund</span>
+        <span className="cs-col-total">Total</span>
+      </div>
+      <div className="cs-cols-row">
+        <span className="cs-col-monthyr">FROM {subFrom} TO {subTo}</span>
+        <span className="cs-col-sub">{Number(totalRet) > 0 ? cur(totalRet) : '0'}</span>
+        <span className="cs-col-total">{Number(totalRet) > 0 ? cur(totalRet) : '0'}</span>
       </div>
 
-      <div className="cs-bottom-info">
-        <div className="cs-bottom-row">
-          <span className="cs-bottom-lbl">AMOUNT APPLIED FOR</span>
-          <span className="cs-bottom-sep">:</span>
-          <span className="cs-bottom-val">{cur(applAmt)}</span>
+      {/* Recovery from 7CPC Arrears */}
+      <div className="cs-section-label">RECOVERY FROM 7CPC ARREARS</div>
+      <div className="cs-cols-hdr">
+        <span className="cs-col-monthyr">Month/Year</span>
+        <span className="cs-col-sub">GPF Recovery</span>
+        <span className="cs-col-total">Total</span>
+      </div>
+      <div className="cs-cols-row cs-empty-row">
+        <span className="cs-col-monthyr"></span>
+        <span className="cs-col-sub"></span>
+        <span className="cs-col-total"></span>
+      </div>
+      <div className="cs-grand-total-row">
+        <span className="cs-grand-total-lbl">TOTAL</span>
+        <span className="cs-grand-total-amt">{cur(totalAvail)}</span>
+      </div>
+
+      {/* Withdrawals */}
+      <div className="cs-section-label">WITHDRAWALS</div>
+      <div className="cs-cols-hdr">
+        <span className="cs-col-monthyr"></span>
+        <span className="cs-col-sub"></span>
+        <span className="cs-col-total">Total</span>
+      </div>
+      <div className="cs-cols-row">
+        <span className="cs-col-monthyr">{purposeLabel(user?.purpose)}</span>
+        <span className="cs-col-sub"></span>
+        <span className="cs-col-total">{cur(applAmt)}</span>
+      </div>
+      <div className="cs-grand-total-row">
+        <span className="cs-grand-total-lbl">TOTAL<br />BALANCE</span>
+        <span className="cs-grand-total-amt">{cur(balAfter)}</span>
+      </div>
+
+      {/* Amount Proposed / Service info */}
+      <div className="cs-proposed-block">
+        <div className="cs-proposed-left">
+          <div><strong>AMOUNT PROPOSED TO WITHDRAWN</strong></div>
+          <div><strong>SERVICE AS ON SANCTION DATE</strong></div>
+          <div><strong>LEFT OVER SERVICE</strong></div>
         </div>
-        <div className="cs-bottom-row">
-          <span className="cs-bottom-lbl">BALANCE AFTER WITHDRAWAL</span>
-          <span className="cs-bottom-sep">:</span>
-          <span className="cs-bottom-val">{cur(balAfter)}</span>
-        </div>
-        <div className="cs-bottom-row">
-          <span className="cs-bottom-lbl">INTEREST ({user?.interestRate ?? 7.1}%)</span>
-          <span className="cs-bottom-sep">:</span>
-          <span className="cs-bottom-val">{cur(interest)}</span>
-        </div>
-        <div className="cs-bottom-row">
-          <span className="cs-bottom-lbl">SANCTION DATE</span>
-          <span className="cs-bottom-sep">:</span>
-          <span className="cs-bottom-val">{sanctionDate}</span>
-        </div>
-        <div className="cs-bottom-row">
-          <span className="cs-bottom-lbl">BILL NO</span>
-          <span className="cs-bottom-sep">:</span>
-          <span className="cs-bottom-val">{billNo}</span>
-        </div>
-        <div className="cs-bottom-row">
-          <span className="cs-bottom-lbl">DV NO</span>
-          <span className="cs-bottom-sep">:</span>
-          <span className="cs-bottom-val">{dvNo}</span>
+        <div className="cs-proposed-right">
+          <div>: {cur(applAmt)}</div>
+          <div>: {sanctionDate}</div>
+          <div>:</div>
         </div>
       </div>
 
+      {/* Signature */}
       <div className="cs-sig-area">
         <div className="cs-sig-right">
-          <div className="cs-sig-bracket">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
-          <div className="cs-sig-role">Sr. Accounts Officer</div>
-          <div className="cs-sig-role">for DIRECTOR: DRDL</div>
+          <div className="cs-sig-bracket">( _________________________ )</div>
+          <div className="cs-sig-role">for Director DRDL</div>
         </div>
       </div>
       <div className="cs-countersign">
-        COUNTERSIGNED<br />
-        <span style={{fontWeight:400, fontSize:'10pt'}}>Director / Competent Authority</span>
+        (Counter Signed)<br />
+        ACCOUNTS OFFICER<br />
+        for DIRECTOR DRDL
       </div>
-      <div className="cs-system-note">Generated by GPF Management System</div>
     </div>
   );
 }
