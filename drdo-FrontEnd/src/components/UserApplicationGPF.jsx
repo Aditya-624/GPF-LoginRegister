@@ -105,7 +105,7 @@ export default function UserApplicationGPF() {
     const currentMonth = currentTime.getMonth(); // 0-11
     const currentYear = currentTime.getFullYear();
     
-    // Financial year starts in April (month 3)
+    // GPF subscription period: March of startYear to February of endYear
     let startYear, endYear;
     if (currentMonth >= 3) { // April to December
       startYear = currentYear;
@@ -115,11 +115,7 @@ export default function UserApplicationGPF() {
       endYear = currentYear;
     }
     
-    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
-                    'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    const currentMonthShort = months[currentTime.getMonth()];
-    
-    return `APR-${startYear} TO ${currentMonthShort}-${endYear}`;
+    return `MAR-${startYear} TO FEB-${endYear}`;
   };
 
   const getFinancialYears = () => {
