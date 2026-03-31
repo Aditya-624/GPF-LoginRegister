@@ -65,11 +65,7 @@ public class GPFYearsController {
 
             List<GPFYears> results = gpfYearsRepository.searchByPassNumber(query.trim());
             
-            if (results.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ErrorResponse("No GPF Years records found matching: " + query));
-            }
-
+            // Return empty array instead of 404 — frontend handles empty gracefully
             return ResponseEntity.ok(results);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -180,30 +176,41 @@ public class GPFYearsController {
                 if (designation == null) continue;
                 
                 // Match work status with designation
+                // Designations: 'Senior Officer', 'Officer Grade II', 'Industrial Worker Grade A/B',
+                //               'Contractual Staff', 'Temporary Staff' etc.
                 boolean matches = false;
-                if (workStatus.equals("OFFICER") && designation.toUpperCase().contains("OFFICER")) {
+                String desigUpper = designation.toUpperCase();
+                if (workStatus.equals("OFFICER") && desigUpper.contains("OFFICER")) {
                     matches = true;
-                } else if (workStatus.equals("INDUSTRIAL") && designation.toUpperCase().contains("INDUSTRIAL")) {
+                } else if (workStatus.equals("INDUSTRIAL") &&
+                           desigUpper.contains("INDUSTRIAL") && !desigUpper.contains("NON")) {
                     matches = true;
-                } else if (workStatus.equals("NON_INDUSTRIAL") && 
-                          (designation.toUpperCase().contains("NON") || 
-                           designation.toUpperCase().contains("NON-INDUSTRIAL"))) {
+                } else if (workStatus.equals("NON_INDUSTRIAL") &&
+                           (desigUpper.contains("NON") || desigUpper.contains("STAFF") ||
+                            desigUpper.contains("CONTRACTUAL") || desigUpper.contains("TEMPORARY"))) {
                     matches = true;
                 }
                 
                 if (matches) {
                     // Get closing balance for this employee and year
+                    // PASS_NUMBER may be stored as 'OFF001-Y1', 'OFF001-Y2' etc.
+                    // so we use the LIKE search to find all records for this persNumber
                     String passNumber = employee.getPersNumber();
                     if (passNumber != null) {
-                        List<GPFYears> yearRecords = gpfYearsRepository.findByPassNumberOrderByGpfYearsDesc(passNumber);
+                        List<GPFYears> yearRecords = gpfYearsRepository.searchByPassNumber(passNumber);
                         
                         // Find the record for the specific year
                         java.math.BigDecimal closingBalance = java.math.BigDecimal.ZERO;
                         for (GPFYears yearRecord : yearRecords) {
-                            if (yearRecord.getGpfYears().intValue() == year) {
+                            if (yearRecord.getGpfYears() != null &&
+                                yearRecord.getGpfYears().intValue() == year) {
                                 closingBalance = yearRecord.getClosingBalance();
                                 break;
                             }
+                        }
+                        // If no exact year match, use the latest available
+                        if (closingBalance.compareTo(java.math.BigDecimal.ZERO) == 0 && !yearRecords.isEmpty()) {
+                            closingBalance = yearRecords.get(0).getClosingBalance();
                         }
                         
                         Map<String, Object> employeeData = new HashMap<>();

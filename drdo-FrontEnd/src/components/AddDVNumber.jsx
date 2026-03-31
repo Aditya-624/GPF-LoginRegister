@@ -43,13 +43,15 @@ export default function AddDVNumber() {
             billAmount: item.appliedAmount ? item.appliedAmount.toString() : '0',
             cdaAmount: item.appliedAmount ? item.appliedAmount.toString() : '0',
             remarks: item.remarks || '',
-            role: item.gpfLoanType === 'OFFICER' ? 'OFFICER' : 'STAFF',
+            // E = Temporary Advance (Staff), F = Final Withdrawal (Officer)
+            role: item.gpfLoanType === 'F' ? 'OFFICER' : 'STAFF',
             dbId: item.id // Store original DB ID for updates
           }));
           setTableData(transformedData);
         }
       } catch (error) {
         console.error('Error fetching sanction details:', error);
+        alert('Could not load sanction details. Make sure the backend is running.');
       }
     };
     fetchSanctionDetails();
@@ -158,7 +160,7 @@ export default function AddDVNumber() {
             billAmount: item.appliedAmount ? item.appliedAmount.toString() : '0',
             cdaAmount: item.appliedAmount ? item.appliedAmount.toString() : '0',
             remarks: item.remarks || '',
-            role: item.gpfLoanType === 'OFFICER' ? 'OFFICER' : 'STAFF',
+            role: item.gpfLoanType === 'F' ? 'OFFICER' : 'STAFF',
             dbId: item.id
           }));
           setTableData(transformedData);

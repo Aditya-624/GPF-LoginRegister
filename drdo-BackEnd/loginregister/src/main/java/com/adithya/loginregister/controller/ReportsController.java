@@ -86,7 +86,8 @@ public class ReportsController {
                 row.put("serviceDate", emp.getServiceDate());
 
                 // Latest closing balance and year from GPF_YEARS
-                List<GPFYears> yearRecords = gpfYearsRepository.findByPassNumberOrderByGpfYearsDesc(persNumber);
+                // PASS_NUMBER stored as 'OFF001-Y1' etc., use LIKE search
+                List<GPFYears> yearRecords = gpfYearsRepository.searchByPassNumber(persNumber);
                 if (!yearRecords.isEmpty()) {
                     GPFYears latest = yearRecords.get(0);
                     row.put("closingBalance", latest.getClosingBalance());
@@ -190,8 +191,8 @@ public class ReportsController {
             result.put("basicPay", emp.getBasicPay());
             result.put("dateOfRetirement", emp.getDateOfRetirement());
 
-            // All year records (sorted desc)
-            List<GPFYears> yearRecords = gpfYearsRepository.findByPassNumberOrderByGpfYearsDesc(persNumber);
+            // All year records (sorted desc) — use LIKE search since PASS_NUMBER = 'OFF001-Y1' etc.
+            List<GPFYears> yearRecords = gpfYearsRepository.searchByPassNumber(persNumber);
             List<Map<String, Object>> years = new ArrayList<>();
             for (GPFYears yr : yearRecords) {
                 Map<String, Object> y = new HashMap<>();

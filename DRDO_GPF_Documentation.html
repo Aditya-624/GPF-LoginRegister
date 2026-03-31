@@ -1,0 +1,1038 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>DRDO GPF Management System — Official Documentation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;color:#1e293b;line-height:1.7;font-size:15px;}
+/* ── PRINT ── */
+@media print{
+  .no-print{display:none!important;}
+  body{background:#fff;font-size:12px;}
+  .page-break{page-break-before:always;}
+  .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  section{page-break-inside:avoid;}
+}
+/* ── COVER ── */
+.cover{background:linear-gradient(135deg,#0a1628 0%,#1a3a5c 50%,#0d2137 100%);color:#fff;padding:0;position:relative;overflow:hidden;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;}
+.cover-bg-circles{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.cover-bg-circles span{position:absolute;border-radius:50%;opacity:0.07;}
+.cover-bg-circles span:nth-child(1){width:600px;height:600px;background:#62adb7;top:-200px;right:-100px;}
+.cover-bg-circles span:nth-child(2){width:400px;height:400px;background:#f59e0b;bottom:-150px;left:-100px;}
+.cover-bg-circles span:nth-child(3){width:200px;height:200px;background:#62adb7;top:40%;left:10%;}
+.cover-inner{position:relative;z-index:2;text-align:center;padding:60px 40px;max-width:900px;}
+.cover-emblem{width:100px;height:100px;margin:0 auto 32px;background:rgba(98,173,183,0.15);border:2px solid rgba(98,173,183,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:48px;}
+.cover-org{font-size:13px;letter-spacing:4px;text-transform:uppercase;color:#62adb7;margin-bottom:16px;font-weight:600;}
+.cover h1{font-size:52px;font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:8px;}
+.cover h1 em{color:#62adb7;font-style:normal;}
+.cover-sub{font-size:20px;color:rgba(255,255,255,0.6);margin:16px 0 40px;font-weight:300;}
+.cover-divider{width:80px;height:3px;background:linear-gradient(90deg,#62adb7,#f59e0b);margin:0 auto 40px;border-radius:2px;}
+.cover-pills{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:48px;}
+.pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);padding:8px 20px;border-radius:30px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.85);}
+.pill strong{color:#62adb7;}
+.cover-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;width:100%;max-width:700px;margin:0 auto;}
+.cover-meta-cell{background:rgba(255,255,255,0.05);padding:20px;text-align:center;}
+.cover-meta-cell .cm-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.4);margin-bottom:6px;}
+.cover-meta-cell .cm-val{font-size:16px;font-weight:700;color:#fff;}
+.cover-footer{position:absolute;bottom:24px;left:0;right:0;text-align:center;font-size:12px;color:rgba(255,255,255,0.3);letter-spacing:1px;}
+/* ── LAYOUT ── */
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px;}
+.doc-layout{display:grid;grid-template-columns:260px 1fr;gap:40px;padding:48px 0 80px;align-items:start;}
+@media(max-width:900px){.doc-layout{grid-template-columns:1fr;}.sidebar{display:none;}}
+/* ── SIDEBAR ── */
+.sidebar{position:sticky;top:24px;}
+.toc-box{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.toc-box .toc-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#94a3b8;margin-bottom:20px;}
+.toc-box ol{list-style:none;padding:0;counter-reset:toc;}
+.toc-box li{counter-increment:toc;margin-bottom:4px;}
+.toc-box li a{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;color:#475569;font-size:13px;font-weight:500;text-decoration:none;transition:all 0.2s;}
+.toc-box li a::before{content:counter(toc);background:#f1f5f9;color:#94a3b8;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.toc-box li a:hover{background:#f0f9ff;color:#0ea5e9;}
+.toc-box li a:hover::before{background:#0ea5e9;color:#fff;}
+/* ── SECTIONS ── */
+section{margin-bottom:64px;scroll-margin-top:24px;}
+.sec-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #e2e8f0;}
+.sec-num{width:40px;height:40px;background:linear-gradient(135deg,#1a3a5c,#2563eb);color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;}
+.sec-header h2{font-size:28px;font-weight:800;color:#0f172a;letter-spacing:-0.5px;}
+h3{font-size:17px;font-weight:700;color:#1e293b;margin:28px 0 12px;display:flex;align-items:center;gap:8px;}
+h3::before{content:'';width:4px;height:18px;background:linear-gradient(180deg,#62adb7,#2563eb);border-radius:2px;display:inline-block;}
+p{margin-bottom:14px;color:#334155;}
+/* ── CARDS ── */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;}
+.feat-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:transform 0.2s,box-shadow 0.2s;}
+.feat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.1);}
+.feat-card .fc-icon{font-size:28px;margin-bottom:10px;}
+.feat-card h4{font-size:14px;font-weight:700;color:#0f172a;margin-bottom:6px;}
+.feat-card p{font-size:13px;color:#64748b;margin:0;}
+/* ── TABLES ── */
+.tbl-wrap{overflow-x:auto;margin-bottom:24px;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+thead tr{background:linear-gradient(135deg,#1a3a5c,#1e4976);}
+th{color:#fff;padding:13px 16px;text-align:left;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;}
+td{padding:12px 16px;border-bottom:1px solid #f1f5f9;color:#334155;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fafc;}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.3px;}
+.b-blue{background:#dbeafe;color:#1d4ed8;}
+.b-green{background:#dcfce7;color:#15803d;}
+.b-orange{background:#fef3c7;color:#b45309;}
+.b-red{background:#fee2e2;color:#b91c1c;}
+.b-purple{background:#f3e8ff;color:#7c3aed;}
+/* ── CODE ── */
+pre{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:12px;overflow-x:auto;font-size:13px;margin-bottom:16px;line-height:1.6;}
+code{font-family:'Cascadia Code','Fira Code',monospace;}
+.ic{background:#f1f5f9;color:#0f172a;padding:2px 8px;border-radius:5px;font-size:12.5px;font-family:monospace;border:1px solid #e2e8f0;}
+/* ── HTTP METHODS ── */
+.m{display:inline-block;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:800;letter-spacing:0.5px;}
+.get{background:#dcfce7;color:#15803d;}.post{background:#dbeafe;color:#1d4ed8;}.put{background:#fef3c7;color:#b45309;}.del{background:#fee2e2;color:#b91c1c;}
+/* ── ARCH ── */
+.arch{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin:28px 0;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.arch-node{text-align:center;padding:20px 28px;background:linear-gradient(135deg,#f8fafc,#f1f5f9);border:2px solid #e2e8f0;border-radius:12px;min-width:150px;}
+.arch-node .an-icon{font-size:32px;margin-bottom:8px;}
+.arch-node .an-title{font-size:14px;font-weight:700;color:#0f172a;}
+.arch-node .an-sub{font-size:11px;color:#64748b;margin-top:3px;}
+.arch-arrow{font-size:28px;color:#62adb7;padding:0 12px;font-weight:300;}
+/* ── FLOW ── */
+.flow{display:flex;flex-direction:column;gap:0;}
+.flow-item{display:flex;gap:0;position:relative;}
+.flow-item:not(:last-child)::after{content:'';position:absolute;left:19px;top:44px;width:2px;height:calc(100% - 8px);background:#e2e8f0;}
+.flow-dot{width:40px;height:40px;background:linear-gradient(135deg,#1a3a5c,#2563eb);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;z-index:1;margin-right:16px;margin-bottom:24px;}
+.flow-body{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;flex:1;margin-bottom:16px;box-shadow:0 2px 6px rgba(0,0,0,0.04);}
+.flow-body h4{font-size:14px;font-weight:700;color:#0f172a;margin-bottom:4px;}
+.flow-body p{font-size:13px;color:#64748b;margin:0;}
+/* ── SCREEN MOCKUP WRAPPER ── */
+.screen-wrap{background:#fff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;margin:20px 0 32px;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+.screen-bar{background:#1e293b;padding:10px 16px;display:flex;align-items:center;gap:8px;}
+.screen-bar .dot{width:12px;height:12px;border-radius:50%;}
+.screen-bar .dot.r{background:#ef4444;}.screen-bar .dot.y{background:#f59e0b;}.screen-bar .dot.g{background:#22c55e;}
+.screen-bar .url{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-size:12px;padding:4px 12px;border-radius:6px;margin-left:8px;font-family:monospace;}
+.screen-body{padding:0;}
+/* ── FOOTER ── */
+footer{background:linear-gradient(135deg,#0a1628,#1a3a5c);color:rgba(255,255,255,0.6);text-align:center;padding:40px 24px;}
+footer .f-logo{font-size:20px;font-weight:800;color:#fff;margin-bottom:8px;}
+footer .f-sub{font-size:13px;margin-bottom:16px;}
+footer .f-pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+footer .f-pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);padding:4px 14px;border-radius:20px;font-size:12px;color:rgba(255,255,255,0.7);}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     COVER PAGE
+═══════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-bg-circles"><span></span><span></span><span></span></div>
+  <div class="cover-inner">
+    <div class="cover-emblem">🛡️</div>
+    <div class="cover-org">Defence Research &amp; Development Organisation</div>
+    <h1>GPF <em>Management</em><br>System</h1>
+    <p class="cover-sub">General Provident Fund — Digital Management Platform</p>
+    <div class="cover-divider"></div>
+    <div class="cover-pills">
+      <span class="pill"><strong>React</strong> 19.2.0</span>
+      <span class="pill"><strong>Spring Boot</strong> 4.0.2</span>
+      <span class="pill"><strong>Oracle XE</strong> Database</span>
+      <span class="pill"><strong>JWT</strong> Authentication</span>
+      <span class="pill"><strong>Flyway</strong> Migrations</span>
+      <span class="pill"><strong>Vite</strong> 7.2.4</span>
+    </div>
+    <div class="cover-meta-grid">
+      <div class="cover-meta-cell"><div class="cm-label">Document Type</div><div class="cm-val">Technical Docs</div></div>
+      <div class="cover-meta-cell"><div class="cm-label">Version</div><div class="cm-val">1.0.0</div></div>
+      <div class="cover-meta-cell"><div class="cm-label">Platform</div><div class="cm-val">Web Application</div></div>
+      <div class="cover-meta-cell"><div class="cm-label">Status</div><div class="cm-val">Active</div></div>
+    </div>
+  </div>
+  <div class="cover-footer">DRDO GPF MANAGEMENT SYSTEM &nbsp;·&nbsp; CONFIDENTIAL &nbsp;·&nbsp; INTERNAL USE ONLY</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MAIN DOCUMENT
+═══════════════════════════════════════════ -->
+<div class="wrap">
+<div class="doc-layout">
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar no-print">
+  <div class="toc-box">
+    <div class="toc-title">Table of Contents</div>
+    <ol>
+      <li><a href="#s1">Abstract</a></li>
+      <li><a href="#s2">Introduction</a></li>
+      <li><a href="#s3">System Architecture</a></li>
+      <li><a href="#s4">Technology Stack</a></li>
+      <li><a href="#s5">Frontend Components</a></li>
+      <li><a href="#s6">Backend Components</a></li>
+      <li><a href="#s7">Database Schema</a></li>
+      <li><a href="#s8">API Reference</a></li>
+      <li><a href="#s9">Security</a></li>
+      <li><a href="#s10">UI Screens</a></li>
+      <li><a href="#s11">User Flows</a></li>
+      <li><a href="#s12">Setup &amp; Run</a></li>
+    </ol>
+  </div>
+</aside>
+
+<!-- ── CONTENT ── -->
+<main>
+
+<!-- ─────────────────────────────────────────
+     1. ABSTRACT
+───────────────────────────────────────── -->
+<section id="s1">
+  <div class="sec-header"><div class="sec-num">1</div><h2>Abstract</h2></div>
+  <div class="card">
+    <p>The <strong>DRDO GPF Management System</strong> is a secure, full-stack web application developed to digitise and streamline General Provident Fund (GPF) operations for employees of the Defence Research and Development Organisation. The system replaces manual, paper-based GPF processes with an integrated digital platform covering employee registration, JWT-secured authentication, GPF account management, subscription tracking, advance applications (temporary and final withdrawals), sanction workflows, and report generation.</p>
+    <p>Built on a modern two-tier architecture — a <strong>React 19</strong> single-page application communicating with a <strong>Spring Boot 4</strong> RESTful backend, backed by an <strong>Oracle XE</strong> relational database — the system enforces security via JSON Web Tokens and manages all schema changes through versioned <strong>Flyway</strong> migrations. It supports 9 UI themes, role-aware navigation guards, and a fully responsive layout.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     2. INTRODUCTION
+───────────────────────────────────────── -->
+<section id="s2">
+  <div class="sec-header"><div class="sec-num">2</div><h2>Introduction</h2></div>
+  <p>The General Provident Fund is a mandatory savings scheme for central government employees in India. Managing GPF records manually is error-prone, time-consuming, and difficult to audit. This system addresses those pain points:</p>
+  <div class="card-grid">
+    <div class="feat-card"><div class="fc-icon">🔐</div><h4>Secure Authentication</h4><p>JWT login with password expiry, security questions, and self-service password recovery.</p></div>
+    <div class="feat-card"><div class="fc-icon">📋</div><h4>GPF Account Management</h4><p>Create and manage GPF accounts, track account numbers, designations, and service dates.</p></div>
+    <div class="feat-card"><div class="fc-icon">💰</div><h4>Subscription Tracking</h4><p>Record monthly GPF subscriptions, DV numbers, and year-wise closing balances.</p></div>
+    <div class="feat-card"><div class="fc-icon">📤</div><h4>Advance Applications</h4><p>Apply for temporary advances or final withdrawals with purpose selection and amount tracking.</p></div>
+    <div class="feat-card"><div class="fc-icon">✅</div><h4>Sanction Workflow</h4><p>Admin sanctions applications, sets instalment amounts, and tracks repayment.</p></div>
+    <div class="feat-card"><div class="fc-icon">📊</div><h4>Reports</h4><p>Generate per-employee GPF reports covering subscriptions, advances, and balances.</p></div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     3. ARCHITECTURE
+───────────────────────────────────────── -->
+<section id="s3">
+  <div class="sec-header"><div class="sec-num">3</div><h2>System Architecture</h2></div>
+  <p>The system follows a classic three-layer client-server architecture with clear separation between presentation, business logic, and data layers.</p>
+  <div class="arch">
+    <div class="arch-node"><div class="an-icon">🌐</div><div class="an-title">React SPA</div><div class="an-sub">Vite · Port 5173</div></div>
+    <div class="arch-arrow">⟷ REST/JSON ⟷</div>
+    <div class="arch-node"><div class="an-icon">⚙️</div><div class="an-title">Spring Boot API</div><div class="an-sub">JWT · Port 8081</div></div>
+    <div class="arch-arrow">⟷ JDBC ⟷</div>
+    <div class="arch-node"><div class="an-icon">🗄️</div><div class="an-title">Oracle XE</div><div class="an-sub">Port 1521 · Flyway</div></div>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Communication Details</h3>
+    <ul style="padding-left:20px;color:#334155;line-height:2;">
+      <li>React frontend runs on <span class="ic">http://localhost:5173</span> (Vite dev server)</li>
+      <li>All API calls target <span class="ic">http://localhost:8081/api/**</span> with Bearer JWT in Authorization header</li>
+      <li>Spring Security validates JWT on every protected endpoint via a stateless filter chain</li>
+      <li>Flyway executes versioned SQL migration scripts on startup to keep Oracle schema in sync</li>
+      <li>CORS configured to allow all <span class="ic">localhost:*</span> origins during development</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     4. TECH STACK
+───────────────────────────────────────── -->
+<section id="s4">
+  <div class="sec-header"><div class="sec-num">4</div><h2>Technology Stack &amp; Versions</h2></div>
+  <h3>Frontend Dependencies</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Library / Tool</th><th>Version</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>React</td><td><span class="badge b-blue">19.2.0</span></td><td>UI component framework</td></tr>
+      <tr><td>React DOM</td><td><span class="badge b-blue">19.2.0</span></td><td>DOM rendering layer</td></tr>
+      <tr><td>React Router DOM</td><td><span class="badge b-blue">6.30.3</span></td><td>Client-side routing &amp; navigation guards</td></tr>
+      <tr><td>Axios</td><td><span class="badge b-blue">1.13.5</span></td><td>HTTP client utility</td></tr>
+      <tr><td>Vite</td><td><span class="badge b-orange">7.2.4</span></td><td>Build tool &amp; dev server</td></tr>
+      <tr><td>@vitejs/plugin-react</td><td><span class="badge b-orange">5.1.1</span></td><td>React fast-refresh &amp; JSX transform</td></tr>
+      <tr><td>babel-plugin-react-compiler</td><td><span class="badge b-orange">1.0.0</span></td><td>React compiler optimisation</td></tr>
+      <tr><td>ESLint</td><td><span class="badge b-orange">9.39.1</span></td><td>Code linting</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Backend Dependencies</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Library / Tool</th><th>Version</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Java</td><td><span class="badge b-green">17</span></td><td>Runtime language</td></tr>
+      <tr><td>Spring Boot</td><td><span class="badge b-green">4.0.2</span></td><td>Application framework</td></tr>
+      <tr><td>Spring Security</td><td><span class="badge b-green">managed</span></td><td>Authentication &amp; authorisation</td></tr>
+      <tr><td>Spring Data JPA / Hibernate</td><td><span class="badge b-green">managed</span></td><td>ORM / repository layer</td></tr>
+      <tr><td>Spring Validation</td><td><span class="badge b-green">managed</span></td><td>Request payload validation</td></tr>
+      <tr><td>Flyway Core + Oracle</td><td><span class="badge b-green">managed</span></td><td>Database migration versioning</td></tr>
+      <tr><td>JJWT (jjwt-api / impl / jackson)</td><td><span class="badge b-green">0.11.5</span></td><td>JWT creation &amp; validation</td></tr>
+      <tr><td>Oracle JDBC (ojdbc8)</td><td><span class="badge b-green">managed</span></td><td>Oracle database driver</td></tr>
+      <tr><td>Maven Wrapper</td><td><span class="badge b-orange">wrapper</span></td><td>Build &amp; dependency management</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Database</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Component</th><th>Version</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Oracle Database XE</td><td><span class="badge b-red">XE</span></td><td>Local instance · Port 1521 · SID: xe</td></tr>
+      <tr><td>Hibernate ORM Dialect</td><td><span class="badge b-green">OracleDialect</span></td><td>ddl-auto: update</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     5. FRONTEND COMPONENTS
+───────────────────────────────────────── -->
+<section id="s5">
+  <div class="sec-header"><div class="sec-num">5</div><h2>Frontend Components</h2></div>
+  <p>All components live in <span class="ic">drdo-FrontEnd/src/components/</span>. Each has a paired <span class="ic">.css</span> file for scoped styling.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Component</th><th>Route</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>LoginPage.jsx</code></td><td><span class="ic">/</span></td><td>Entry point. Redirects to /dashboard if already authenticated (PublicRoute guard).</td></tr>
+      <tr><td><code>Registration.jsx</code></td><td><span class="ic">/register</span></td><td>New user registration with security questions and password strength rules.</td></tr>
+      <tr><td><code>ForgotPassword.jsx</code></td><td><span class="ic">/forgot-password</span></td><td>Two-step password recovery via security question verification.</td></tr>
+      <tr><td><code>ChangePassword.jsx</code></td><td><span class="ic">/change-password</span></td><td>Authenticated password change; also triggered on password expiry.</td></tr>
+      <tr><td><code>Dashboard.jsx</code></td><td><span class="ic">/dashboard</span></td><td>Main landing page. Live clock, navigation to GPF modules, Sign Out.</td></tr>
+      <tr><td><code>Profile.jsx</code></td><td><span class="ic">/profile</span></td><td>User profile view with account details and change-password link.</td></tr>
+      <tr><td><code>GPF.jsx</code></td><td><span class="ic">/gpf</span></td><td>GPF module hub — grid of all GPF sub-feature buttons.</td></tr>
+      <tr><td><code>GPFAccountNumbers.jsx</code></td><td><span class="ic">/gpf/account-numbers</span></td><td>View and manage GPF account numbers for all employees.</td></tr>
+      <tr><td><code>AddGPFSlips.jsx</code></td><td><span class="ic">/gpf/add-slips</span></td><td>Add year-wise GPF data entries.</td></tr>
+      <tr><td><code>GPFSlipDetails.jsx</code></td><td><span class="ic">/gpf/slip-details</span></td><td>View detailed GPF slip records per employee.</td></tr>
+      <tr><td><code>Subscription.jsx</code></td><td><span class="ic">/gpf/subscription</span></td><td>View monthly GPF subscription records.</td></tr>
+      <tr><td><code>AddSubscription.jsx</code></td><td><span class="ic">/gpf/add-subscription</span></td><td>Add monthly subscription entries with DV numbers.</td></tr>
+      <tr><td><code>AddDVNumber.jsx</code></td><td><span class="ic">/gpf/add-dv-number</span></td><td>Assign Disbursement Voucher numbers to subscription records.</td></tr>
+      <tr><td><code>TemporaryAdvance.jsx</code></td><td><span class="ic">/temporary-advance</span></td><td>Admin view of temporary advance applications with sanction controls.</td></tr>
+      <tr><td><code>FinalWithdrawal.jsx</code></td><td><span class="ic">/final-withdrawal</span></td><td>Admin view of final withdrawal applications.</td></tr>
+      <tr><td><code>UserApplicationGPF.jsx</code></td><td><span class="ic">/gpf/user-application</span></td><td>Employee self-service form to apply for GPF advance/withdrawal.</td></tr>
+      <tr><td><code>Reports.jsx</code></td><td><span class="ic">/gpf/reports</span></td><td>Admin report listing — search employees and view GPF reports.</td></tr>
+      <tr><td><code>UserReport.jsx</code></td><td><span class="ic">/gpf/reports/user/:id</span></td><td>Per-employee report summary page.</td></tr>
+      <tr><td><code>ReportDetail.jsx</code></td><td><span class="ic">/gpf/reports/user/:id/:type</span></td><td>Detailed printable GPF report.</td></tr>
+      <tr><td><code>ThemeSelector.jsx</code></td><td>—</td><td>Theme switcher — 9 colour themes (light, dark, ocean, sunset, forest, purple, cyberpunk, rose-gold).</td></tr>
+      <tr><td><code>FloatingParticles.jsx</code></td><td>—</td><td>Animated background particle effect on all pages.</td></tr>
+      <tr><td><code>NotificationToast.jsx</code></td><td>—</td><td>Global toast notification component.</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Route Guards</h3>
+  <div class="card">
+    <ul style="padding-left:20px;color:#334155;line-height:2.2;">
+      <li><strong>PrivateRoute</strong> — wraps all authenticated pages. Redirects to <span class="ic">/</span> if no session or JWT token found.</li>
+      <li><strong>PublicRoute</strong> — wraps login, register, forgot-password. Redirects to <span class="ic">/dashboard</span> if user is already logged in, preventing browser back-button bypass.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     6. BACKEND COMPONENTS
+───────────────────────────────────────── -->
+<section id="s6">
+  <div class="sec-header"><div class="sec-num">6</div><h2>Backend Components</h2></div>
+  <h3>Controllers</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Controller</th><th>Base Path</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td><code>AuthController</code></td><td><span class="ic">/api/auth</span></td><td>Register, login, change-password, security questions, verify answers</td></tr>
+      <tr><td><code>GPFController</code></td><td><span class="ic">/api/gpf</span></td><td>GPF account CRUD and search</td></tr>
+      <tr><td><code>GPFYearsController</code></td><td><span class="ic">/api/gpf-years</span></td><td>Year-wise GPF data (closing balances)</td></tr>
+      <tr><td><code>GpfSubDetailsController</code></td><td><span class="ic">/api/gpf-sub-details</span></td><td>Monthly subscription records</td></tr>
+      <tr><td><code>GPFSanctionDetailsController</code></td><td><span class="ic">/api/gpf-sanction-details</span></td><td>Sanction records for advances/withdrawals</td></tr>
+      <tr><td><code>GPFUsrDetailsController</code></td><td><span class="ic">/api/gpf-usr-details</span></td><td>User-submitted GPF applications</td></tr>
+      <tr><td><code>GPFPurposeEController</code></td><td><span class="ic">/api/gpf-purpose-e</span></td><td>Purposes for temporary advances</td></tr>
+      <tr><td><code>GPFPurposeFController</code></td><td><span class="ic">/api/gpf-purpose</span></td><td>Purposes for final withdrawals</td></tr>
+      <tr><td><code>ReportsController</code></td><td><span class="ic">/api/reports</span></td><td>Report data aggregation per employee</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Entities &amp; Tables</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Entity</th><th>Table</th><th>Key Fields</th></tr></thead>
+    <tbody>
+      <tr><td><code>User</code></td><td>USERS</td><td>userId, username, password (BCrypt), dob, workStatus, securityQ1/2, passwordExpiryDays</td></tr>
+      <tr><td><code>GPF</code></td><td>GPF</td><td>gpfAccountNumber (PK), name, designation, basicPay, phoneNumber, persNumber, serviceDate</td></tr>
+      <tr><td><code>GPFYears</code></td><td>GPF_YEARS</td><td>id, gpfAccountNumber, financialYear, openingBalance, closingBalance, interest</td></tr>
+      <tr><td><code>GpfSubDetails</code></td><td>GPF_SUB_DETAILS</td><td>id, gpfAccountNumber, month, amount, dvNumber</td></tr>
+      <tr><td><code>GPFSanctionDetails</code></td><td>GPF_SANCTION_DETAILS</td><td>sanctionId, gpfAccountNumber, sanctionAmount, sanctionDate, gpfType (E/F), noOfInstalments</td></tr>
+      <tr><td><code>GPFUsrDetails</code></td><td>GPF_USR_DETAILS</td><td>id, persno, applAmt, applDate, purpose, gpfType, enclosers, houseAddr</td></tr>
+      <tr><td><code>GPFPurposeE</code></td><td>GPF_PURPOSE_E</td><td>code, purpose (temporary advance purposes)</td></tr>
+      <tr><td><code>GPFPurposeF</code></td><td>GPF_PURPOSE_F</td><td>code, purpose (final withdrawal purposes)</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Key Utilities</h3>
+  <div class="card">
+    <ul style="padding-left:20px;color:#334155;line-height:2.2;">
+      <li><strong>JwtUtil.java</strong> — generates and validates JWT tokens using HMAC-SHA256. Token expiry: 1 hour.</li>
+      <li><strong>SecurityConfig.java</strong> — Spring Security filter chain. Stateless session, public vs protected endpoints, CORS.</li>
+      <li><strong>AuthenticationService.java</strong> — business logic for register, login, password change, security question verification.</li>
+      <li><strong>JsonAuthEntryPoint / JsonAccessDeniedHandler</strong> — return clean JSON for 401/403 instead of HTML error pages.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     7. DATABASE
+───────────────────────────────────────── -->
+<section id="s7">
+  <div class="sec-header"><div class="sec-num">7</div><h2>Database Schema</h2></div>
+  <p>Schema managed by <strong>Flyway</strong> with 23 versioned migration scripts (V1–V23). Oracle XE on <span class="ic">localhost:1521</span>, SID <span class="ic">xe</span>.</p>
+  <h3>Flyway Migration History</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Version</th><th>Script</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge b-purple">V1</span></td><td>V1__create_users_table.sql</td><td>Create USERS table</td></tr>
+      <tr><td><span class="badge b-purple">V2</span></td><td>V2__add_userid_dob.sql</td><td>Add USER_ID and DOB columns</td></tr>
+      <tr><td><span class="badge b-purple">V3</span></td><td>V3__create_user_sequence.sql</td><td>Create user ID sequence</td></tr>
+      <tr><td><span class="badge b-purple">V4–V5</span></td><td>V4–V5__security_questions.sql</td><td>Add security questions columns</td></tr>
+      <tr><td><span class="badge b-purple">V6</span></td><td>V6__add_password_expiry.sql</td><td>Add password expiry tracking</td></tr>
+      <tr><td><span class="badge b-purple">V7–V10</span></td><td>V7–V10__gpf_tables.sql</td><td>GPF table, GPF_YEARS table, ID column</td></tr>
+      <tr><td><span class="badge b-purple">V11</span></td><td>V11__replace_email_with_work_status.sql</td><td>Replace email with work_status field</td></tr>
+      <tr><td><span class="badge b-purple">V12–V13</span></td><td>V12–V13__purpose_tables.sql</td><td>GPF_PURPOSE_F and GPF_PURPOSE_E lookup tables</td></tr>
+      <tr><td><span class="badge b-purple">V14</span></td><td>V14__create_gpf_usr_details_table.sql</td><td>GPF_USR_DETAILS (user applications)</td></tr>
+      <tr><td><span class="badge b-purple">V15</span></td><td>V15__create_gpf_sanction_details_table.sql</td><td>GPF_SANCTION_DETAILS table</td></tr>
+      <tr><td><span class="badge b-purple">V16–V19</span></td><td>V16–V19__data_and_sub.sql</td><td>Phone number, test data, GPF_SUB_DETAILS, report fields</td></tr>
+      <tr><td><span class="badge b-purple">V20–V23</span></td><td>V20–V23__fixes.sql</td><td>Service date, trigger fixes, sequence fixes, 4 more test employees</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     8. API REFERENCE
+───────────────────────────────────────── -->
+<section id="s8">
+  <div class="sec-header"><div class="sec-num">8</div><h2>API Reference</h2></div>
+  <p>Base URL: <span class="ic">http://localhost:8081</span></p>
+  <h3>Authentication — /api/auth</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><span class="m post">POST</span></td><td><span class="ic">/api/auth/register</span></td><td>None</td><td>Register a new user</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><span class="ic">/api/auth/login</span></td><td>None</td><td>Login — returns JWT token + user session</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><span class="ic">/api/auth/change-password</span></td><td>None</td><td>Change user password</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><span class="ic">/api/auth/security-questions/{userId}</span></td><td>None</td><td>Fetch security questions for a user</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><span class="ic">/api/auth/verify-security-answers</span></td><td>None</td><td>Verify answers and return temporary password</td></tr>
+    </tbody>
+  </table></div>
+  <h3>GPF Accounts — /api/gpf</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><span class="m get">GET</span></td><td><span class="ic">/api/gpf/all</span></td><td>Get all GPF accounts</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><span class="ic">/api/gpf/search?query=</span></td><td>Search GPF by account number or name</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><span class="ic">/api/gpf/create</span></td><td>Create new GPF account</td></tr>
+      <tr><td><span class="m put">PUT</span></td><td><span class="ic">/api/gpf/update/{id}</span></td><td>Update GPF account</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Other Endpoints</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><span class="m get">GET</span></td><td><span class="ic">/api/gpf-years/search?query=</span></td><td>Year-wise GPF data for an account</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><span class="ic">/api/gpf-years/create</span></td><td>Add a new year record</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><span class="ic">/api/gpf-usr-details/create</span></td><td>Submit a new GPF application</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><span class="ic">/api/gpf-usr-details/all</span></td><td>Get all user applications</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><span class="ic">/api/gpf-sanction-details/all</span></td><td>Get all sanction records</td></tr>
+      <tr><td><span class="m post">POST</span></td><td><span class="ic">/api/gpf-sanction-details/create</span></td><td>Create sanction record</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><span class="ic">/api/gpf-purpose-e/all</span></td><td>Get temporary advance purposes</td></tr>
+      <tr><td><span class="m get">GET</span></td><td><span class="ic">/api/gpf-purpose/all</span></td><td>Get final withdrawal purposes</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     9. SECURITY
+───────────────────────────────────────── -->
+<section id="s9">
+  <div class="sec-header"><div class="sec-num">9</div><h2>Security</h2></div>
+  <div class="card-grid">
+    <div class="feat-card"><div class="fc-icon">🔑</div><h4>JWT Authentication</h4><p>HMAC-SHA256 signed tokens. 1-hour expiry. Sent as Bearer token in Authorization header on every protected request.</p></div>
+    <div class="feat-card"><div class="fc-icon">🔒</div><h4>BCrypt Passwords</h4><p>All passwords hashed with BCrypt before storage. Never stored or transmitted in plain text.</p></div>
+    <div class="feat-card"><div class="fc-icon">⏰</div><h4>Password Expiry</h4><p>Configurable expiry in days. User is forced to change password on next login after expiry.</p></div>
+    <div class="feat-card"><div class="fc-icon">🛡️</div><h4>Route Guards</h4><p>PrivateRoute blocks unauthenticated access. PublicRoute prevents logged-in users from navigating back to login.</p></div>
+    <div class="feat-card"><div class="fc-icon">❓</div><h4>Security Questions</h4><p>Two security questions set at registration. Used for self-service password recovery without email dependency.</p></div>
+    <div class="feat-card"><div class="fc-icon">🌐</div><h4>CORS Policy</h4><p>Configured to allow localhost:* origins during development. Must be restricted to specific origins in production.</p></div>
+  </div>
+  <h3>Password Rules</h3>
+  <div class="card">
+    <ul style="padding-left:20px;color:#334155;line-height:2.2;">
+      <li>Minimum <strong>8 characters</strong>, maximum <strong>12 characters</strong></li>
+      <li>At least <strong>1 uppercase letter</strong></li>
+      <li>At least <strong>1 numeric digit</strong></li>
+      <li>At least <strong>1 special character</strong> (<span class="ic">!@#$%^&amp;*</span> etc.)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     10. UI SCREENS (SVG MOCKUPS)
+───────────────────────────────────────── -->
+<section id="s10">
+  <div class="sec-header"><div class="sec-num">10</div><h2>UI Screens</h2></div>
+  <p>The following are accurate UI mockups drawn from the actual component code, showing the real layout, fields, buttons, and color scheme of each screen.</p>
+
+  <!-- LOGIN -->
+  <h3>Screen 1 — Login Page &nbsp;<span class="ic">/</span></h3>
+  <div class="screen-wrap">
+    <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/</span></div>
+    <div class="screen-body">
+      <svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <defs>
+          <radialGradient id="bg1" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#1a3a5c"/><stop offset="100%" stop-color="#0a1628"/></radialGradient>
+          <filter id="blur1"><feGaussianBlur stdDeviation="40"/></filter>
+        </defs>
+        <rect width="900" height="520" fill="url(#bg1)"/>
+        <!-- particles -->
+        <circle cx="100" cy="80" r="3" fill="#62adb7" opacity="0.4"/>
+        <circle cx="800" cy="120" r="2" fill="#62adb7" opacity="0.3"/>
+        <circle cx="200" cy="400" r="4" fill="#62adb7" opacity="0.2"/>
+        <circle cx="750" cy="380" r="3" fill="#f59e0b" opacity="0.3"/>
+        <circle cx="450" cy="50" r="2" fill="#fff" opacity="0.2"/>
+        <circle cx="650" cy="460" r="3" fill="#62adb7" opacity="0.25"/>
+        <!-- card -->
+        <rect x="300" y="60" width="300" height="400" rx="16" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+        <!-- logo -->
+        <circle cx="450" cy="120" r="32" fill="rgba(98,173,183,0.2)" stroke="#62adb7" stroke-width="1.5"/>
+        <text x="450" y="128" text-anchor="middle" font-size="22" fill="#62adb7">🛡️</text>
+        <text x="450" y="175" text-anchor="middle" font-size="16" font-weight="700" fill="#fff" font-family="Inter,sans-serif">DRDO GPF System</text>
+        <text x="450" y="195" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.5)" font-family="Inter,sans-serif">Sign in to your account</text>
+        <!-- user id field -->
+        <text x="320" y="228" font-size="11" fill="rgba(255,255,255,0.6)" font-family="Inter,sans-serif" font-weight="600">USER ID</text>
+        <rect x="320" y="234" width="260" height="36" rx="8" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <text x="334" y="257" font-size="12" fill="rgba(255,255,255,0.4)" font-family="Inter,sans-serif">Enter your User ID</text>
+        <!-- password field -->
+        <text x="320" y="288" font-size="11" fill="rgba(255,255,255,0.6)" font-family="Inter,sans-serif" font-weight="600">PASSWORD</text>
+        <rect x="320" y="294" width="260" height="36" rx="8" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <text x="334" y="317" font-size="12" fill="rgba(255,255,255,0.4)" font-family="Inter,sans-serif">••••••••</text>
+        <!-- login btn -->
+        <rect x="320" y="346" width="260" height="38" rx="9" fill="url(#loginbtn)"/>
+        <defs><linearGradient id="loginbtn" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#62adb7"/><stop offset="100%" stop-color="#2563eb"/></linearGradient></defs>
+        <text x="450" y="370" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="Inter,sans-serif">SIGN IN</text>
+        <!-- links -->
+        <text x="450" y="406" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.4)" font-family="Inter,sans-serif">Forgot Password? · Register</text>
+        <!-- theme btn top right -->
+        <rect x="820" y="16" width="64" height="28" rx="6" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+        <text x="852" y="34" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.6)" font-family="Inter,sans-serif">🎨 Theme</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <h3>Screen 2 — Dashboard &nbsp;<span class="ic">/dashboard</span></h3>
+  <div class="screen-wrap">
+    <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/dashboard</span></div>
+    <div class="screen-body">
+      <div style="font-family:'Inter',system-ui,sans-serif;background:#E0F7FA;min-height:420px;">
+        <!-- NAV -->
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 10px rgba(0,0,0,0.08);">
+          <div style="display:flex;align-items:center;gap:16px;">
+            <span style="font-weight:800;font-size:17px;color:#1a3a5c;">DRDO Dashboard</span>
+            <span style="font-size:13px;color:#64748b;background:rgba(98,173,183,0.1);padding:4px 10px;border-radius:6px;font-weight:500;">🕐 02:45:30 PM</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button style="background:#f1f5f9;border:1px solid #e2e8f0;color:#475569;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;">🎨 Theme</button>
+            <button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(139,92,246,0.3);">👤 User Profile</button>
+            <button style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(239,68,68,0.3);">🚪 Sign Out</button>
+          </div>
+        </div>
+        <!-- MAIN -->
+        <div style="padding:24px;max-width:1100px;margin:0 auto;">
+          <!-- Welcome card -->
+          <div style="text-align:center;padding:24px;background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.08);margin-bottom:24px;border:1px solid rgba(255,255,255,0.1);">
+            <div style="font-size:26px;font-weight:800;background:linear-gradient(135deg,#62adb7,#6DB432);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">Welcome back, Adithya! 👋</div>
+            <div style="font-size:14px;color:#64748b;font-weight:500;">Tuesday, March 31, 2026</div>
+          </div>
+          <!-- Two action buttons -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+            <button style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:32px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:16px;cursor:pointer;font-weight:700;font-size:17px;box-shadow:0 10px 30px rgba(245,158,11,0.35);position:relative;overflow:hidden;">
+              <span style="font-size:40px;">👥</span>
+              <span>User Application GPF</span>
+            </button>
+            <button style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:32px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:16px;cursor:pointer;font-weight:700;font-size:17px;box-shadow:0 10px 30px rgba(245,158,11,0.35);">
+              <span style="font-size:40px;">💰</span>
+              <span>General Provident Fund (GPF)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GPF HUB -->
+  <h3>Screen 3 — GPF Module Hub &nbsp;<span class="ic">/gpf</span></h3>
+  <div class="screen-wrap">
+    <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf</span></div>
+    <div class="screen-body">
+      <svg viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <rect width="900" height="500" fill="#e8f4f8"/>
+        <rect width="900" height="56" fill="#fff"/>
+        <text x="24" y="34" font-size="15" font-weight="800" fill="#1a3a5c" font-family="Inter,sans-serif">← Back &nbsp; General Provident Fund</text>
+        <rect x="820" y="14" width="68" height="28" rx="6" fill="#ef4444"/>
+        <text x="854" y="32" text-anchor="middle" font-size="11" fill="#fff" font-family="Inter,sans-serif">🚪 Sign Out</text>
+        <!-- title -->
+        <text x="450" y="96" text-anchor="middle" font-size="22" font-weight="800" fill="#1a3a5c" font-family="Inter,sans-serif">GPF Management</text>
+        <!-- grid of 9 buttons -->
+        <defs><linearGradient id="gbtn" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a3a5c"/><stop offset="100%" stop-color="#2563eb"/></linearGradient></defs>
+        <!-- row 1 -->
+        <rect x="24" y="116" width="180" height="90" rx="12" fill="url(#gbtn)"/><text x="114" y="156" text-anchor="middle" font-size="22">🔢</text><text x="114" y="178" text-anchor="middle" font-size="11" fill="#fff" font-family="Inter,sans-serif">Account Numbers</text>
+        <rect x="216" y="116" width="180" height="90" rx="12" fill="url(#gbtn)"/><text x="306" y="156" text-anchor="middle" font-size="22">➕</text><text x="306" y="178" text-anchor="middle" font-size="11" fill="#fff" font-family="Inter,sans-serif">Add GPF Slips</text>
+        <rect x="408" y="116" width="180" height="90" rx="12" fill="url(#gbtn)"/><text x="498" y="156" text-anchor="middle" font-size="22">📄</text><text x="498" y="178" text-anchor="middle" font-size="11" fill="#fff" font-family="Inter,sans-serif">GPF Slip Details</text>
+        <rect x="600" y="116" width="180" height="90" rx="12" fill="url(#gbtn)"/><text x="690" y="156" text-anchor="middle" font-size="22">📅</text><text x="690" y="178" text-anchor="middle" font-size="11" fill="#fff" font-family="Inter,sans-serif">Subscription</text>
+        <!-- row 2 -->
+        <rect x="24" y="220" width="180" height="90" rx="12" fill="url(#gbtn)"/><text x="114" y="260" text-anchor="middle" font-size="22">💳</text><text x="114" y="282" text-anchor="middle" font-size="11" fill="#fff" font-family="Inter,sans-serif">Add Subscription</text>
+        <rect x="216" y="220" width="180" height="90" rx="12" fill="url(#gbtn)"/><text x="306" y="260" text-anchor="middle" font-size="22">🔖</text><text x="306" y="282" text-anchor="middle" font-size="11" fill="#fff" font-family="Inter,sans-serif">Add DV Number</text>
+        <rect x="408" y="220" width="180" height="90" rx="12" fill="url(#gbtn)"/><text x="498" y="260" text-anchor="middle" font-size="22">⏳</text><text x="498" y="282" text-anchor="middle" font-size="11" fill="#fff" font-family="Inter,sans-serif">Temporary Advance</text>
+        <rect x="600" y="220" width="180" height="90" rx="12" fill="url(#gbtn)"/><text x="690" y="260" text-anchor="middle" font-size="22">🏦</text><text x="690" y="282" text-anchor="middle" font-size="11" fill="#fff" font-family="Inter,sans-serif">Final Withdrawal</text>
+        <!-- row 3 -->
+        <rect x="24" y="324" width="180" height="90" rx="12" fill="url(#gbtn)"/><text x="114" y="364" text-anchor="middle" font-size="22">📊</text><text x="114" y="386" text-anchor="middle" font-size="11" fill="#fff" font-family="Inter,sans-serif">Reports</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- USER APPLICATION GPF -->
+  <h3>Screen 4 — User Application GPF &nbsp;<span class="ic">/gpf/user-application</span></h3>
+  <div class="screen-wrap">
+    <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf/user-application</span></div>
+    <div class="screen-body">
+      <div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:600px;">
+        <!-- NAV -->
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);position:sticky;top:0;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">← Back</button>
+            <span style="font-weight:700;font-size:15px;color:#1a3a5c;">User Application GPF</span>
+            <span style="font-size:12px;color:#64748b;background:rgba(98,173,183,0.1);padding:3px 9px;border-radius:5px;">🕐 02:45:30 PM</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button style="background:#f1f5f9;border:1px solid #e2e8f0;color:#475569;padding:6px 12px;border-radius:7px;font-size:12px;cursor:pointer;">🎨 Theme</button>
+            <button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">👤 User Profile</button>
+          </div>
+        </div>
+        <!-- MAIN -->
+        <div style="padding:20px 28px;max-width:1200px;margin:0 auto;">
+          <!-- Page title -->
+          <div style="text-align:center;margin-bottom:20px;">
+            <h1 style="font-size:22px;font-weight:800;color:#1e293b;margin-bottom:4px;">User Application GPF</h1>
+            <p style="font-size:13px;color:#64748b;">Manage user GPF applications and requests</p>
+          </div>
+          <!-- Form card -->
+          <div style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+            <!-- Form title -->
+            <h2 style="font-size:15px;font-weight:800;text-align:center;background:linear-gradient(135deg,#62adb7,#6DB432);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;letter-spacing:0.5px;border-bottom:3px solid #62adb7;padding-bottom:12px;margin-bottom:18px;">GRANT OF TEMPORARY / FINAL WITHDRAWAL FROM GPF A/C NO.</h2>
+            <!-- Date row -->
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px;">
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <label style="font-size:11px;font-weight:700;color:#1e293b;text-transform:uppercase;letter-spacing:0.5px;">DATE OF JOINING</label>
+                <input type="text" value="01/04/1995" style="padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;color:#1e293b;background:#f8fafc;width:150px;" readonly/>
+              </div>
+              <div style="flex:1;background:linear-gradient(135deg,rgba(98,173,183,0.1),rgba(109,180,50,0.1));border:2px solid #e2e8f0;border-radius:12px;padding:12px 20px;text-align:center;">
+                <span style="font-size:13px;font-weight:600;color:#1e293b;">Adithya Kumar &nbsp;|&nbsp; Scientist-D &nbsp;|&nbsp; DOB: 15/08/1985 &nbsp;|&nbsp; ID: ADK2024</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <label style="font-size:11px;font-weight:700;color:#1e293b;text-transform:uppercase;">CURRENT DATE:</label>
+                <span style="padding:7px 14px;border:2px solid #e2e8f0;border-radius:6px;font-size:13px;font-weight:600;color:#1e293b;background:#f8fafc;">31/03/2026</span>
+              </div>
+            </div>
+            <!-- Two info boxes -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+              <!-- Left box -->
+              <div style="padding:20px;border:2px solid #e2e8f0;border-radius:12px;background:linear-gradient(135deg,rgba(59,130,246,0.04),rgba(99,102,241,0.04));">
+                <h3 style="font-size:12px;font-weight:800;color:#1e293b;text-align:center;text-transform:uppercase;letter-spacing:0.3px;border-bottom:2px solid #e2e8f0;padding-bottom:10px;margin-bottom:14px;">GPF ACCUMULATED UP TO MARCH 2026</h3>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                    <label style="font-size:11px;font-weight:600;color:#334155;flex:1;">1) Closing Balance as per GPF-DS Statements 2025-26:</label>
+                    <input type="number" value="0" style="width:120px;padding:6px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;text-align:right;background:#f0f0f0;color:#94a3b8;" readonly/>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                    <label style="font-size:11px;font-weight:600;color:#334155;flex:1;">2) GPF Subscription from MAR-2025 TO FEB-2026:</label>
+                    <input type="number" placeholder="0.00" style="width:120px;padding:6px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;text-align:right;"/>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                    <label style="font-size:11px;font-weight:600;color:#334155;flex:1;">3) GPF Refund from Current FY to Current Month:</label>
+                    <input type="number" placeholder="0.00" style="width:120px;padding:6px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;text-align:right;"/>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                    <label style="font-size:11px;font-weight:600;color:#334155;flex:1;">4) Recovery from Pay Fixation Arrears:</label>
+                    <input type="number" placeholder="0.00" style="width:120px;padding:6px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;text-align:right;"/>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(99,102,241,0.15));border:3px solid #62adb7;border-radius:10px;margin-top:4px;">
+                    <span style="font-size:14px;font-weight:800;color:#1e293b;text-transform:uppercase;">TOTAL (A):</span>
+                    <span style="font-size:16px;font-weight:800;color:#62adb7;">₹ 0.00</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Right box -->
+              <div style="padding:20px;border:2px solid #e2e8f0;border-radius:12px;background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(5,150,105,0.04));">
+                <h3 style="font-size:12px;font-weight:800;color:#1e293b;text-align:center;text-transform:uppercase;letter-spacing:0.3px;border-bottom:2px solid #e2e8f0;padding-bottom:10px;margin-bottom:14px;">GPF WITHDRAWALS B/W MAR-2025 TO FEB-2026</h3>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                    <label style="font-size:11px;font-weight:600;color:#334155;flex:1;">Approved:</label>
+                    <input type="number" placeholder="0.00" style="width:120px;padding:6px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;text-align:right;"/>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(99,102,241,0.15));border:3px solid #62adb7;border-radius:10px;margin-top:4px;">
+                    <span style="font-size:14px;font-weight:800;color:#1e293b;text-transform:uppercase;">TOTAL (B):</span>
+                    <span style="font-size:16px;font-weight:800;color:#62adb7;">₹ 0.00</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(5,150,105,0.2));border:3px solid #10b981;border-radius:10px;margin-top:8px;box-shadow:0 8px 20px rgba(16,185,129,0.25);">
+                    <span style="font-size:15px;font-weight:800;color:#1e293b;text-transform:uppercase;">TOTAL (A - B):</span>
+                    <span style="font-size:18px;font-weight:800;color:#10b981;">₹ 0.00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Form fields grid -->
+            <div style="background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:16px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:11px;font-weight:700;color:#1e293b;text-transform:uppercase;letter-spacing:0.3px;">1) PHONE NO.</label>
+                  <input type="tel" style="padding:10px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;background:#f0f0f0;color:#94a3b8;" placeholder="Auto-filled from profile" readonly/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:11px;font-weight:700;color:#1e293b;text-transform:uppercase;letter-spacing:0.3px;">2) PRESENT BASIC PAY</label>
+                  <input type="number" style="padding:10px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;background:#f0f0f0;color:#94a3b8;" placeholder="Auto-filled from profile" readonly/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:11px;font-weight:700;color:#1e293b;text-transform:uppercase;letter-spacing:0.3px;">3) AMOUNT OF PREVIOUS ADVANCE IF ANY DRAWN</label>
+                  <input type="number" style="padding:10px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;" placeholder="Enter amount"/>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:11px;font-weight:700;color:#1e293b;text-transform:uppercase;letter-spacing:0.3px;">7) GPF LOAN TYPE</label>
+                  <select style="padding:10px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;cursor:pointer;"><option>Select Type</option><option>TEMPORARY</option><option>FINAL</option></select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:11px;font-weight:700;color:#1e293b;text-transform:uppercase;letter-spacing:0.3px;">8) PURPOSE FOR WHICH THE ADVANCE IS REQUIRED</label>
+                  <select style="padding:10px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;cursor:pointer;"><option>Please select GPF Loan Type first</option></select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:11px;font-weight:700;color:#1e293b;text-transform:uppercase;letter-spacing:0.3px;">9) AMOUNT APPLIED FOR</label>
+                  <input type="number" style="padding:10px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;" placeholder="Enter amount"/>
+                </div>
+              </div>
+              <!-- Save / Clear buttons -->
+              <div style="display:flex;justify-content:center;gap:20px;padding-top:16px;border-top:2px solid #e2e8f0;">
+                <button style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;padding:11px 36px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.3);">💾 Save</button>
+                <button style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;padding:11px 36px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(239,68,68,0.3);">🗑️ Clear</button>
+              </div>
+            </div>
+            <!-- Not yet approved table -->
+            <div style="border:2px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px;">
+              <h2 style="font-size:14px;font-weight:800;text-align:center;background:linear-gradient(135deg,#62adb7,#6DB432);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;border-bottom:3px solid #62adb7;padding-bottom:8px;margin-bottom:12px;">NOT YET APPROVED RECORDS</h2>
+              <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                <thead><tr style="background:linear-gradient(135deg,#62adb7,#6DB432);"><th style="color:#fff;padding:10px;text-align:left;">S.NO.</th><th style="color:#fff;padding:10px;">PRINT</th><th style="color:#fff;padding:10px;">EDIT</th><th style="color:#fff;padding:10px;text-align:left;">PURPOSE</th><th style="color:#fff;padding:10px;text-align:left;">APPLIED AMOUNT</th><th style="color:#fff;padding:10px;text-align:left;">APPLIED DATE</th><th style="color:#fff;padding:10px;text-align:left;">LOAN TYPE</th></tr></thead>
+                <tbody><tr><td colspan="7" style="text-align:center;padding:24px;color:#94a3b8;font-style:italic;">No records to display. Records will appear here once added.</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORTS -->
+  <h3>Screen 5 — Reports &nbsp;<span class="ic">/gpf/reports</span></h3>
+  <div class="screen-wrap">
+    <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf/reports</span></div>
+    <div class="screen-body">
+      <svg viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <rect width="900" height="440" fill="#e8f4f8"/>
+        <rect width="900" height="56" fill="#fff"/>
+        <text x="24" y="34" font-size="13" font-weight="700" fill="#1a3a5c" font-family="Inter,sans-serif">← Back &nbsp; GPF Reports</text>
+        <!-- search bar -->
+        <rect x="24" y="72" width="852" height="44" rx="10" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
+        <text x="44" y="99" font-size="13" fill="#94a3b8" font-family="Inter,sans-serif">🔍 Search employee by name or account number...</text>
+        <!-- table -->
+        <rect x="24" y="128" width="852" height="40" rx="0" fill="#1a3a5c"/>
+        <text x="50" y="153" font-size="11" font-weight="700" fill="#fff" font-family="Inter,sans-serif">S.NO.</text>
+        <text x="120" y="153" font-size="11" font-weight="700" fill="#fff" font-family="Inter,sans-serif">GPF ACCOUNT NO.</text>
+        <text x="280" y="153" font-size="11" font-weight="700" fill="#fff" font-family="Inter,sans-serif">EMPLOYEE NAME</text>
+        <text x="480" y="153" font-size="11" font-weight="700" fill="#fff" font-family="Inter,sans-serif">DESIGNATION</text>
+        <text x="660" y="153" font-size="11" font-weight="700" fill="#fff" font-family="Inter,sans-serif">ACTIONS</text>
+        <!-- rows -->
+        <rect x="24" y="168" width="852" height="36" fill="#fff"/>
+        <text x="50" y="191" font-size="12" fill="#334155" font-family="Inter,sans-serif">1</text>
+        <text x="120" y="191" font-size="12" fill="#334155" font-family="Inter,sans-serif">GPF/2024/001</text>
+        <text x="280" y="191" font-size="12" fill="#334155" font-family="Inter,sans-serif">Rajesh Kumar</text>
+        <text x="480" y="191" font-size="12" fill="#334155" font-family="Inter,sans-serif">Scientist-D</text>
+        <rect x="660" y="176" width="80" height="22" rx="5" fill="#dbeafe"/>
+        <text x="700" y="191" text-anchor="middle" font-size="11" fill="#1d4ed8" font-family="Inter,sans-serif">View Report</text>
+        <rect x="24" y="204" width="852" height="36" fill="#f8fafc"/>
+        <text x="50" y="227" font-size="12" fill="#334155" font-family="Inter,sans-serif">2</text>
+        <text x="120" y="227" font-size="12" fill="#334155" font-family="Inter,sans-serif">GPF/2024/002</text>
+        <text x="280" y="227" font-size="12" fill="#334155" font-family="Inter,sans-serif">Priya Sharma</text>
+        <text x="480" y="227" font-size="12" fill="#334155" font-family="Inter,sans-serif">Scientist-C</text>
+        <rect x="660" y="212" width="80" height="22" rx="5" fill="#dbeafe"/>
+        <text x="700" y="227" text-anchor="middle" font-size="11" fill="#1d4ed8" font-family="Inter,sans-serif">View Report</text>
+        <rect x="24" y="240" width="852" height="36" fill="#fff"/>
+        <text x="50" y="263" font-size="12" fill="#334155" font-family="Inter,sans-serif">3</text>
+        <text x="120" y="263" font-size="12" fill="#334155" font-family="Inter,sans-serif">GPF/2024/003</text>
+        <text x="280" y="263" font-size="12" fill="#334155" font-family="Inter,sans-serif">Suresh Nair</text>
+        <text x="480" y="263" font-size="12" fill="#334155" font-family="Inter,sans-serif">Tech Officer-B</text>
+        <rect x="660" y="248" width="80" height="22" rx="5" fill="#dbeafe"/>
+        <text x="700" y="263" text-anchor="middle" font-size="11" fill="#1d4ed8" font-family="Inter,sans-serif">View Report</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <h3>Screen 6 — User Profile &nbsp;<span class="ic">/profile</span></h3>
+  <div class="screen-wrap">
+    <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/profile</span></div>
+    <div class="screen-body">
+      <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <rect width="900" height="400" fill="#e8f4f8"/>
+        <rect width="900" height="56" fill="#fff"/>
+        <text x="24" y="34" font-size="13" font-weight="700" fill="#1a3a5c" font-family="Inter,sans-serif">← Back &nbsp; User Profile</text>
+        <!-- profile card -->
+        <rect x="200" y="72" width="500" height="300" rx="16" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
+        <!-- avatar -->
+        <circle cx="450" cy="130" r="40" fill="linear-gradient(135deg,#8b5cf6,#a855f7)"/>
+        <circle cx="450" cy="130" r="40" fill="#8b5cf6"/>
+        <text x="450" y="138" text-anchor="middle" font-size="28" fill="#fff">👤</text>
+        <text x="450" y="192" text-anchor="middle" font-size="18" font-weight="800" fill="#0f172a" font-family="Inter,sans-serif">Adithya Kumar</text>
+        <text x="450" y="212" text-anchor="middle" font-size="12" fill="#64748b" font-family="Inter,sans-serif">Scientist-D · DRDO</text>
+        <!-- info rows -->
+        <text x="230" y="248" font-size="11" fill="#94a3b8" font-family="Inter,sans-serif">USER ID</text>
+        <text x="230" y="264" font-size="13" font-weight="600" fill="#1e293b" font-family="Inter,sans-serif">ADK2024</text>
+        <text x="450" y="248" font-size="11" fill="#94a3b8" font-family="Inter,sans-serif">DATE OF BIRTH</text>
+        <text x="450" y="264" font-size="13" font-weight="600" fill="#1e293b" font-family="Inter,sans-serif">15/08/1985</text>
+        <!-- change password btn -->
+        <rect x="310" y="320" width="180" height="36" rx="8" fill="url(#cpbtn)"/>
+        <defs><linearGradient id="cpbtn" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#62adb7"/><stop offset="100%" stop-color="#2563eb"/></linearGradient></defs>
+        <text x="400" y="343" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="Inter,sans-serif">🔒 Change Password</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- REGISTRATION -->
+  <h3>Screen 7 — Registration &nbsp;<span class="ic">/register</span></h3>
+  <div class="screen-wrap">
+    <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/register</span></div>
+    <div class="screen-body">
+      <svg viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+        <defs><radialGradient id="rbg" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#1a3a5c"/><stop offset="100%" stop-color="#0a1628"/></radialGradient></defs>
+        <rect width="900" height="540" fill="url(#rbg)"/>
+        <rect x="250" y="30" width="400" height="480" rx="16" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+        <text x="450" y="72" text-anchor="middle" font-size="18" font-weight="800" fill="#fff" font-family="Inter,sans-serif">Create Account</text>
+        <text x="450" y="92" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.5)" font-family="Inter,sans-serif">Register for DRDO GPF System</text>
+        <!-- fields -->
+        <text x="270" y="120" font-size="10" fill="rgba(255,255,255,0.6)" font-family="Inter,sans-serif">USER ID</text>
+        <rect x="270" y="126" width="360" height="32" rx="7" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <text x="270" y="178" font-size="10" fill="rgba(255,255,255,0.6)" font-family="Inter,sans-serif">USERNAME</text>
+        <rect x="270" y="184" width="360" height="32" rx="7" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <text x="270" y="236" font-size="10" fill="rgba(255,255,255,0.6)" font-family="Inter,sans-serif">WORK STATUS</text>
+        <rect x="270" y="242" width="360" height="32" rx="7" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <text x="270" y="294" font-size="10" fill="rgba(255,255,255,0.6)" font-family="Inter,sans-serif">DATE OF BIRTH</text>
+        <rect x="270" y="300" width="360" height="32" rx="7" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <text x="270" y="352" font-size="10" fill="rgba(255,255,255,0.6)" font-family="Inter,sans-serif">PASSWORD</text>
+        <rect x="270" y="358" width="360" height="32" rx="7" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <text x="270" y="410" font-size="10" fill="rgba(255,255,255,0.6)" font-family="Inter,sans-serif">SECURITY QUESTION 1</text>
+        <rect x="270" y="416" width="360" height="32" rx="7" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <!-- register btn -->
+        <rect x="270" y="462" width="360" height="36" rx="9" fill="url(#loginbtn)"/>
+        <text x="450" y="485" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="Inter,sans-serif">CREATE ACCOUNT</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     11. USER FLOWS
+───────────────────────────────────────── -->
+<!-- SCREEN 8: GPF ACCOUNT NUMBERS -->
+  <h3>Screen 8 — GPF Account Numbers &nbsp;<span class="ic">/gpf/account-numbers</span></h3>
+  <div class="screen-wrap">
+    <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf/account-numbers</span></div>
+    <div class="screen-body">
+      <div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:420px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;">← Back to GPF</button>
+            <span style="font-weight:700;font-size:15px;color:#1a3a5c;">GPF Account Numbers</span>
+            <span style="font-size:12px;color:#64748b;background:rgba(98,173,183,0.1);padding:3px 9px;border-radius:5px;">🕐 02:45:30 PM</span>
+          </div>
+          <div style="display:flex;gap:8px;"><button style="background:#f1f5f9;border:1px solid #e2e8f0;color:#475569;padding:6px 12px;border-radius:7px;font-size:12px;">🎨 Theme</button><button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">👤 User Profile</button></div>
+        </div>
+        <div style="padding:20px 28px;">
+          <div style="text-align:center;margin-bottom:20px;"><h1 style="font-size:22px;font-weight:800;color:#1e293b;margin-bottom:4px;">GPF Account Numbers</h1><p style="font-size:13px;color:#64748b;">Browse all registered GPF accounts</p></div>
+          <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;">
+              <input type="text" placeholder="🔍 Search by account number, name, or department..." style="flex:1;padding:10px 14px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;"/>
+              <button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;">Refresh</button>
+            </div>
+            <div style="display:flex;gap:24px;margin-bottom:14px;font-size:13px;color:#64748b;">
+              <span>Total Accounts: <strong style="color:#1e293b;">6</strong></span>
+              <span>Total Balance: <strong style="color:#1e293b;">₹26,00,000</strong></span>
+            </div>
+            <div style="overflow-x:auto;border-radius:10px;border:1px solid #e2e8f0;">
+              <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <thead><tr style="background:linear-gradient(135deg,#1a3a5c,#1e4976);">
+                  <th style="color:#fff;padding:11px 14px;text-align:left;">S.No</th>
+                  <th style="color:#fff;padding:11px 14px;text-align:left;">Account Number</th>
+                  <th style="color:#fff;padding:11px 14px;text-align:left;">Pers No.</th>
+                  <th style="color:#fff;padding:11px 14px;text-align:left;">Employee Name</th>
+                  <th style="color:#fff;padding:11px 14px;text-align:left;">Designation</th>
+                  <th style="color:#fff;padding:11px 14px;text-align:left;">Balance</th>
+                  <th style="color:#fff;padding:11px 14px;text-align:left;">Opening Date</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 14px;">1</td><td style="padding:10px 14px;font-weight:600;color:#2563eb;">GPF-2024-001</td><td style="padding:10px 14px;">PERS-001</td><td style="padding:10px 14px;">Rajesh Kumar</td><td style="padding:10px 14px;">Senior Engineer</td><td style="padding:10px 14px;font-weight:600;color:#15803d;">₹4,50,000</td><td style="padding:10px 14px;">15/01/2020</td></tr>
+                  <tr style="border-bottom:1px solid #f1f5f9;background:#f8fafc;"><td style="padding:10px 14px;">2</td><td style="padding:10px 14px;font-weight:600;color:#2563eb;">GPF-2024-002</td><td style="padding:10px 14px;">PERS-002</td><td style="padding:10px 14px;">Priya Singh</td><td style="padding:10px 14px;">Project Manager</td><td style="padding:10px 14px;font-weight:600;color:#15803d;">₹6,50,000</td><td style="padding:10px 14px;">20/06/2019</td></tr>
+                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 14px;">3</td><td style="padding:10px 14px;font-weight:600;color:#2563eb;">GPF-2024-003</td><td style="padding:10px 14px;">PERS-003</td><td style="padding:10px 14px;">Amit Patel</td><td style="padding:10px 14px;">Developer</td><td style="padding:10px 14px;font-weight:600;color:#15803d;">₹3,20,000</td><td style="padding:10px 14px;">10/03/2021</td></tr>
+                  <tr style="border-bottom:1px solid #f1f5f9;background:#f8fafc;"><td style="padding:10px 14px;">4</td><td style="padding:10px 14px;font-weight:600;color:#2563eb;">GPF-2024-004</td><td style="padding:10px 14px;">PERS-004</td><td style="padding:10px 14px;">Neha Sharma</td><td style="padding:10px 14px;">Analyst</td><td style="padding:10px 14px;font-weight:600;color:#15803d;">₹2,80,000</td><td style="padding:10px 14px;">05/01/2022</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- SCREEN 9: ADD GPF SLIPS -->
+  <h3>Screen 9 — Add GPF Slips &nbsp;<span class="ic">/gpf/add-slips</span></h3>
+  <div class="screen-wrap">
+    <div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf/add-slips</span></div>
+    <div class="screen-body">
+      <div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:480px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <div style="display:flex;align-items:center;gap:14px;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;">← Back to GPF</button><span style="font-weight:700;font-size:15px;color:#1a3a5c;">Add GPF Slips</span><span style="font-size:12px;color:#64748b;background:rgba(98,173,183,0.1);padding:3px 9px;border-radius:5px;">🕐 02:45:30 PM</span></div>
+          <div style="display:flex;gap:8px;"><button style="background:#f1f5f9;border:1px solid #e2e8f0;color:#475569;padding:6px 12px;border-radius:7px;font-size:12px;">🎨 Theme</button><button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">👤 User Profile</button></div>
+        </div>
+        <div style="padding:20px 28px;">
+          <div style="text-align:center;margin-bottom:20px;"><h1 style="font-size:22px;font-weight:800;color:#1e293b;margin-bottom:4px;">Add GPF Slip</h1><p style="font-size:13px;color:#64748b;">Search for an employee and enter GPF contribution details</p></div>
+          <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:20px;">
+            <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+              <h3 style="font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">Search GPF Account</h3>
+              <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <select style="flex:1;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:12px;"><option>-- Select or Search Employee --</option><option>GPF-001 - Rajesh Kumar (PERS-001)</option><option>GPF-002 - Priya Singh (PERS-002)</option></select>
+                <button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:9px 14px;border-radius:8px;font-size:12px;font-weight:600;">🔍 Search</button>
+              </div>
+            </div>
+            <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+              <h3 style="font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">User Details</h3>
+              <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                <tbody>
+                  <tr><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">GPF Account Number</td><td style="padding:7px 10px;border:1px solid #e2e8f0;font-weight:600;color:#1e293b;">GPF-2024-001</td><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">Personnel Number</td><td style="padding:7px 10px;border:1px solid #e2e8f0;font-weight:600;color:#1e293b;">PERS-001</td></tr>
+                  <tr><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">Employee Name</td><td style="padding:7px 10px;border:1px solid #e2e8f0;">Rajesh Kumar</td><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">Designation</td><td style="padding:7px 10px;border:1px solid #e2e8f0;">Senior Engineer</td></tr>
+                  <tr><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">Basic Pay</td><td style="padding:7px 10px;border:1px solid #e2e8f0;">₹85,000</td><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">Phone Number</td><td style="padding:7px 10px;border:1px solid #e2e8f0;">9876543210</td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top:16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px;">
+                <h4 style="font-size:13px;font-weight:700;color:#1a3a5c;margin-bottom:12px;">GPF Year Closing Balance</h4>
+                <div style="display:flex;gap:12px;align-items:flex-end;">
+                  <div style="flex:1;"><label style="font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:4px;">GPF Year</label><select style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"><option>2026-27</option><option>2025-26</option><option>2024-25</option></select></div>
+                  <div style="flex:1;"><label style="font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:4px;">Closing Balance</label><input type="number" placeholder="Enter closing balance" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div>
+                  <button style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:700;">Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <h3>Screen 10 — GPF Slip Details <span class="ic">/gpf/slip-details</span></h3>
+  <div class="screen-wrap"><div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf/slip-details</span></div><div class="screen-body"><div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:380px;"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><div style="display:flex;align-items:center;gap:14px;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;">Back to GPF</button><span style="font-weight:700;font-size:15px;color:#1a3a5c;">GPF Slip Details</span></div><button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">User Profile</button></div><div style="padding:20px 28px;"><div style="text-align:center;margin-bottom:16px;"><h1 style="font-size:20px;font-weight:800;color:#1e293b;">GPF Slip Details</h1><p style="font-size:13px;color:#64748b;">View and manage GPF contribution slips</p></div><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><div style="display:flex;gap:20px;margin-bottom:16px;"><div style="flex:1;"><label style="font-size:11px;font-weight:700;color:#1e293b;display:block;margin-bottom:5px;">DESIGNATION TYPE</label><select style="width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;"><option>OFFICER</option><option>INDUSTRIAL</option><option>NON INDUSTRIAL</option></select></div><div style="flex:1;"><label style="font-size:11px;font-weight:700;color:#1e293b;display:block;margin-bottom:5px;">GPF YEAR</label><select style="width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;"><option>2025</option><option>2024</option><option>2023</option></select></div></div><div style="overflow-x:auto;border-radius:10px;border:1px solid #e2e8f0;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="background:linear-gradient(135deg,#1a3a5c,#1e4976);"><th style="color:#fff;padding:10px 14px;text-align:left;">S.No</th><th style="color:#fff;padding:10px 14px;text-align:left;">PERS No.</th><th style="color:#fff;padding:10px 14px;text-align:left;">Name</th><th style="color:#fff;padding:10px 14px;text-align:left;">Designation</th><th style="color:#fff;padding:10px 14px;text-align:left;">GPF Account No.</th><th style="color:#fff;padding:10px 14px;text-align:right;">Closing Balance</th><th style="color:#fff;padding:10px 14px;text-align:center;">Status</th></tr></thead><tbody><tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:9px 14px;">1</td><td style="padding:9px 14px;">OFF001</td><td style="padding:9px 14px;">Rajesh Kumar</td><td style="padding:9px 14px;">Scientist-D</td><td style="padding:9px 14px;">GPF-2024-001</td><td style="padding:9px 14px;text-align:right;font-weight:600;color:#15803d;">Rs.4,50,000.00</td><td style="padding:9px 14px;text-align:center;"><span style="background:#dcfce7;color:#15803d;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">Applied</span></td></tr><tr style="border-bottom:1px solid #f1f5f9;background:#f8fafc;"><td style="padding:9px 14px;">2</td><td style="padding:9px 14px;">OFF002</td><td style="padding:9px 14px;">Priya Sharma</td><td style="padding:9px 14px;">Scientist-C</td><td style="padding:9px 14px;">GPF-2024-002</td><td style="padding:9px 14px;text-align:right;font-weight:600;color:#15803d;">Rs.6,50,000.00</td><td style="padding:9px 14px;text-align:center;"><span style="background:#f1f5f9;color:#64748b;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">No Application</span></td></tr></tbody></table></div></div></div></div></div></div>
+
+  <h3>Screen 11 — Subscription <span class="ic">/gpf/subscription</span></h3>
+  <div class="screen-wrap"><div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf/subscription</span></div><div class="screen-body"><div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:340px;"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><div style="display:flex;align-items:center;gap:14px;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;">Back to GPF</button><span style="font-weight:700;font-size:15px;color:#1a3a5c;">Subscriptions</span></div><button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">User Profile</button></div><div style="padding:20px 28px;"><div style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><h2 style="font-size:18px;font-weight:800;color:#1e293b;margin-bottom:4px;">GPF Subscription</h2><p style="font-size:13px;color:#64748b;margin-bottom:16px;">Search employee by Personnel Number</p><div style="display:flex;gap:10px;margin-bottom:20px;"><div style="flex:1;display:flex;align-items:center;gap:8px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:8px;padding:0 12px;"><span style="font-size:14px;">&#128269;</span><input type="text" placeholder="Enter Personnel Number (e.g. OFF001)..." style="flex:1;border:none;background:transparent;padding:10px 0;font-size:13px;outline:none;"/></div><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;">Search</button></div><div style="overflow-x:auto;border-radius:10px;border:1px solid #e2e8f0;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="background:linear-gradient(135deg,#1a3a5c,#1e4976);"><th style="color:#fff;padding:10px 14px;text-align:left;">Personnel No.</th><th style="color:#fff;padding:10px 14px;text-align:left;">Date</th><th style="color:#fff;padding:10px 14px;text-align:right;">GPF Subscription</th><th style="color:#fff;padding:10px 14px;text-align:right;">GPF Refund</th></tr></thead><tbody><tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:9px 14px;">OFF001</td><td style="padding:9px 14px;">2025-03-01</td><td style="padding:9px 14px;text-align:right;font-weight:600;">Rs.12,000</td><td style="padding:9px 14px;text-align:right;">Rs.0</td></tr><tr style="border-bottom:1px solid #f1f5f9;background:#f8fafc;"><td style="padding:9px 14px;">OFF001</td><td style="padding:9px 14px;">2025-02-01</td><td style="padding:9px 14px;text-align:right;font-weight:600;">Rs.12,000</td><td style="padding:9px 14px;text-align:right;">Rs.0</td></tr><tr><td style="padding:9px 14px;">OFF001</td><td style="padding:9px 14px;">2025-01-01</td><td style="padding:9px 14px;text-align:right;font-weight:600;">Rs.12,000</td><td style="padding:9px 14px;text-align:right;">Rs.500</td></tr></tbody></table></div></div></div></div></div></div>
+
+  <h3>Screen 12 — Add Subscription <span class="ic">/gpf/add-subscription</span></h3>
+  <div class="screen-wrap"><div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf/add-subscription</span></div><div class="screen-body"><div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:460px;"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><div style="display:flex;align-items:center;gap:14px;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;">Back to GPF</button><span style="font-weight:700;font-size:15px;color:#1a3a5c;">Add Subscription</span></div><button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">User Profile</button></div><div style="padding:20px 28px;"><div style="text-align:center;margin-bottom:16px;"><h1 style="font-size:20px;font-weight:800;color:#1e293b;">Add Subscription</h1><p style="font-size:13px;color:#64748b;">Search for an employee and manage GPF subscription details</p></div><div style="display:grid;grid-template-columns:1fr 1.5fr;gap:20px;margin-bottom:20px;"><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><h3 style="font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">Search / Add Subscription</h3><div style="display:flex;gap:8px;"><div style="flex:1;position:relative;"><input type="text" placeholder="Enter Pers No, Name or Account No..." style="width:100%;padding:9px 36px 9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:12px;"/><button style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:14px;cursor:pointer;">&#9660;</button></div><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:9px 14px;border-radius:8px;font-size:12px;font-weight:600;">Search</button></div></div><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><h3 style="font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:12px;">User Details</h3><table style="width:100%;border-collapse:collapse;font-size:12px;"><tbody><tr><td style="padding:6px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">GPF Account Number</td><td style="padding:6px 10px;border:1px solid #e2e8f0;font-weight:600;color:#1e293b;">GPF-2024-001</td><td style="padding:6px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">Personnel Number</td><td style="padding:6px 10px;border:1px solid #e2e8f0;font-weight:600;color:#1e293b;">OFF001</td></tr><tr><td style="padding:6px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">Employee Name</td><td style="padding:6px 10px;border:1px solid #e2e8f0;">Rajesh Kumar</td><td style="padding:6px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">Designation</td><td style="padding:6px 10px;border:1px solid #e2e8f0;">Scientist-D</td></tr><tr><td style="padding:6px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">Basic Pay</td><td style="padding:6px 10px;border:1px solid #e2e8f0;">Rs.85,000</td><td style="padding:6px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">Phone Number</td><td style="padding:6px 10px;border:1px solid #e2e8f0;">9876543210</td></tr></tbody></table></div></div><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><h3 style="font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">Subscription Entry</h3><div style="display:flex;gap:16px;margin-bottom:16px;"><div style="flex:1;"><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">ADD DATE / MONTH</label><input type="date" style="width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;"/></div><div style="flex:1;"><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">GPF SUBSCRIPTION</label><input type="number" placeholder="Enter amount" style="width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;"/></div><div style="flex:1;"><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">GPF REFUND</label><input type="number" placeholder="Enter amount" style="width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;"/></div></div><div style="display:flex;gap:12px;"><button style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;">Save</button><button style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;">Delete</button><button style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;">Reset</button></div></div></div></div></div></div>
+
+  <h3>Screen 13 — Add DV Number <span class="ic">/gpf/add-dv-number</span></h3>
+  <div class="screen-wrap"><div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf/add-dv-number</span></div><div class="screen-body"><div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:420px;"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><div style="display:flex;align-items:center;gap:14px;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;">Back to GPF</button><span style="font-weight:700;font-size:15px;color:#1a3a5c;">Add DV Number</span></div><button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">User Profile</button></div><div style="padding:20px 28px;"><div style="display:flex;gap:20px;align-items:center;margin-bottom:16px;"><label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer;"><input type="radio" name="role" checked/> Officer</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer;"><input type="radio" name="role"/> Staff</label></div><div style="text-align:center;margin-bottom:16px;"><h1 style="font-size:20px;font-weight:800;color:#1e293b;">Add DV Number</h1><p style="font-size:13px;color:#64748b;">Manage bill details and DV information</p></div><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);margin-bottom:16px;"><div style="display:flex;gap:16px;align-items:flex-end;"><div style="flex:1;"><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">DV NUMBER</label><input type="text" placeholder="Enter DV Number" style="width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;"/></div><div style="flex:1;"><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">DV DATE</label><input type="date" style="width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;"/></div><div style="flex:1;"><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">DV AMOUNT</label><input type="number" placeholder="Enter Amount" style="width:100%;padding:9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;"/></div><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;">Submit</button></div></div><div style="display:flex;gap:10px;margin-bottom:14px;"><button style="background:#dbeafe;color:#1d4ed8;border:none;padding:8px 18px;border-radius:7px;font-size:12px;font-weight:600;">Select All</button><button style="background:#fee2e2;color:#b91c1c;border:none;padding:8px 18px;border-radius:7px;font-size:12px;font-weight:600;">Unselect All</button></div><div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><h3 style="font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:12px;">Bill Details</h3><div style="overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0;"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:900px;"><thead><tr style="background:linear-gradient(135deg,#1a3a5c,#1e4976);"><th style="color:#fff;padding:9px 12px;text-align:left;">S.NO</th><th style="color:#fff;padding:9px 12px;">Select</th><th style="color:#fff;padding:9px 12px;text-align:left;">PERS NO.</th><th style="color:#fff;padding:9px 12px;text-align:left;">NAME</th><th style="color:#fff;padding:9px 12px;text-align:left;">TYPE</th><th style="color:#fff;padding:9px 12px;text-align:left;">APP DATE</th><th style="color:#fff;padding:9px 12px;text-align:left;">BILL NO.</th><th style="color:#fff;padding:9px 12px;text-align:right;">BILL AMT</th><th style="color:#fff;padding:9px 12px;text-align:right;">CDA AMT</th><th style="color:#fff;padding:9px 12px;text-align:left;">REMARKS</th></tr></thead><tbody><tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:8px 12px;">1</td><td style="padding:8px 12px;text-align:center;"><input type="checkbox"/></td><td style="padding:8px 12px;">OFF001</td><td style="padding:8px 12px;">Rajesh Kumar</td><td style="padding:8px 12px;">T</td><td style="padding:8px 12px;">2025-03-01</td><td style="padding:8px 12px;">BILL-001</td><td style="padding:8px 12px;text-align:right;">Rs.50,000</td><td style="padding:8px 12px;"><input type="text" value="50000" style="width:80px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:5px;font-size:11px;"/></td><td style="padding:8px 12px;"><input type="text" placeholder="Remarks" style="width:100px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:5px;font-size:11px;"/></td></tr><tr style="border-bottom:1px solid #f1f5f9;background:#f8fafc;"><td style="padding:8px 12px;">2</td><td style="padding:8px 12px;text-align:center;"><input type="checkbox" checked/></td><td style="padding:8px 12px;">OFF002</td><td style="padding:8px 12px;">Priya Sharma</td><td style="padding:8px 12px;">F</td><td style="padding:8px 12px;">2025-02-15</td><td style="padding:8px 12px;">BILL-002</td><td style="padding:8px 12px;text-align:right;">Rs.1,20,000</td><td style="padding:8px 12px;"><input type="text" value="120000" style="width:80px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:5px;font-size:11px;"/></td><td style="padding:8px 12px;"><input type="text" placeholder="Remarks" style="width:100px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:5px;font-size:11px;"/></td></tr></tbody></table></div></div></div></div></div></div>
+
+  <h3>Screen 14 — Temporary Advance <span class="ic">/temporary-advance</span></h3>
+  <div class="screen-wrap"><div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/temporary-advance</span></div><div class="screen-body"><div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:500px;"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><div style="display:flex;align-items:center;gap:14px;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;">Back to GPF</button><span style="font-weight:700;font-size:15px;color:#1a3a5c;">Temporary Advance</span></div><button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">User Profile</button></div><div style="padding:20px 28px;"><div style="display:grid;grid-template-columns:1fr 1.5fr;gap:20px;margin-bottom:20px;"><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><h2 style="font-size:15px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">Search User</h2><div style="display:flex;gap:16px;margin-bottom:12px;"><label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;"><input type="radio" name="ta" checked/> Staff</label><label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;"><input type="radio" name="ta"/> Officer</label><label style="display:flex;align-items:center;gap:6px;font-size:12px;"><input type="checkbox"/> Online Application</label></div><div style="display:flex;gap:8px;"><div style="flex:1;position:relative;"><input type="text" placeholder="Enter Pers No, Name or Account No..." style="width:100%;padding:9px 36px 9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:12px;"/><button style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:14px;">&#9660;</button></div><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:9px 14px;border-radius:8px;font-size:12px;font-weight:600;">Search</button></div></div><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><h2 style="font-size:15px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">User Details</h2><table style="width:100%;border-collapse:collapse;font-size:12px;"><tbody><tr><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">PERS NO.</td><td style="padding:7px 10px;border:1px solid #e2e8f0;font-weight:600;">OFF001</td><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">GPF ACC. NO.</td><td style="padding:7px 10px;border:1px solid #e2e8f0;font-weight:600;">GPF-2024-001</td></tr><tr><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">NAME</td><td style="padding:7px 10px;border:1px solid #e2e8f0;">Rajesh Kumar</td><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">BASIC PAY</td><td style="padding:7px 10px;border:1px solid #e2e8f0;">Rs.85,000</td></tr><tr><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">DOB</td><td style="padding:7px 10px;border:1px solid #e2e8f0;">22 Mar 1985</td><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">DESIGNATION</td><td style="padding:7px 10px;border:1px solid #e2e8f0;">Scientist-D</td></tr></tbody></table></div></div><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);margin-bottom:16px;"><h3 style="font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">Application Details</h3><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;"><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">APPLICATION DATE *</label><input type="date" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">APPLICATION AMOUNT *</label><input type="number" placeholder="Enter amount" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">LOAN TAKEN CURRENT YEAR</label><input type="number" placeholder="Enter amount" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">DATE</label><input type="date" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div></div></div><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><h3 style="font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">Purpose and Bill Details</h3><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-bottom:14px;"><div style="grid-column:span 4;"><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">PURPOSE *</label><select style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"><option>-- Select Purpose --</option><option>Medical Treatment</option><option>Education</option><option>House Construction</option><option>Marriage</option></select></div><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">BILL NO. *</label><input type="text" placeholder="Enter bill number" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">BILL DATE *</label><input type="date" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">REC FROM *</label><input type="date" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div></div><div style="text-align:center;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:11px 36px;border-radius:8px;font-size:14px;font-weight:700;">Submit Application</button></div></div></div></div></div></div>
+
+  <h3>Screen 15 — Final Withdrawal <span class="ic">/final-withdrawal</span></h3>
+  <div class="screen-wrap"><div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/final-withdrawal</span></div><div class="screen-body"><div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:480px;"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><div style="display:flex;align-items:center;gap:14px;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;">Back to GPF</button><span style="font-weight:700;font-size:15px;color:#1a3a5c;">Final Withdrawal</span></div><button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">User Profile</button></div><div style="padding:20px 28px;"><div style="display:grid;grid-template-columns:1fr 1.5fr;gap:20px;margin-bottom:20px;"><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><h2 style="font-size:15px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">Search User</h2><div style="display:flex;gap:16px;margin-bottom:12px;"><label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;"><input type="radio" name="fw" checked/> Staff</label><label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;"><input type="radio" name="fw"/> Officer</label><label style="display:flex;align-items:center;gap:6px;font-size:12px;"><input type="checkbox"/> Online Application</label></div><div style="display:flex;gap:8px;"><div style="flex:1;position:relative;"><input type="text" placeholder="Enter Pers No, Name or Account No..." style="width:100%;padding:9px 36px 9px 12px;border:2px solid #e2e8f0;border-radius:8px;font-size:12px;"/><button style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:14px;">&#9660;</button></div><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:9px 14px;border-radius:8px;font-size:12px;font-weight:600;">Search</button></div></div><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><h2 style="font-size:15px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">User Details</h2><table style="width:100%;border-collapse:collapse;font-size:12px;"><tbody><tr><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">PERS NO.</td><td style="padding:7px 10px;border:1px solid #e2e8f0;font-weight:600;">OFF001</td><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">GPF ACC. NO.</td><td style="padding:7px 10px;border:1px solid #e2e8f0;font-weight:600;">GPF-2024-001</td></tr><tr><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">NAME</td><td style="padding:7px 10px;border:1px solid #e2e8f0;">Rajesh Kumar</td><td style="padding:7px 10px;color:#64748b;font-weight:600;background:#f8fafc;border:1px solid #e2e8f0;">BASIC PAY</td><td style="padding:7px 10px;border:1px solid #e2e8f0;">Rs.85,000</td></tr></tbody></table></div></div><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);margin-bottom:16px;"><h3 style="font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">Withdrawal Details</h3><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;"><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">WITHDRAWAL DATE *</label><input type="date" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">WITHDRAWAL AMOUNT *</label><input type="number" placeholder="Enter amount" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">CLOSING BALANCE</label><input type="number" placeholder="Enter closing balance" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">WITHDRAWAL REASON *</label><select style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"><option>-- Select Reason --</option><option>Retirement</option><option>Resignation</option><option>Medical Emergency</option></select></div></div></div><div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.08);"><h3 style="font-size:14px;font-weight:700;color:#1a3a5c;margin-bottom:14px;">Bank Details</h3><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;"><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">BANK NAME *</label><input type="text" placeholder="Enter bank name" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">ACCOUNT NUMBER *</label><input type="text" placeholder="Enter account number" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div><div><label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:5px;">IFSC CODE *</label><input type="text" placeholder="Enter IFSC code" style="width:100%;padding:8px 10px;border:2px solid #e2e8f0;border-radius:7px;font-size:12px;"/></div></div><div style="text-align:center;"><button style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;padding:11px 36px;border-radius:8px;font-size:14px;font-weight:700;">Submit Withdrawal Request</button></div></div></div></div></div></div>
+
+  <h3>Screen 16 — Reports (Summary) <span class="ic">/gpf/reports</span></h3>
+  <div class="screen-wrap"><div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf/reports</span></div><div class="screen-body"><div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:460px;"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><div style="display:flex;align-items:center;gap:14px;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;">Back to GPF</button><span style="font-weight:700;font-size:15px;color:#1a3a5c;">Reports</span><span style="font-size:12px;color:#64748b;background:rgba(98,173,183,0.1);padding:3px 9px;border-radius:5px;">02:45:30 PM</span></div><button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">User Profile</button></div><div style="padding:20px 28px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;"><div><h1 style="font-size:22px;font-weight:800;color:#1e293b;margin-bottom:4px;">GPF User Summary Report</h1><p style="font-size:13px;color:#64748b;">5 of 5 records</p></div></div><div style="display:flex;gap:12px;margin-bottom:16px;"><input type="text" placeholder="Search by Pers No. or Name..." style="flex:1;padding:10px 14px;border:2px solid #e2e8f0;border-radius:8px;font-size:13px;"/><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;">Refresh</button></div><div style="overflow-x:auto;border-radius:12px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.04);"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:1000px;"><thead><tr style="background:linear-gradient(135deg,#1a3a5c,#1e4976);"><th style="color:#fff;padding:11px 12px;text-align:left;">#</th><th style="color:#fff;padding:11px 12px;text-align:left;">Pers No.</th><th style="color:#fff;padding:11px 12px;text-align:left;">GPF Acc. No.</th><th style="color:#fff;padding:11px 12px;text-align:left;">Name</th><th style="color:#fff;padding:11px 12px;text-align:left;">Date of Birth</th><th style="color:#fff;padding:11px 12px;text-align:left;">Designation</th><th style="color:#fff;padding:11px 12px;text-align:left;">Purpose Type</th><th style="color:#fff;padding:11px 12px;text-align:center;">GPF Type</th><th style="color:#fff;padding:11px 12px;text-align:right;">Closing Balance</th><th style="color:#fff;padding:11px 12px;text-align:right;">Appl. Amount</th><th style="color:#fff;padding:11px 12px;text-align:center;">Report</th></tr></thead><tbody><tr style="border-bottom:1px solid #f1f5f9;cursor:pointer;" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='#fff'"><td style="padding:10px 12px;">1</td><td style="padding:10px 12px;font-family:monospace;font-weight:600;color:#1a3a5c;">OFF001</td><td style="padding:10px 12px;font-family:monospace;">GPF-2024-001</td><td style="padding:10px 12px;font-weight:600;">Rajesh Kumar</td><td style="padding:10px 12px;">22/03/1985</td><td style="padding:10px 12px;">Scientist-D</td><td style="padding:10px 12px;">House Building</td><td style="padding:10px 12px;text-align:center;"><span style="background:#dcfce7;color:#15803d;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">Partial</span></td><td style="padding:10px 12px;text-align:right;font-weight:600;color:#15803d;">Rs.4,50,000.00</td><td style="padding:10px 12px;text-align:right;font-weight:600;">Rs.50,000.00</td><td style="padding:10px 12px;text-align:center;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">View Report</button></td></tr><tr style="border-bottom:1px solid #f1f5f9;background:#f8fafc;cursor:pointer;"><td style="padding:10px 12px;">2</td><td style="padding:10px 12px;font-family:monospace;font-weight:600;color:#1a3a5c;">OFF002</td><td style="padding:10px 12px;font-family:monospace;">GPF-2024-002</td><td style="padding:10px 12px;font-weight:600;">Priya Sharma</td><td style="padding:10px 12px;">05/11/1980</td><td style="padding:10px 12px;">Scientist-C</td><td style="padding:10px 12px;">Education</td><td style="padding:10px 12px;text-align:center;"><span style="background:#dbeafe;color:#1d4ed8;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">Final</span></td><td style="padding:10px 12px;text-align:right;font-weight:600;color:#15803d;">Rs.6,50,000.00</td><td style="padding:10px 12px;text-align:right;font-weight:600;">Rs.1,20,000.00</td><td style="padding:10px 12px;text-align:center;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">View Report</button></td></tr><tr style="border-bottom:1px solid #f1f5f9;cursor:pointer;"><td style="padding:10px 12px;">3</td><td style="padding:10px 12px;font-family:monospace;font-weight:600;color:#1a3a5c;">STF001</td><td style="padding:10px 12px;font-family:monospace;">GPF-2024-003</td><td style="padding:10px 12px;font-weight:600;">Suresh Nair</td><td style="padding:10px 12px;">14/07/1990</td><td style="padding:10px 12px;">Tech Officer-B</td><td style="padding:10px 12px;">Medical</td><td style="padding:10px 12px;text-align:center;"><span style="background:#dcfce7;color:#15803d;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">Partial</span></td><td style="padding:10px 12px;text-align:right;font-weight:600;color:#15803d;">Rs.3,20,000.00</td><td style="padding:10px 12px;text-align:right;font-weight:600;">Rs.30,000.00</td><td style="padding:10px 12px;text-align:center;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">View Report</button></td></tr></tbody></table></div></div></div></div></div></div>
+
+  <h3>Screen 17 — User Report (Select Report Type) <span class="ic">/gpf/reports/user/:persNumber</span></h3>
+  <div class="screen-wrap"><div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf/reports/user/OFF001</span></div><div class="screen-body"><div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:440px;"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><div style="display:flex;align-items:center;gap:14px;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;">Back to Reports</button><span style="font-weight:700;font-size:15px;color:#1a3a5c;">Reports - Rajesh Kumar</span></div><button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">User Profile</button></div><div style="padding:28px;"><div style="text-align:center;margin-bottom:24px;"><h1 style="font-size:24px;font-weight:800;color:#1e293b;margin-bottom:12px;">Select Report Type</h1><div style="display:inline-flex;align-items:center;gap:10px;background:#fff;border:1px solid #e2e8f0;border-radius:30px;padding:8px 20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);"><span style="background:#f1f5f9;color:#475569;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;">OFF001</span><span style="color:#94a3b8;">|</span><span style="font-weight:700;color:#1e293b;font-size:13px;">Rajesh Kumar</span><span style="color:#94a3b8;">|</span><span style="background:#dcfce7;color:#15803d;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;">Partial / Temporary Advance</span></div></div><div style="display:flex;flex-direction:column;gap:12px;max-width:700px;margin:0 auto;"><div style="display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:all 0.2s;" onmouseover="this.style.borderColor='#62adb7';this.style.transform='translateX(4px)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.transform='translateX(0)'"><span style="font-size:28px;">&#129534;</span><div style="flex:1;"><h3 style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:3px;">Contingent Bill</h3><p style="font-size:12px;color:#64748b;margin:0;">Bill for contingent expenditure against GPF</p></div><span style="font-size:18px;color:#62adb7;font-weight:700;">&#8594;</span></div><div style="display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#62adb7';this.style.transform='translateX(4px)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.transform='translateX(0)'"><span style="font-size:28px;">&#128203;</span><div style="flex:1;"><h3 style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:3px;">CFA</h3><p style="font-size:12px;color:#64748b;margin:0;">Competent Financial Authority approval form</p></div><span style="font-size:18px;color:#62adb7;font-weight:700;">&#8594;</span></div><div style="display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#62adb7';this.style.transform='translateX(4px)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.transform='translateX(0)'"><span style="font-size:28px;">&#129518;</span><div style="flex:1;"><h3 style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:3px;">Calculation Sheet</h3><p style="font-size:12px;color:#64748b;margin:0;">Detailed GPF calculation breakdown</p></div><span style="font-size:18px;color:#62adb7;font-weight:700;">&#8594;</span></div><div style="display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#62adb7';this.style.transform='translateX(4px)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.transform='translateX(0)'"><span style="font-size:28px;">&#128221;</span><div style="flex:1;"><h3 style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:3px;">Application</h3><p style="font-size:12px;color:#64748b;margin:0;">GPF withdrawal / advance application form</p></div><span style="font-size:18px;color:#62adb7;font-weight:700;">&#8594;</span></div><div style="display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px 20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);" onmouseover="this.style.borderColor='#62adb7';this.style.transform='translateX(4px)'" onmouseout="this.style.borderColor='#e2e8f0';this.style.transform='translateX(0)'"><span style="font-size:28px;">&#128197;</span><div style="flex:1;"><h3 style="font-size:15px;font-weight:700;color:#1e293b;margin-bottom:3px;">Schedule</h3><p style="font-size:12px;color:#64748b;margin:0;">Repayment schedule for GPF advance</p></div><span style="font-size:18px;color:#62adb7;font-weight:700;">&#8594;</span></div></div></div></div></div></div></div>
+
+  <h3>Screen 18 — Report Detail (Printable) <span class="ic">/gpf/reports/user/:persNumber/:reportType</span></h3>
+  <div class="screen-wrap"><div class="screen-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">http://localhost:5173/gpf/reports/user/OFF001/contingent-bill</span></div><div class="screen-body"><div style="font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;min-height:600px;"><div style="display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><div style="display:flex;align-items:center;gap:14px;"><button style="background:linear-gradient(135deg,#62adb7,#6DB432);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;">Back</button><span style="font-weight:700;font-size:15px;color:#1a3a5c;">CB Contingent Bill</span></div><div style="display:flex;gap:8px;"><button style="background:linear-gradient(135deg,#1a3a5c,#2563eb);color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;">Print</button><button style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">Profile</button></div></div><div style="padding:20px 28px;"><div style="background:#fff;border-radius:12px;padding:32px;box-shadow:0 4px 16px rgba(0,0,0,0.08);max-width:800px;margin:0 auto;font-family:'Times New Roman',serif;font-size:11pt;line-height:1.7;"><div style="text-align:right;font-size:10pt;margin-bottom:16px;"><div><strong>UNIT CODE</strong></div><div><strong>DRDL 360000032</strong></div></div><div style="text-align:center;font-size:14pt;font-weight:bold;letter-spacing:2px;border-top:2px solid #000;border-bottom:2px solid #000;padding:8px 0;margin-bottom:16px;">CONTINGENT BILL</div><div style="text-align:center;font-size:11pt;margin-bottom:16px;">BILL NO. DRDL/FIN/CGOS/GPF-FW/<span style="border-bottom:1px solid #000;padding:0 20px;">BILL-001</span></div><div style="display:flex;justify-content:space-between;margin-bottom:20px;"><div style="font-size:10pt;line-height:1.8;"><div>TO</div><div>THE PCDA(R&amp;D)</div><div>KANCHANBAGH</div><div>HYDERABAD-500058</div></div><div style="text-align:right;font-size:10pt;line-height:1.8;"><div>FW/<span style="border-bottom:1px solid #000;padding:0 10px;">BILL-001</span></div><div><strong>DRDL HYD</strong></div><div>Dated: <span style="border-bottom:1px solid #000;padding:0 10px;">31/03/2026</span></div></div></div><div style="font-size:10pt;line-height:1.8;margin-bottom:16px;"><div>Expenditure on account of Final Withdrawal from GPF assets A/C No. <strong>GPF-2024-001</strong> in R/o SHRI <strong>Rajesh Kumar</strong></div><div style="margin-left:20px;">ID NO. <span style="border-bottom:1px solid #000;padding:0 10px;">OFF001</span> &nbsp;&nbsp;&nbsp; PERS No. <span style="border-bottom:1px solid #000;padding:0 10px;">OFF001</span></div><div style="margin-left:20px;">i) Authority : 15(1)(B)(e) of GPF(CS) Rules 1960</div><div style="margin-left:20px;">ii) Months account in which last charge on this account was preferred <span style="border-bottom:1px solid #000;padding:0 10px;">Jan 2026</span></div></div><div style="border:1px solid #000;margin-bottom:16px;"><div style="display:flex;border-bottom:1px solid #000;"><div style="flex:2;padding:8px 12px;font-weight:bold;border-right:1px solid #000;">DETAILS OF EXPENDITURE</div><div style="flex:1;padding:8px 12px;font-weight:bold;text-align:right;">AMOUNT</div></div><div style="display:flex;"><div style="flex:2;padding:8px 12px;line-height:1.8;border-right:1px solid #000;"><div>Final Withdrawal from GPF assets against A/C No. <strong>GPF-2024-001</strong> in R/o SHRI <strong>Rajesh Kumar</strong></div><div style="margin-left:20px;">vide sanction dated <span style="border-bottom:1px solid #000;padding:0 10px;">31/03/2026</span> in connection with</div><div style="margin-left:20px;">Upkeeping of ancestral house at native place</div><div style="margin-left:20px;">Address: <span style="border-bottom:1px solid #000;padding:0 30px;">Hyderabad, Telangana</span></div></div><div style="flex:1;padding:8px 12px;text-align:right;font-weight:bold;font-size:12pt;">Rs.50,000.00</div></div></div><div style="font-size:9pt;font-weight:bold;text-align:center;border:1px solid #000;padding:8px;margin-bottom:16px;">CERTIFIED THAT THE INDIVIDUAL IS NOT DUE FOR RETIREMENT WITHIN NEXT 24 MONTHS</div><div style="font-size:10pt;line-height:1.8;margin-bottom:20px;"><div>Encls: a) Sanction of the competent authority in original</div><div style="margin-left:40px;">b) GPF application form</div><div style="margin-left:40px;">c) GPF annual statement of account for the year 2024 &amp; 2025</div><div style="margin-left:40px;">d) Debit schedule in triplicate</div></div><div style="display:flex;justify-content:space-between;border-top:2px solid #000;padding-top:12px;"><div style="font-size:11pt;font-weight:bold;">TOTAL Rs. <span style="border-bottom:2px solid #000;padding:0 20px;">Rs.50,000.00</span></div><div style="font-size:11pt;font-weight:bold;">RECEIVED PAYMENT</div></div><div style="display:flex;justify-content:space-between;margin-top:32px;font-size:10pt;"><div><div style="margin-bottom:40px;"></div><div>Sr. Accounts Officer</div><div>for DIRECTOR</div></div><div style="text-align:right;"><div style="font-weight:bold;margin-bottom:8px;">SIGNATURE OF THE INDIVIDUAL</div><div>ID NO: <span style="border-bottom:1px solid #000;padding:0 20px;">OFF001</span> &nbsp; Pers No: <span style="border-bottom:1px solid #000;padding:0 20px;">OFF001</span></div><div>NAME: <span style="border-bottom:1px solid #000;padding:0 40px;">Rajesh Kumar</span></div><div>BANK ACCOUNT NO: <span style="border-bottom:1px solid #000;padding:0 30px;"></span></div><div>IFSC CODE: <span style="border-bottom:1px solid #000;padding:0 40px;"></span></div></div></div></div></div></div></div></div></div>
+
+<section id="s11">
+  <div class="sec-header"><div class="sec-num">11</div><h2>User Flows</h2></div>
+  <h3>Login Flow</h3>
+  <div class="flow">
+    <div class="flow-item"><div class="flow-dot">1</div><div class="flow-body"><h4>Open Application</h4><p>Navigate to http://localhost:5173. If already logged in, PublicRoute redirects to /dashboard automatically.</p></div></div>
+    <div class="flow-item"><div class="flow-dot">2</div><div class="flow-body"><h4>Enter Credentials</h4><p>Enter User ID and Password on the login form.</p></div></div>
+    <div class="flow-item"><div class="flow-dot">3</div><div class="flow-body"><h4>JWT Issued</h4><p>Backend validates credentials, returns JWT token + user session data (userId, username, workStatus, dob, numericId).</p></div></div>
+    <div class="flow-item"><div class="flow-dot">4</div><div class="flow-body"><h4>Session Stored</h4><p>Token and user data stored in both localStorage and sessionStorage for persistence.</p></div></div>
+    <div class="flow-item"><div class="flow-dot">5</div><div class="flow-body"><h4>Redirect to Dashboard</h4><p>User lands on /dashboard. Browser back button no longer returns to login page.</p></div></div>
+  </div>
+  <h3>GPF Application Flow</h3>
+  <div class="flow">
+    <div class="flow-item"><div class="flow-dot">1</div><div class="flow-body"><h4>Open User Application GPF</h4><p>From dashboard, click "User Application GPF".</p></div></div>
+    <div class="flow-item"><div class="flow-dot">2</div><div class="flow-body"><h4>Auto-fill Data</h4><p>Phone number and basic pay fetched from GPF table. Closing balance auto-filled from GPF Years (latest year).</p></div></div>
+    <div class="flow-item"><div class="flow-dot">3</div><div class="flow-body"><h4>Select Loan Type &amp; Purpose</h4><p>Choose Temporary or Final. Purpose dropdown populates from GPF_PURPOSE_E or GPF_PURPOSE_F accordingly.</p></div></div>
+    <div class="flow-item"><div class="flow-dot">4</div><div class="flow-body"><h4>Fill &amp; Submit</h4><p>Enter amount, enclosures, previous advance details. Click Save — POST to /api/gpf-usr-details/create.</p></div></div>
+    <div class="flow-item"><div class="flow-dot">5</div><div class="flow-body"><h4>Record Created</h4><p>Application saved to GPF_USR_DETAILS. Appears in "Not Yet Approved" table.</p></div></div>
+    <div class="flow-item"><div class="flow-dot">6</div><div class="flow-body"><h4>Admin Sanctions</h4><p>Admin reviews in Temporary Advance / Final Withdrawal screens and creates a sanction record in GPF_SANCTION_DETAILS.</p></div></div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────
+     12. SETUP & RUN
+───────────────────────────────────────── -->
+<section id="s12">
+  <div class="sec-header"><div class="sec-num">12</div><h2>Setup &amp; Run</h2></div>
+  <h3>Prerequisites</h3>
+  <div class="card">
+    <ul style="padding-left:20px;color:#334155;line-height:2.2;">
+      <li>Java 17+</li>
+      <li>Node.js 18+ and npm</li>
+      <li>Oracle Database XE running on <span class="ic">localhost:1521</span> with SID <span class="ic">xe</span></li>
+      <li>Oracle user <span class="ic">aditya</span> with password <span class="ic">aditya2468</span> (or update application.properties)</li>
+    </ul>
+  </div>
+  <h3>Start Backend</h3>
+  <pre><code>cd drdo-BackEnd/loginregister
+
+# Windows
+mvnw.cmd spring-boot:run
+
+# Linux / Mac
+./mvnw spring-boot:run
+
+# Server starts on http://localhost:8081
+# Flyway migrations run automatically on startup</code></pre>
+  <h3>Start Frontend</h3>
+  <pre><code>cd drdo-FrontEnd
+
+npm install        # first time only
+npm run dev        # starts on http://localhost:5173
+
+npm run build      # production build → dist/</code></pre>
+  <h3>Environment Config</h3>
+  <p>Frontend reads API base URL from <span class="ic">drdo-FrontEnd/.env</span>:</p>
+  <pre><code>VITE_API_BASE_URL=http://localhost:8081</code></pre>
+  <p>Defaults to <span class="ic">http://localhost:8081</span> if not set.</p>
+</section>
+
+</main>
+</div><!-- end doc-layout -->
+</div><!-- end wrap -->
+
+<footer>
+  <div class="f-logo">🛡️ DRDO GPF Management System</div>
+  <div class="f-sub">General Provident Fund — Digital Management Platform &nbsp;·&nbsp; Technical Documentation v1.0</div>
+  <div class="f-pills">
+    <span class="f-pill">React 19.2.0</span>
+    <span class="f-pill">Spring Boot 4.0.2</span>
+    <span class="f-pill">Oracle XE</span>
+    <span class="f-pill">JWT 0.11.5</span>
+    <span class="f-pill">Flyway</span>
+    <span class="f-pill">Vite 7.2.4</span>
+    <span class="f-pill">Java 17</span>
+  </div>
+  <p style="margin-top:20px;font-size:12px;color:rgba(255,255,255,0.25);">CONFIDENTIAL — INTERNAL USE ONLY — DRDO</p>
+</footer>
+
+</body>
+</html>
+
+
+
+
+

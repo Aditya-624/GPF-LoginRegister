@@ -101,14 +101,18 @@
 }
 
 .btn-signout {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: var(--white);
-  border: none;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .btn-signout:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+  color: #fff !important;
+  border: none !important;
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.45);
 }
 
 .dashboard-main {
