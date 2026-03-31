@@ -11,6 +11,16 @@ function PrivateRoute({ children }) {
   }
   return children;
 }
+
+// Redirects logged-in users away from public pages (login, register, etc.)
+function PublicRoute({ children }) {
+  const session = userService.getUserSession();
+  const token = userService.getAuthToken();
+  if (session && token) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return children;
+}
 import Registration from './components/Registration';
 import LoginPage from './components/LoginPage';
 import ChangePassword from './components/ChangePassword';
@@ -197,9 +207,9 @@ function AppRoutes() {
         <div className="page-wrapper prev" ref={prevRef} aria-hidden="true">
           <Routes location={prevLocation}>
             {/* Public routes */}
-            <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
-            <Route path="/register" element={<Registration />} />
-            <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
+            <Route path="/" element={<PublicRoute><LoginPage onLoginSuccess={handleLoginSuccess} /></PublicRoute>} />
+            <Route path="/register" element={<PublicRoute><Registration /></PublicRoute>} />
+            <Route path="/forgot-password" element={<PublicRoute><ForgotPassword onSuccess={() => navigate('/')} /></PublicRoute>} />
             <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} onCancel={handleCancelChangePassword} loggedInUser={loggedInUser} fromExpiry={location.state?.fromExpiry} />} />
             {/* Protected routes — require login */}
             <Route path="/dashboard" element={<PrivateRoute><Dashboard onSignOut={handleLogout} /></PrivateRoute>} />
@@ -225,9 +235,9 @@ function AppRoutes() {
       <div className="page-wrapper current" ref={currRef} aria-live="polite">
         <Routes location={location}>
           {/* Public routes */}
-          <Route path="/" element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
-          <Route path="/register" element={<Registration />} />
-          <Route path="/forgot-password" element={<ForgotPassword onSuccess={() => navigate('/')} />} />
+          <Route path="/" element={<PublicRoute><LoginPage onLoginSuccess={handleLoginSuccess} /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><Registration /></PublicRoute>} />
+          <Route path="/forgot-password" element={<PublicRoute><ForgotPassword onSuccess={() => navigate('/')} /></PublicRoute>} />
           <Route path="/change-password" element={<ChangePassword onSuccess={handleChangePasswordSuccess} onCancel={handleCancelChangePassword} loggedInUser={loggedInUser} fromExpiry={location.state?.fromExpiry} />} />
           {/* Protected routes — require login */}
           <Route path="/dashboard" element={<PrivateRoute><Dashboard onSignOut={handleLogout} /></PrivateRoute>} />
