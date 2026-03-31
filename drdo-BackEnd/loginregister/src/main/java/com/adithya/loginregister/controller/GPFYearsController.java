@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,21 @@ public class GPFYearsController {
     public GPFYearsController(GPFYearsRepository gpfYearsRepository, GPFRepository gpfRepository) {
         this.gpfYearsRepository = gpfYearsRepository;
         this.gpfRepository = gpfRepository;
+    }
+
+    /**
+     * Get GPF Years records by person number
+     * GET /api/gpf-years/person/{persNumber}
+     */
+    @GetMapping("/person/{persNumber}")
+    public ResponseEntity<?> getByPersonNumber(@PathVariable String persNumber) {
+        try {
+            List<GPFYears> records = gpfYearsRepository.findByPassNumberOrderByGpfYearsDesc(persNumber);
+            return ResponseEntity.ok(records);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("Error fetching GPF Years: " + e.getMessage()));
+        }
     }
 
     /**
